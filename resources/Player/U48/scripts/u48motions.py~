@@ -41,11 +41,6 @@ GM = 0.5
 # (diesel for emerged, electric for submerged)
 dPower = 1.0E6
 ePower = 280.0E3
-if not 'diesel_power' in ship:
-	ship['diesel_power'] = dPower
-if not 'electric_power' in ship:
-	ship['electric_power'] = ePower
-
 
 # Efficiency
 nu_d = 0.6
