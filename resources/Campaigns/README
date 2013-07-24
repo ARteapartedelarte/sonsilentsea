@@ -1,0 +1,6 @@
+The campaigns and missions are threated as Python modules, so:
+
+1.- The names can't start by a number, and special symbols (including spaces) should not be used
+
+2.- Inside the campaign/mission folder an __init__.py srcipt must be added. Look for the examples for more information
+

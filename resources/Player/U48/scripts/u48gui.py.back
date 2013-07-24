@@ -1,0 +1,156 @@
+#    Copyright (c) 2013, 2014
+#    Jose Luis Cercos-Pita <jlcercos@gmail.com>
+#    
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import bge
+from bge import logic as g
+from bge import texture
+from math import *
+from mathutils import *
+
+# Get the local object controller
+controller = g.getCurrentController()
+
+# Get the GUI manager (if exist)
+scene   = g.getCurrentScene()
+objects = scene.objects
+camera  = scene.active_camera
+gui     = None
+if 'gui' in camera:
+		# Create our system and show the mouse
+		gui = camera['gui']
+
+gui_shipZ     = 11.0
+gui_minZ      = 1.0
+
+speed_angles = (radians(0.0),
+                 radians(43.0),
+                 radians(85.0),
+                 radians(127.0))
+d_angle      = radians(1.0)
+
+depth_limits = (0.0, 260.0)
+depth_angles = (radians(-130.0), radians(130.0))
+
+widget_dims  = 17.0
+
+def update_speed():
+    """ Update the speed indicator
+    @note Call this method each frame
+    """
+    controller = g.getCurrentController()
+    indicator  = controller.owner
+    speed      = indicator.parent
+    gui        = speed.parent
+    ship       = gui.parent
+    throttle   = ship['speed']
+    angle      = indicator['angle']
+    objective  = copysign(speed_angles[abs(throttle)], throttle)
+    if (angle < objective + d_angle) and (angle > objective - d_angle):
+        if not indicator.visible:
+            return
+        indicator['visibleTics'] -= 1
+        if indicator['visibleTics'] > 0:
+            return
+        # Turn off the visbility
+        indicator.visible = False
+        speed.visible     = False
+        return
+    rot = copysign(d_angle, objective - angle)
+    indicator.applyRotation(Vector((0.0,0.0,-rot)), True)
+    indicator['angle'] += rot
+    indicator['visibleTics'] = gui['visibleTics']
+    if indicator.visible:
+        return
+    # Turn on the visbility
+    indicator.visible = True
+    speed.visible     = True
+
+def update_depth():
+    """ Update the depth indicator
+    @note Call this method each frame
+    """
+    controller = g.getCurrentController()
+    indicator  = controller.owner
+    depth      = indicator.parent
+    gui        = depth.parent
+    ship       = gui.parent
+    # Rotate the indicator
+    h = -ship.worldPosition[2]
+    f = (h - depth_limits[0]) / (depth_limits[1] - depth_limits[0])
+    if f < 0.0:
+        f = 0.0
+    if f > 1.0:
+        f = 1.0
+    angle = (1.0-f)*depth_angles[0] + f*depth_angles[1]
+    eul   = Euler((0.0, 0.0, -angle), 'XYZ')
+    indicator.localOrientation = eul
+    # Compute the visibility
+    submerging = ship['submerging']
+    if (not submerging) or ((submerging > 0) and (h < 0.25)):
+        if not indicator.visible:
+            return
+        indicator['visibleTics'] -= 1
+        if indicator['visibleTics'] > 0:
+            return
+        # Turn off the visbility
+        indicator.visible = False
+        depth.visible     = False
+        return
+    indicator['visibleTics'] = gui['visibleTics']
+    if indicator.visible:
+        return
+    # Turn on the visbility
+    indicator.visible = True
+    depth.visible     = True
+
+def redistributeWidgets(gui):
+    """ Distribute the widgets along the
+    ship length.
+    @param gui GUI node, the patern of all
+    the widgets
+    """
+    # Get the visible widgets
+    widgets = []
+    for i in range(0,len(gui.children)):
+        if gui.children[i].visible:
+            widgets.append(gui.children[i])
+    n = len(widgets)
+    if not n:
+        return
+    l = n * widget_dims
+    # Move the widgets
+    for i,w in enumerate(widgets):
+        # For some reason the widgets are positioned -0.5*dim
+        x = - 0.5*l + (i+1)*widget_dims
+        w.localPosition.x = x
+
+def update():
+    """ Update the GUI manager
+    @note Call this method each frame
+    """
+    controller = g.getCurrentController()
+    gui        = controller.owner
+    ship       = gui.parent
+    # First set the position
+    gui.worldPosition = ship.worldPosition
+    z = max(gui_minZ, gui_shipZ + ship.worldPosition.z)
+    gui.worldPosition.z = z
+    # And then fix the orientation
+    gui.worldOrientation = Matrix.Identity(3)
+    # Finally redistribute the widgets
+    redistributeWidgets(gui)
+
+
