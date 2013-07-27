@@ -70,38 +70,6 @@ noise_max = 1.25*noise_dPower*dPower
 if not 'noise' in ship:
 	ship['noise'] = 0.0
 
-# Get the images path
-blend_file  = path.dirname(__file__)
-images_path = path.join(path.dirname(blend_file), 'GUI')
-
-# Compute de widgets dimensions
-image_dims  = [0.05,0.05]
-w = bge.render.getWindowWidth()
-h = bge.render.getWindowHeight()
-aspect_ratio = h / w
-if aspect_ratio > 1.0:
-	image_dims[0] *= aspect_ratio
-else:
-	image_dims[1] /= aspect_ratio
-widget_dims  = [0.25,0.025]
-
-# Create the widgets
-if gui:
-	img = path.join(images_path,'Actions-layer-visible-off-icon.png')
-	widget = bgui.Image(gui, 'player_visibility_img', img, size=[image_dims[0], image_dims[1]],
-	                    pos=[0.975-widget_dims[0]-image_dims[0], widget_dims[1] + image_dims[1]],
-	                    options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
-	widget = bgui.ProgressBar(gui, "player_visibility", percent=0.0, size=[widget_dims[0], widget_dims[1]],
-	                    pos=[0.975-widget_dims[0], widget_dims[1] + image_dims[1]],
-	                    sub_theme='Red', options = bgui.BGUI_DEFAULT)
-	img = path.join(images_path,'Actions-speaker-icon.png')
-	widget = bgui.Image(gui, 'player_noise_img', img, size=[image_dims[0], image_dims[1]],
-	                    pos=[0.975-widget_dims[0]-image_dims[0], widget_dims[1]],
-	                    options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
-	widget = bgui.ProgressBar(gui, "player_noise", percent=0.0, size=[widget_dims[0], widget_dims[1]],
-	                    pos=[0.975-widget_dims[0], widget_dims[1]],
-	                    sub_theme='Red', options = bgui.BGUI_DEFAULT)
-
 def _update_visibility():
 	z        = ship.worldPosition[2]
 	v_factor = visibility_table[1][-1]
@@ -117,6 +85,8 @@ def _update_visibility():
 	ship['visibility'] = v_factor
 	# Update GUI
 	if not gui:
+		return
+	if not 'player_visibility' in gui.children:
 		return
 	gui.children['player_visibility'].percent = v_factor
 
@@ -138,6 +108,8 @@ def _update_noise():
 	ship['noise'] = noise_engine
 	# Update GUI
 	if not gui:
+		return
+	if not 'player_noise' in gui.children:
 		return
 	gui.children['player_noise'].percent = min(1.0,ship['noise']/noise_max)
 

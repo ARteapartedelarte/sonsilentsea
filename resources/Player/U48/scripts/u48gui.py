@@ -52,6 +52,10 @@ speed_angles = (radians(0.0),
                 radians(43.0),
                 radians(85.0),
                 radians(127.0))
+rudder_angles = (radians(0.0),
+                 radians(1.0/3.0*19.0),
+                 radians(2.0/3.0*19.0),
+                 radians(19.0))
 d_angle      = radians(1.0)
 
 depth_limits = (0.0, 260.0)
@@ -59,28 +63,56 @@ depth_angles = (radians(130.0), radians(-130.0))
 
 # Compute de widgets dimensions
 widget_dims  = [0.25,0.25]
+image_dims   = [0.05,0.05]
 w = bge.render.getWindowWidth()
 h = bge.render.getWindowHeight()
 aspect_ratio = h / w
 if aspect_ratio > 1.0:
 	widget_dims[1] /= aspect_ratio
+	image_dims[0]  *= aspect_ratio
 else:
 	widget_dims[0] *= aspect_ratio
+	image_dims[1]  /= aspect_ratio
+pbar_dims  = [0.25,0.025]
+
+
 
 # Create the widgets
 if gui:
+	widget = bgui.ProgressBar(gui, "player_visibility", percent=0.0, size=[pbar_dims[0], pbar_dims[1]],
+	                    pos=[0.975-pbar_dims[0], pbar_dims[1] + image_dims[1]],
+	                    sub_theme='RedGUI', options = bgui.BGUI_DEFAULT)
+	widget = bgui.ProgressBar(gui, "player_noise", percent=0.0, size=[pbar_dims[0], pbar_dims[1]],
+	                    pos=[0.975-pbar_dims[0], pbar_dims[1]],
+	                    sub_theme='RedGUI', options = bgui.BGUI_DEFAULT)
 	img = path.join(images_path,'depth.blender.png')
-	widget = bgui.Image(gui, 'player_depth', img, size=[widget_dims[0], widget_dims[1]], pos=[0.1*widget_dims[0], 0.1*widget_dims[1]],
-	options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
+	widget = bgui.Image(gui, 'player_depth', img,
+	         size=[widget_dims[0], widget_dims[1]], pos=[0.1*widget_dims[0], 0.1*widget_dims[1]],
+	         options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
 	img = path.join(images_path,'depth.blender.Indicator.png')
-	widget = bgui.Image(widget, 'player_depth_indicator', img, size=[1.0, 1.0], pos=[0.0, 0.0],
-	options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
-	img = path.join(images_path,'throttle.blender.png')
-	widget = bgui.Image(gui, 'player_throttle', img, size=[widget_dims[0], widget_dims[1]], pos=[1.2*widget_dims[0], 0.1*widget_dims[1]],
-	options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
+	bgui.Image(widget, 'player_depth_indicator', img,
+               size=[1.0, 1.0], pos=[0.0, 0.0],
+	           options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
+	img = path.join(images_path,'throttle_rudder.blender.png')
+	widget = bgui.Image(gui, 'player_throttle', img,
+                        size=[widget_dims[0], widget_dims[1]], pos=[1.2*widget_dims[0], 0.1*widget_dims[1]],
+	                    options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
 	img = path.join(images_path,'throttle.blender.Indicator.png')
-	widget = bgui.Image(widget, 'player_throttle_indicator', img, size=[1.0, 1.0], pos=[0.0, 0.0],
-	options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
+	bgui.Image(widget, 'player_throttle_indicator', img,
+               size=[1.0, 1.0], pos=[0.0, 0.0],
+	           options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
+	img = path.join(images_path,'rudder.Indicator.png')
+	bgui.Image(widget, 'player_rudder_indicator', img,
+               size=[1.0, 1.0], pos=[0.0, 0.0],
+	           options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
+	img = path.join(images_path,'Actions-layer-visible-off-icon.png')
+	widget = bgui.Image(gui, 'player_visibility_img', img, size=[image_dims[0], image_dims[1]],
+	                    pos=[0.975-pbar_dims[0]-image_dims[0], pbar_dims[1] + image_dims[1]],
+	                    options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
+	img = path.join(images_path,'Actions-speaker-icon.png')
+	widget = bgui.Image(gui, 'player_noise_img', img, size=[image_dims[0], image_dims[1]],
+	                    pos=[0.975-pbar_dims[0]-image_dims[0], pbar_dims[1]],
+	                    options = bgui.BGUI_DEFAULT|bgui.BGUI_CACHE)
 
 def update_speed():
 	""" Update the speed indicator
@@ -93,6 +125,22 @@ def update_speed():
 	subwidget  = widget.children['player_throttle_indicator']
 	angle      = subwidget.rotation
 	objective  = copysign(speed_angles[abs(throttle)], -throttle)
+	if (angle < objective + d_angle) and (angle > objective - d_angle):
+		return
+	rot = copysign(d_angle, objective - angle)
+	subwidget.rotation = angle + rot
+
+def update_rudder():
+	""" Update the speed indicator
+	@note Call this method each frame
+	"""
+	if not gui:
+		return
+	rudder     = ship['rudder']
+	widget     = gui.children['player_throttle']
+	subwidget  = widget.children['player_rudder_indicator']
+	angle      = subwidget.rotation
+	objective  = copysign(rudder_angles[abs(rudder)], -rudder)
 	if (angle < objective + d_angle) and (angle > objective - d_angle):
 		return
 	rot = copysign(d_angle, objective - angle)
@@ -123,5 +171,6 @@ def update():
 	if not gui:
 		return
 	update_speed()
+	update_rudder()
 	update_depth()
 
