@@ -67,6 +67,7 @@ def load():
 		player = scene.addObject('Ship.Main.U48', origin)
 	else:
 		player = active['Ship.Main.U48']
+	player['team'] = 0
 	print('OK!')
 
 	print('Loading Liberty enemy object...')
@@ -82,7 +83,7 @@ def load():
 		print('Warning: The object is in an active layer. Just one instance could be used')
 		enemies.append(active['Ship.Main.Liberty'])
 	enemies[0]['team'] = 1
-	enemies[0].worldPosition = Vector((0.0, 600.0, 0.0))
+	enemies[0].worldPosition = Vector((0.0, 2000.0, 0.0))
 	# Damage the ship
 	enemies[0].worldPosition.z -= 12
 	enemies[0].worldOrientation = Euler((-radians(15.0), -radians(3.0), 0.0), 'XYZ')

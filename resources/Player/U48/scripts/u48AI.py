@@ -70,6 +70,14 @@ noise_max = 1.25*noise_dPower*dPower
 if not 'noise' in ship:
 	ship['noise'] = 0.0
 
+# Initializate the list of enemies/allies
+if 'team' not in ship:
+	ship['team'] = 0
+allies      = []
+allies_ind  = []
+enemies     = []
+enemies_ind = []
+
 def _update_visibility():
 	z        = ship.worldPosition[2]
 	v_factor = visibility_table[1][-1]
@@ -113,6 +121,59 @@ def _update_noise():
 		return
 	gui.children['player_noise'].percent = min(1.0,ship['noise']/noise_max)
 
+def _update_ships():
+	# Look for unconsidered ships
+	objects = scene.objects
+	for obj in objects:
+		# Filter non-ships instances
+		if 'Ship.Main' not in obj.name:
+			continue
+		# Filter dead ships
+		if not obj['alive']:
+			continue
+		# Filter self reference
+		if obj == ship:
+			continue
+		# Get if allied or enemy
+		l     = allies
+		l_ind = allies_ind
+		if obj['team'] != ship['team']:
+			l     = enemies
+			l_ind = enemies_ind
+		# Add if it is not already included
+		if obj not in l:
+			l.append(obj)
+			# Add an empty indicator to generate later
+			l_ind.append(None)
+	# Look for considered ships that are dead
+	for l,l_ind in ((allies,allies_ind),(enemies,enemies_ind)):
+		for i,obj in enumerate(l):
+			if obj['alive']:
+				continue
+			# Destroy the indicator
+			l_ind[i].endObject()
+			# And remove the ship from the list
+			del l[i]
+			del l_ind[i]
+
+def _update_indicators():
+	# Look for the indicators in the scene
+	objects = scene.objectsInactive
+	if ('GUI.AlliedIndicator' not in objects) or ('GUI.EnemyIndicator' not in objects):
+		return
+	# Update the indicators
+	for n,l,l_ind in (('GUI.AlliedIndicator',allies,allies_ind),('GUI.EnemyIndicator',enemies,enemies_ind)):
+		for i,obj in enumerate(l):
+			# Get the indicator, or create if it not already exist
+			ind = l_ind[i]
+			if not ind:
+				ind = scene.addObject(n, ship)
+				ind.worldPosition.z = 1.0
+				l_ind[i] = ind
+			# Update the indicator
+			ind['from'] = ship.worldPosition.xy
+			ind['to']   = obj.worldPosition.xy
+
 def update():
 	""" Update the AI
 	@note Call this method each frame
@@ -120,4 +181,7 @@ def update():
 	# Update self data
 	_update_visibility()
 	_update_noise()
+	# Locate the allies and enemies
+	_update_ships()
+	_update_indicators()
 
