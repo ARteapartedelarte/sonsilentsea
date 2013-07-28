@@ -93,9 +93,10 @@ class GuiSys(bgui.System):
 		size=[0.15, 0.08], pos=[0.025, 0.025], options = bgui.BGUI_DEFAULT)
 		button.on_click = self._on_miss_back
 
-		# -----------------------------------------		
+		# -----------------------------------------
 		# Create a progress bar window (hiden)
-		# -----------------------------------------		
+		# -----------------------------------------
+		"""
 		p_bar_win = bgui.Frame(self, 'progress_bar_win', size=[0.8, 0.2],
 		options=bgui.BGUI_DEFAULT|bgui.BGUI_CENTERED)
 		bgui.Label(p_bar_win, 'progress_bar_label', text="", pos=[0.5, 0.75],
@@ -103,6 +104,7 @@ class GuiSys(bgui.System):
 		bgui.ProgressBar(p_bar_win, "progress_bar_pbar", percent=0.0, size=[0.95, 0.4], pos=[0.025, 0.15],
 		options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)											
 		p_bar_win.visible = False
+		"""
 
 		# -----------------------------------------		
 		# Create a keymap for keyboard input

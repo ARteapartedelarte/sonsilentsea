@@ -33,70 +33,25 @@ vMin = 200.0
 # AI properties
 # ----------------------------
 
-# View parameters
-vSens  = 0.85    # Sensitivity, higher = best detection skills
-vAngle = 0.0     # Actual looking angle    [deg]
-vRange = 30.0    # Angle viewing amplitude [deg]
-vOmega = 10.0    # Abgle rotation velocity [deg/s]
-
-# Sonar parameters
-sSens  = 0.5     # Sensitivity, higher = best detection skills
-sAngle = 0.0     # Actual looking angle    [deg]
-sRange = 15.0    # Angle viewing amplitude [deg]
-sOmega = 2.0     # Abgle rotation velocity [deg/s]
-
-def updateView():
-    """ Updates the view for locating enemies
-    """
-    dt     = 1.0/g.getLogicTicRate()
-    vAngle = vAngle + vOmega*dt
-    # Look for the enemy ships in the viewing area
-    for s in ships:
-        # Discard allies
-        if ship['team'] == s['team']:
-            continue
-        # Discard death
-        if not s['alive']:
-            continue
-        [l,gV,lV] = ship.getVectTo(s)
-        # Test if the object is viewable
-        
-        if l < vMin:
-            # Perfect detection
-            
-
 def update():
-    """ Updates the list of enemies, and the commands
-    (propulsion, firing, etc.)
-    """
-    # Don't works if the object is destroyed
-    if not ship['alive']:
-        return
-    
-    
-# Get the ship
-controller = g.getCurrentController()
-ship       = controller.owner
-# Get the list of ships from the scene
-scene      = g.getCurrentScene()
-objects    = scene.objects
-ships      = []
-for obj in objects:
-    if 'Ship.Main' in obj.name:
-        ships.append(obj)
+	""" Updates the list of enemies, and the commands
+	(propulsion, firing, etc.)
+	"""
+	# Don't works if the object is destroyed
+	if not ship['alive']:
+		return
 
-waterPlane = objects.get('waterPlane')
-if not waterPlane:
-    raise Exception("Can't find the object 'waterPlane'")
+	# Several instances of the ship can be required,
+	# so we need to get the object instance each time
+	controller = g.getCurrentController()
+	ship       = controller.owner
 
-# Initialize the list of enemies
-enemies    = []
-enemiesVel = []
+	# Ships can be added or removed from the scene, so
+	# we need to renew the list of ships each frame
+	scene      = g.getCurrentScene()
+	objects    = scene.objects
+	ships      = []
+	for obj in objects:
+		if 'Ship.Main' in obj.name:
+			ships.append(obj)
 
-# Convert to radians
-vAngle = vAngle * pi/180.0
-vRange = vAngle * pi/180.0
-vOmega = vAngle * pi/180.0
-sAngle = vAngle * pi/180.0
-sRange = vAngle * pi/180.0
-sOmega = vAngle * pi/180.0

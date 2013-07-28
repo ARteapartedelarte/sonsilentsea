@@ -22,20 +22,22 @@ from mathutils import *
 rpm = 150.0
 
 def update():
-    """ Update the propellers rotation and bubbles generation
-    @note Call this method each frame
-    """
-    speed      = ship['speed']
-    w          = ship['propulsion']*copysign(2.0*pi/60.0 * speed*speed/9.0 * rpm, speed)
-    # Since is an child object velocity will not work
-    dt         = 1.0/g.getLogicTicRate()
-    theta      = w*dt
-    prop.applyRotation(Vector((theta,0.0,0.0)), True)
-    
-    emitter.applyRotation(Vector((-theta,0.0,0.0)), True)
-    emitter['amount'] = abs(speed)**2
+	""" Update the propellers rotation and bubbles generation
+	@note Call this method each frame
+	"""
+	# Renew the ship instance (several instances of the same ship can be used)
+	controller = g.getCurrentController()
+	prop       = controller.owner
+	ship       = prop.parent
+	emitter    = prop.children[0]
+	# Get the ship data
+	speed      = ship['speed']
+	w          = ship['propulsion']*copysign(2.0*pi/60.0 * speed*speed/9.0 * rpm, speed)
+	# Since is an child object velocity will not work
+	dt         = 1.0/g.getLogicTicRate()
+	theta      = w*dt
+	prop.applyRotation(Vector((theta,0.0,0.0)), True)
+	
+	emitter.applyRotation(Vector((-theta,0.0,0.0)), True)
+	emitter['amount'] = int(ship['propulsion']*abs(speed)**2)
 
-controller = g.getCurrentController()
-prop       = controller.owner
-ship       = prop.parent
-emitter    = prop.children[0]
