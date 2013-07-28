@@ -157,6 +157,14 @@ def heading(ship):
 	K  = 1.0E10
 	return -(disp*GML*st + K*w)
 
+def yaw(ship):
+	""" Defines the yaw drag moment
+	@param ship Ship game object
+	"""
+	w  = ship.localAngularVelocity[2]
+	K  = 1.0E10
+	return -K*w
+
 def moment(ship):
 	""" Compute the moment vector
 	@param ship Ship game object
@@ -168,8 +176,10 @@ def moment(ship):
 	mx = sea(ship) + righting(ship) + viscous(ship)
 	# Compute heading moment vector
 	my = heading(ship)
+	# Compute the yaw damping
+	mz = yaw(ship)
 	# Align it with the ship
-	m = Vector((mx,my,0.0))
+	m = Vector((mx,my,mz))
 	m = ship.worldOrientation * m
 	return m
 
@@ -232,5 +242,4 @@ def load():
 		ship['alive'] = True
 	if 'angles' not in ship:      # Stable angles (upright/damaged stability), [roll, heading]
 		ship['angles'] = [0.0,0.0]
-	
 
