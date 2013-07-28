@@ -198,8 +198,10 @@ def moment(ship):
 	mx = sea(ship) + righting(ship) + viscous(ship)
 	# Compute heading moment vector
 	my = heading(ship)
+	# Compute the yaw damping
+	mz = yaw(ship)
 	# Align it with the ship
-	m  = Vector((mx,my,0.0))
+	m  = Vector((mx,my,mz))
 	m = ship.worldOrientation * m
 	return m
 

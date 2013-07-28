@@ -201,7 +201,7 @@ def rudder(ship):
 	rad   = Vector((28.75,0.0,0.0))
 	speed = ship.localLinearVelocity[0]
 	K     = 1.0E3
-	f     = K * r/3.0 * speed*speed
+	f     = K * r/3.0 * speed*abs(speed)
 	m     = f*rad.zyx
 	return m
 

@@ -242,5 +242,4 @@ def load():
 		ship['alive'] = True
 	if 'angles' not in ship:      # Stable angles (upright/damaged stability), [roll, heading]
 		ship['angles'] = [0.0,0.0]
-	
 

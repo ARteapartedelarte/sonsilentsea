@@ -225,7 +225,7 @@ def rudder(ship):
 	K     = 2.0E3
 	if(abs(speed) > 7.0):
 		K = 2.0E3*max( 0.25, 1.0 - (abs(speed)-7.0)/3.0 )
-	f     = K * r/3.0 * speed*speed
+	f     = K * r/3.0 * speed*abs(speed)
 	m     = f*rad.zyx
 	return m
 
