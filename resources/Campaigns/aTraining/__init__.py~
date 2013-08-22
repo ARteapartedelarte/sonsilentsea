@@ -1,8 +1,0 @@
-import sys
-import os
-from os import path
-
-p = path.dirname(path.abspath(__file__))
-if not p in sys.path:
-	sys.path.append(p)
-

@@ -129,8 +129,8 @@ def emitter():
                 particle["child"].localScale[1] = particle['startscale'][1]* particle['scale']
                 particle["child"].localScale[2] = particle['startscale'][2]* particle['scale']
                 particle["child"].applyRotation((random.uniform(0,2*math.pi),0,0), True)
-                particle.localOrientation = (particle["randRotX"],particle["randRotY"],particle["randRotZ"])
-                euler = particle.localOrientation.to_euler()
+                particle.worldOrientation = mathutils.Euler((particle["randRotX"],particle["randRotY"],particle["randRotZ"]), 'XYZ')
+                euler = particle.worldOrientation.to_euler()
                 particle['RotX'] = euler[0]
                 particle['RotY'] = euler[1]
                 particle['RotZ'] = euler[2]
@@ -153,9 +153,14 @@ def emitter():
 def particle_update(obj, list, multiplier, emitter):
     scene = bge.logic.getCurrentScene()
     if obj['lifeticker']%2 == 0:
-        obj['child'].alignAxisToVect(scene.active_camera.position,0,1.0)
-    obj['child'].applyRotation((obj['rotation']*multiplier*obj['randomDirection'],0,0),True)    
-
+        # Two approaches can be used here:
+        # 1.- The position based billboard is good for far cameras and higher frustrum.
+        obj['child'].alignAxisToVect(scene.active_camera.position-obj['child'].worldPosition,0,1.0)
+        # 2.- The viewing direction based billboars are good for extreme situations, where
+        # the camera will pass trhough the particle
+        # obj['child'].alignAxisToVect(-scene.active_camera.getScreenVect(0.5, 0.5),0,1.0)
+    obj['child'].applyRotation((obj['rotation']*multiplier*obj['randomDirection'],0,0),True)
+    print(obj['child'].worldOrientation.to_euler())
 
 
 ###Fade between two colors###
@@ -177,7 +182,7 @@ def particle_update(obj, list, multiplier, emitter):
         if obj['lifeticker'] <= obj['fadein'] : 
             fadeinfactor_down = obj['fadeinticker']/obj['fadein']
             fadeinfactor_up = 1 - fadeinfactor_down
-            if obj['addmode']:      
+            if obj['addmode']:
                 obj['finColor'][0] = obj['tmpColor'][0] * fadeinfactor_down
                 obj['finColor'][1] = obj['tmpColor'][1] * fadeinfactor_down
                 obj['finColor'][2] = obj['tmpColor'][2] * fadeinfactor_down
@@ -187,7 +192,7 @@ def particle_update(obj, list, multiplier, emitter):
                 obj['finColor'][0] = obj['tmpColor'][0]
                 obj['finColor'][1] = obj['tmpColor'][1]
                 obj['finColor'][2] = obj['tmpColor'][2]
-                obj['finColor'][3] = obj['tmpColor'][3] * fadeinfactor_down      
+                obj['finColor'][3] = obj['tmpColor'][3] * fadeinfactor_down
             obj['fadeinticker'] += multiplier
             
         elif (obj['lifeticker'] > (obj['lifetime'] - obj['fadeout'])) and (obj['lifeticker'] > obj['fadein']):
@@ -301,7 +306,7 @@ def particle_update(obj, list, multiplier, emitter):
     obj['RotY'] = obj['RotY'] * 0.9 + obj['randRotY'] * 0.1
     obj['RotZ'] = obj['RotZ'] * 0.9 + obj['randRotZ'] * 0.1
 
-    obj.localOrientation = (obj['RotX'],obj['RotY'],obj['RotZ'])       
+    obj.worldOrientation = mathutils.Euler((obj['RotX'],obj['RotY'],obj['RotZ']), 'XYZ')
 
 ###Lifeticker
     obj['lifeticker'] += multiplier
@@ -311,6 +316,4 @@ def particle_update(obj, list, multiplier, emitter):
         list.remove(obj)
         obj["child"].endObject()
         obj.endObject()
-    
-    
-    
+
