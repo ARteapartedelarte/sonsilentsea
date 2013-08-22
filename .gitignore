@@ -1,0 +1,12 @@
+# Python cache files #
+######################
+*.pyc
+
+# Backup files #
+################
+*~
+*.blend1
+*.blend2
+*.blend3
+*.blend4
+
