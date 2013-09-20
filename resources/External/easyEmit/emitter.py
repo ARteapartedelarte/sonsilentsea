@@ -160,7 +160,6 @@ def particle_update(obj, list, multiplier, emitter):
         # the camera will pass trhough the particle
         # obj['child'].alignAxisToVect(-scene.active_camera.getScreenVect(0.5, 0.5),0,1.0)
     obj['child'].applyRotation((obj['rotation']*multiplier*obj['randomDirection'],0,0),True)
-    print(obj['child'].worldOrientation.to_euler())
 
 
 ###Fade between two colors###
