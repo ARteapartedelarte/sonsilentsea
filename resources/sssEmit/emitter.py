@@ -231,7 +231,7 @@ def particle_update(obj, list, multiplier, emitter):
     ## Calculate speed
     if obj['lifeticker'] > emitter['speedCacheProgress']:
         
-        speedfade = obj['speedfade_end']-obj['speedfade_start']
+        speedfade = max(1.0, obj['speedfade_end']-obj['speedfade_start'])
         speedfactor_down = obj['speedticker']/speedfade
         speedfactor_up = 1-speedfactor_down
     

@@ -1,9 +1,7 @@
 import bpy
 import math
 import mathutils
-import os
-from bpy.app.handlers import persistent
-from bpy.props import StringProperty, BoolProperty, EnumProperty
+from bpy.props import BoolProperty
 
 from sssEmit.preset import *
 from sssEmit.particle import *
@@ -140,7 +138,7 @@ class sssEmit(bpy.types.Panel):
         update=update_values,
         description='Particles scale on death')
     bpy.types.Object.scalefade_start = bpy.props.IntProperty(name='',
-        default=0,
+        default=1,
         min=1,
         update=update_values,
         description='Adjust the scale fading for the particle lifetime')
@@ -195,8 +193,8 @@ class sssEmit(bpy.types.Panel):
         update=update_values,
         description='Particle Alpha Value')
     bpy.types.Object.colorfade_start = bpy.props.IntProperty(name='',
-        default=0,
-        min=0,
+        default=1,
+        min=1,
         update=update_values,
         description='Adjust the color fading for Particle Lifetime')
     bpy.types.Object.colorfade_end = bpy.props.IntProperty(name='',
@@ -206,12 +204,12 @@ class sssEmit(bpy.types.Panel):
         description='Adjust the color fading for Particle Lifetime')
     bpy.types.Object.fadein = bpy.props.IntProperty(name='',
         default=10,
-        min=0,
+        min=1,
         update=update_values,
         description='Particle Fade in time')
     bpy.types.Object.fadeout = bpy.props.IntProperty(name='',
         default=30,
-        min=0,
+        min=1,
         update=update_values,
         description='Particle Fade out time')
     

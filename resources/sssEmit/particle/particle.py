@@ -1,6 +1,8 @@
 import bpy
 import math
+import mathutils
 from os import path
+from bpy.props import StringProperty, BoolProperty, EnumProperty
 
 def script_paths():
     """ Return all the possible locations for the scripts """
@@ -54,8 +56,15 @@ class generate_particle_system(bpy.types.Operator):
         # useful if the object will be imported from other blender file,
         # inserting the script in the importing scene
         bpy.ops.logic.controller_add(type='PYTHON', name="Reference", object="")
-        bpy.context.object.game.controllers['Python'].mode = 'SCRIPT'
-        bpy.context.object.game.controllers['Python'].module = 'emitter.py'
+        text = None
+        for t in bpy.data.texts:
+            if t.name == 'emitter.py':
+                text = t
+                break
+        if text == None:
+            raise Exception('The script "emitter.py is not loaded"')
+        bpy.context.object.game.controllers['Reference'].mode = 'SCRIPT'
+        bpy.context.object.game.controllers['Reference'].text = text
         try:
             iten = bpy.context.object.particle_list[0]
         except:
@@ -323,7 +332,6 @@ class generate_particle_system(bpy.types.Operator):
     def execute(self, context):
         active_ob = bpy.context.active_object
 
-        self.gen_particle_logic(context)
         self.gen_properties(context)
         bpy.context.object.particlesystem = True
         
@@ -356,6 +364,10 @@ class generate_particle_system(bpy.types.Operator):
                                        False, False, False, False, True))
             bpy.context.active_object.name = 'ParticleParent'
         
+        # The particles system logic need that the script has been loaded
+        # to can generate the reference
+        self.gen_particle_logic(context)
+
         bpy.ops.object.select_all(action='DESELECT')
         bpy.context.scene.objects.active = active_ob
         bpy.context.scene.objects[active_ob.name].select = True
@@ -394,68 +406,65 @@ class apply_values(bpy.types.Operator):
     bl_label = "Apply the values to the particle system"
     
     def execute(self, context):
-        try:
-            bpy.context.object.game.properties['culling'].value = bpy.context.object.frustumCulling
-            bpy.context.object.game.properties['cullingRadius'].value = bpy.context.object.frustumRadius
-            
-            bpy.context.object.game.properties['start_r'].value = bpy.context.object.startcolor[0]
-            bpy.context.object.game.properties['start_g'].value = bpy.context.object.startcolor[1]
-            bpy.context.object.game.properties['start_b'].value = bpy.context.object.startcolor[2]
-            
-            bpy.context.object.game.properties['end_r'].value = bpy.context.object.endcolor[0]
-            bpy.context.object.game.properties['end_g'].value = bpy.context.object.endcolor[1]
-            bpy.context.object.game.properties['end_b'].value = bpy.context.object.endcolor[2]
-            
-            bpy.context.object.game.properties['alpha'].value = bpy.context.object.alpha
-    
-            bpy.context.object.game.properties['colorfade_start'].value = bpy.context.object.colorfade_start
-            bpy.context.object.game.properties['colorfade_end'].value = bpy.context.object.colorfade_end
-            
-            bpy.context.object.game.properties['emitteron'].value = bpy.context.object.emitteron
-            bpy.context.object.game.properties['emitTime'].value = bpy.context.object.emitTime
-            bpy.context.object.game.properties['lifetime'].value = bpy.context.object.lifetime
-            bpy.context.object.game.properties['randomlifetimevalue'].value = bpy.context.object.randomlifetimevalue
-            bpy.context.object.game.properties['amount'].value = bpy.context.object.amount
-            
-            bpy.context.object.game.properties['startscale_x'].value = bpy.context.object.startscale
-            bpy.context.object.game.properties['startscale_y'].value = bpy.context.object.startscale
-            bpy.context.object.game.properties['startscale_z'].value = bpy.context.object.startscale
-            
-            bpy.context.object.game.properties['endscale_x'].value = bpy.context.object.endscale
-            bpy.context.object.game.properties['endscale_y'].value = bpy.context.object.endscale
-            bpy.context.object.game.properties['endscale_z'].value = bpy.context.object.endscale
-            
-            bpy.context.object.game.properties['rangeEmitX'].value = bpy.context.object.rangeEmit[0]
-            bpy.context.object.game.properties['rangeEmitY'].value = bpy.context.object.rangeEmit[1]
-            bpy.context.object.game.properties['rangeEmitZ'].value = bpy.context.object.rangeEmit[2]
-            bpy.context.active_object.dimensions = bpy.context.object.rangeEmit*2 + mathutils.Vector((1,1,1))
-    
-            
-            bpy.context.object.game.properties['scalefade_start'].value = bpy.context.object.scalefade_start
-            bpy.context.object.game.properties['scalefade_end'].value = bpy.context.object.scalefade_end
-            bpy.context.object.game.properties['speedfade_start'].value = bpy.context.object.speedfade_start
-            bpy.context.object.game.properties['speedfade_end'].value = bpy.context.object.speedfade_end
-            
-            bpy.context.object.game.properties['startspeed'].value = bpy.context.object.startspeed
-            bpy.context.object.game.properties['endspeed'].value = bpy.context.object.endspeed
-            bpy.context.object.game.properties['randomMovement'].value = bpy.context.object.randomMovement
-            
-            bpy.context.object.game.properties['coneX'].value = bpy.context.object.cone[0]
-            bpy.context.object.game.properties['coneY'].value = bpy.context.object.cone[1]
-            bpy.context.object.game.properties['coneZ'].value = bpy.context.object.cone[2]
-            
-            bpy.context.object.game.properties['fadein'].value = bpy.context.object.fadein
-            bpy.context.object.game.properties['fadeout'].value = bpy.context.object.fadeout
-            
-            bpy.context.object.hide_render = bpy.context.object.emitterinvisible
-            
-            bpy.context.object.game.properties['localEmit'].value = bpy.context.object.localEmit
-            
-            bpy.context.object.game.properties['rotation'].value = bpy.context.object.particlerotation
-            bpy.context.object.game.properties['halo'].value = bpy.context.object.halo
-            #bpy.context.object.particle_list[bpy.context.object.particle_list_index].name = bpy.context.scene.particles
-        except:
-            pass
+        bpy.context.object.game.properties['culling'].value = bpy.context.object.frustumCulling
+        bpy.context.object.game.properties['cullingRadius'].value = bpy.context.object.frustumRadius
+        
+        bpy.context.object.game.properties['start_r'].value = bpy.context.object.startcolor[0]
+        bpy.context.object.game.properties['start_g'].value = bpy.context.object.startcolor[1]
+        bpy.context.object.game.properties['start_b'].value = bpy.context.object.startcolor[2]
+        
+        bpy.context.object.game.properties['end_r'].value = bpy.context.object.endcolor[0]
+        bpy.context.object.game.properties['end_g'].value = bpy.context.object.endcolor[1]
+        bpy.context.object.game.properties['end_b'].value = bpy.context.object.endcolor[2]
+        
+        bpy.context.object.game.properties['alpha'].value = bpy.context.object.alpha
+
+        bpy.context.object.game.properties['colorfade_start'].value = bpy.context.object.colorfade_start
+        bpy.context.object.game.properties['colorfade_end'].value = bpy.context.object.colorfade_end
+        
+        bpy.context.object.game.properties['emitteron'].value = bpy.context.object.emitteron
+        bpy.context.object.game.properties['emitTime'].value = bpy.context.object.emitTime
+        bpy.context.object.game.properties['lifetime'].value = bpy.context.object.lifetime
+        bpy.context.object.game.properties['randomlifetimevalue'].value = bpy.context.object.randomlifetimevalue
+        bpy.context.object.game.properties['amount'].value = bpy.context.object.amount
+        
+        bpy.context.object.game.properties['startscale_x'].value = bpy.context.object.startscale
+        bpy.context.object.game.properties['startscale_y'].value = bpy.context.object.startscale
+        bpy.context.object.game.properties['startscale_z'].value = bpy.context.object.startscale
+        
+        bpy.context.object.game.properties['endscale_x'].value = bpy.context.object.endscale
+        bpy.context.object.game.properties['endscale_y'].value = bpy.context.object.endscale
+        bpy.context.object.game.properties['endscale_z'].value = bpy.context.object.endscale
+        
+        bpy.context.object.game.properties['rangeEmitX'].value = bpy.context.object.rangeEmit[0]
+        bpy.context.object.game.properties['rangeEmitY'].value = bpy.context.object.rangeEmit[1]
+        bpy.context.object.game.properties['rangeEmitZ'].value = bpy.context.object.rangeEmit[2]
+        bpy.context.active_object.dimensions = bpy.context.object.rangeEmit*2 + mathutils.Vector((1,1,1))
+
+        
+        bpy.context.object.game.properties['scalefade_start'].value = bpy.context.object.scalefade_start
+        bpy.context.object.game.properties['scalefade_end'].value = bpy.context.object.scalefade_end
+        bpy.context.object.game.properties['speedfade_start'].value = bpy.context.object.speedfade_start
+        bpy.context.object.game.properties['speedfade_end'].value = bpy.context.object.speedfade_end
+        
+        bpy.context.object.game.properties['startspeed'].value = bpy.context.object.startspeed
+        bpy.context.object.game.properties['endspeed'].value = bpy.context.object.endspeed
+        bpy.context.object.game.properties['randomMovement'].value = bpy.context.object.randomMovement
+        
+        bpy.context.object.game.properties['coneX'].value = bpy.context.object.cone[0]
+        bpy.context.object.game.properties['coneY'].value = bpy.context.object.cone[1]
+        bpy.context.object.game.properties['coneZ'].value = bpy.context.object.cone[2]
+        
+        bpy.context.object.game.properties['fadein'].value = bpy.context.object.fadein
+        bpy.context.object.game.properties['fadeout'].value = bpy.context.object.fadeout
+        
+        bpy.context.object.hide_render = bpy.context.object.emitterinvisible
+        
+        bpy.context.object.game.properties['localEmit'].value = bpy.context.object.localEmit
+        
+        bpy.context.object.game.properties['rotation'].value = bpy.context.object.particlerotation
+        bpy.context.object.game.properties['halo'].value = bpy.context.object.halo
+        #bpy.context.object.particle_list[bpy.context.object.particle_list_index].name = bpy.context.scene.particles
         self.report({'INFO'}, "Changes applied!")
         
         

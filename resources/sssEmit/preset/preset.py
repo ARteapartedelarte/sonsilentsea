@@ -1,5 +1,6 @@
 import bpy
 import math
+from bpy.props import StringProperty
 
 class preset(bpy.types.PropertyGroup):
     """ Group of properties of the emmiter presets """
