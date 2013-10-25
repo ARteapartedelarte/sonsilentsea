@@ -76,7 +76,44 @@ def emitter():
                 particle["child"] = scene.addObject(obj['particles'][randParticle],obj, 0)
                 particle["child"].setParent(particle, False, False)
                 
-                vect = mathutils.Vector((random.uniform(-obj['rangeEmitX'],obj['rangeEmitX']),random.uniform(-obj['rangeEmitY'],obj['rangeEmitY']),random.uniform(-obj['rangeEmitZ'],obj['rangeEmitZ'])))
+                vect = mathutils.Vector((random.uniform(-obj['rangeEmitX'],
+                                                        obj['rangeEmitX']),
+                                         random.uniform(-obj['rangeEmitY'],
+                                                        obj['rangeEmitY']),
+                                         random.uniform(-obj['rangeEmitZ'],
+                                                        obj['rangeEmitZ'])))
+                # The ellipsoidal range is a new property, so may don't exist in older particles systems
+                try:
+                    ellipsoidalRange = obj["ellipsoidalRange"]
+                except:
+                    ellipsoidalRange = False
+                if ellipsoidalRange:
+                    a = obj['rangeEmitX']
+                    b = obj['rangeEmitY']
+                    c = obj['rangeEmitZ']
+                    x = 0.0
+                    y = 0.0
+                    z = 0.0
+                    if a > 0.0:
+                        x = vect[0]/a
+                    if b > 0.0:
+                        y = vect[1]/b
+                    if c > 0.0:
+                        z = vect[2]/c
+                    while x*x + y*y + z*z > 1.0:
+                        vect = mathutils.Vector((random.uniform(-obj['rangeEmitX'],
+                                                                obj['rangeEmitX']),
+                                                 random.uniform(-obj['rangeEmitY'],
+                                                                obj['rangeEmitY']),
+                                                 random.uniform(-obj['rangeEmitZ'],
+                                                                obj['rangeEmitZ'])))
+                        if a > 0.0:
+                            x = vect[0]/a
+                        if b > 0.0:
+                            y = vect[1]/b
+                        if c > 0.0:
+                            z = vect[2]/c
+                rvect = vect    # I store this data for the radial speed multiplier
                 vect = particle.localOrientation * vect
 
                 particle.localPosition += vect
@@ -110,8 +147,36 @@ def emitter():
                 particle['tmpColor'] = [0,0,0,0]
                 particle['finColor'] = [0,0,0,0]
                 
-                particle['startspeed'] = [0,0,obj['startspeed']]
-                particle['endspeed'] = [0,0,obj['endspeed']]
+                startspeed = obj['startspeed']
+                endspeed = obj['endspeed']
+                # The radial multiplier is a new property, so may don't exist in older particles systems
+                try:
+                    startspeedRadial = obj["startspeedRadial"]
+                    endspeedRadial = obj["endspeedRadial"]
+                except:
+                    startspeedRadial = '1.0'
+                    endspeedRadial = '1.0'
+                a = obj['rangeEmitX']
+                b = obj['rangeEmitY']
+                c = obj['rangeEmitZ']
+                x = 0.0
+                y = 0.0
+                z = 0.0
+                if a > 0.0:
+                    x = rvect[0]/a
+                if b > 0.0:
+                    y = rvect[1]/b
+                if c > 0.0:
+                    z = rvect[2]/c
+                r = math.sqrt(x*x + y*y + z*z)
+                R = r                    
+                startspeedRadial = eval(startspeedRadial)
+                endspeedRadial = eval(endspeedRadial)
+                particle['variablespeed'] = False
+                if (startspeedRadial != 1.0) or (endspeedRadial != 1.0):
+                    particle['variablespeed'] = True
+                particle['startspeed'] = [0,0,startspeed*startspeedRadial]
+                particle['endspeed'] = [0,0,endspeed*endspeedRadial]
                 particle['randomMovement'] = obj['randomMovement']
                 
                 particle['colorfade_start'] = obj['colorfade_start']
@@ -152,6 +217,7 @@ def emitter():
     
 def particle_update(obj, list, multiplier, emitter):
     scene = bge.logic.getCurrentScene()
+
     if obj['lifeticker']%2 == 0:
         # Two approaches can be used here:
         # 1.- The position based billboard is good for far cameras and higher frustrum.
@@ -229,7 +295,7 @@ def particle_update(obj, list, multiplier, emitter):
 
 
     ## Calculate speed
-    if obj['lifeticker'] > emitter['speedCacheProgress']:
+    if (obj['lifeticker'] > emitter['speedCacheProgress']) or obj['variablespeed']:
         
         speedfade = max(1.0, obj['speedfade_end']-obj['speedfade_start'])
         speedfactor_down = obj['speedticker']/speedfade

@@ -53,6 +53,7 @@ class save_preset(bpy.types.Operator, ExportHelper):
             particleDict['endcolorB'] = preset.endcolor[2]
             particleDict['endscale'] = preset.endscale
             particleDict['endspeed'] = preset.endspeed
+            particleDict['endspeedRadial'] = preset.endspeedRadial
             particleDict['fadein'] = preset.fadein
             particleDict['fadeout'] = preset.fadeout
             particleDict['lifetime'] = preset.lifetime
@@ -65,6 +66,7 @@ class save_preset(bpy.types.Operator, ExportHelper):
             particleDict['rangeEmitX'] = preset.rangeEmit[0]
             particleDict['rangeEmitY'] = preset.rangeEmit[1]
             particleDict['rangeEmitZ'] = preset.rangeEmit[2]
+            particleDict['ellipsoidalRange'] = preset.ellipsoidalRange
             particleDict['scalefade_end'] = preset.scalefade_end
             particleDict['scalefade_start'] = preset.scalefade_start
             particleDict['speedfade_end'] = preset.speedfade_end
@@ -74,6 +76,7 @@ class save_preset(bpy.types.Operator, ExportHelper):
             particleDict['startcolorB'] = preset.startcolor[2]
             particleDict['startscale'] = preset.startscale
             particleDict['startspeed'] = preset.startspeed
+            particleDict['startspeedRadial'] = preset.startspeedRadial
             self.data.append(particleDict)
             
     def save_preset(self, data, filepath):
@@ -180,6 +183,7 @@ class load_preset(bpy.types.Operator, ExportHelper):
             item.endcolor[2] = particleDict['endcolorB']
             item.endscale = particleDict['endscale']
             item.endspeed = particleDict['endspeed']
+            item.endspeedRadial = particleDict['endspeedRadial']
             item.fadein = particleDict['fadein']
             item.fadeout = particleDict['fadeout']
             item.lifetime = particleDict['lifetime']
@@ -192,6 +196,7 @@ class load_preset(bpy.types.Operator, ExportHelper):
             item.rangeEmit[0] = particleDict['rangeEmitX']
             item.rangeEmit[1] = particleDict['rangeEmitY']
             item.rangeEmit[2] = particleDict['rangeEmitZ']
+            item.ellipsoidalRange = particleDict['ellipsoidalRange']
             item.scalefade_end = particleDict['scalefade_end']
             item.scalefade_start = particleDict['scalefade_start']
             item.speedfade_end = particleDict['speedfade_end']
@@ -201,6 +206,7 @@ class load_preset(bpy.types.Operator, ExportHelper):
             item.startcolor[2] = particleDict['startcolorB']
             item.startscale = particleDict['startscale']
             item.startspeed = particleDict['startspeed']
+            item.startspeedRadial = particleDict['startspeedRadial']
         self.report({'INFO'}, "easyEmit Preset imported!")
         return{'FINISHED'}
 

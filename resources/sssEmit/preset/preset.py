@@ -14,6 +14,7 @@ class preset(bpy.types.PropertyGroup):
     amount = bpy.props.IntProperty(default=10)
     cone = bpy.props.FloatVectorProperty(name='',default=(0.261800, 0.261800, 0.261800))
     rangeEmit = bpy.props.FloatVectorProperty(name='',default=(0.0,0.0,0.0))
+    ellipsoidalRange = bpy.props.BoolProperty(name='',default=False)
     startcolor = bpy.props.FloatVectorProperty(name='',default=(0.0,0.0,0.0))
     endcolor = bpy.props.FloatVectorProperty(name='',default=(0.0,0.0,0.0))
     alpha = bpy.props.FloatProperty(default=1.0)
@@ -23,7 +24,9 @@ class preset(bpy.types.PropertyGroup):
     fadeout = bpy.props.IntProperty(default=30)
     particlerotation = bpy.props.FloatProperty(default=0.0)
     startspeed = bpy.props.FloatProperty(default=0.0)
+    startspeedRadial = bpy.props.StringProperty(default='1')
     endspeed = bpy.props.FloatProperty(default=0.1)
+    endspeedRadial = bpy.props.StringProperty(default='1')
     speedfade_start = bpy.props.IntProperty(default=0)
     speedfade_end = bpy.props.IntProperty(default=60)
     randomMovement = bpy.props.FloatProperty(default=0.0)
@@ -49,6 +52,7 @@ class init_presets(bpy.types.Operator):
                      amount=10,
                      cone=(0,0,0),
                      rangeEmit=(0,0,0),
+                     ellipsoidalRange=False,
                      startcolor=(0.5, 0.3, 0.0),
                      endcolor=(0.5, 0.0, 0.0),
                      alpha=1.0,
@@ -77,6 +81,7 @@ class init_presets(bpy.types.Operator):
         item.amount = amount
         item.cone = cone
         item.rangeEmit = rangeEmit
+        item.ellipsoidalRange = ellipsoidalRange
         item.startcolor = startcolor
         item.endcolor = endcolor
         item.alpha = alpha
@@ -86,7 +91,9 @@ class init_presets(bpy.types.Operator):
         item.fadeout = fadeout
         item.particlerotation = particlerotation
         item.startspeed = startspeed
+        item.startspeedRadial = startspeedRadial
         item.endspeed = endspeed
+        item.endspeedRadial = endspeedRadial
         item.speedfade_start = speedfade_start
         item.speedfade_end = speedfade_end
         item.randomMovement = randomMovement
@@ -229,6 +236,7 @@ class add_preset(bpy.types.Operator):
         item.amount = bpy.context.active_object.amount
         item.cone = bpy.context.active_object.cone
         item.rangeEmit = bpy.context.active_object.rangeEmit
+        item.ellipsoidalRange = bpy.context.active_object.ellipsoidalRange
         item.startcolor = bpy.context.active_object.startcolor
         item.endcolor = bpy.context.active_object.endcolor
         item.alpha = bpy.context.active_object.alpha
@@ -238,7 +246,9 @@ class add_preset(bpy.types.Operator):
         item.fadeout = bpy.context.active_object.fadeout
         item.particlerotation = bpy.context.active_object.particlerotation
         item.startspeed = bpy.context.active_object.startspeed
+        item.startspeedRadial = bpy.context.active_object.startspeedRadial
         item.endspeed = bpy.context.active_object.endspeed
+        item.endspeedRadial = bpy.context.active_object.endspeedRadial
         item.speedfade_start = bpy.context.active_object.speedfade_start
         item.speedfade_end = bpy.context.active_object.speedfade_end
         item.randomMovement = bpy.context.active_object.randomMovement
@@ -308,5 +318,12 @@ class apply_preset(bpy.types.Operator):
         context.object.endscale = scene.preset[scene.preset_index]['endscale']
         context.object.scalefade_start = scene.preset[scene.preset_index]['scalefade_start']
         context.object.scalefade_end = scene.preset[scene.preset_index]['scalefade_end']
+        # New data which may don't exist in the saved file
+        try:
+            context.object.ellipsoidalRange = scene.preset[scene.preset_index]['ellipsoidalRange']
+            context.object.startspeedRadial = scene.preset[scene.preset_index]['startspeedRadial']
+            context.object.endspeedRadial = scene.preset[scene.preset_index]['endspeedRadial']
+        except:
+            pass
         return{'FINISHED'}
 

@@ -97,7 +97,7 @@ class sssEmit(bpy.types.Panel):
     bpy.types.Object.amount = bpy.props.IntProperty(name='',
         default=10, 
         min=1,
-        max=180,
+        max=18000,
         update=update_values,
         description='Amount of Particles that are emitted in 60 Tics (1 Second)')
     bpy.types.Object.lifetime = bpy.props.IntProperty(name='',
@@ -158,6 +158,9 @@ class sssEmit(bpy.types.Panel):
         update=update_values,
         description='Adjust the speed fading for the particle lifetime')
 
+    bpy.types.Object.ellipsoidalRange = bpy.props.BoolProperty(default=False,
+        update=update_values,
+        description='Force the particles to be generated inside the ellipsoide limited by emission range values, otherwise a cube will be considered')
     bpy.types.Object.rangeEmit = bpy.props.FloatVectorProperty(name='',
         default=(0.0, 0.0, 0.0),
         min=0,
@@ -226,13 +229,21 @@ class sssEmit(bpy.types.Panel):
         max=100,
         update=update_values,
         description='Particle Startspeed')
+    bpy.types.Object.startspeedRadial = bpy.props.StringProperty(name='',
+        default='1',
+        update=update_values,
+        description='Normalized radial multiplier factor for the starting particles speed (for instance "(1 - r)**2.0")')
     bpy.types.Object.endspeed = bpy.props.FloatProperty(name='',
         default=10,
         min=-100,
         max=100,
         update=update_values,
         description='Particle Endspeed')
-    
+    bpy.types.Object.endspeedRadial = bpy.props.StringProperty(name='',
+        default='1',
+        update=update_values,
+        description='Normalized radial multiplier factor for the final particles speed (for instance "(1 - r)**2.0")')
+
     bpy.types.Object.particlerotation = bpy.props.FloatProperty(name='',
         default=0.0,
         min=0,
@@ -306,12 +317,11 @@ class sssEmit(bpy.types.Panel):
             row.label("Spherical Emission:")
             row.column().prop(context.object, "cone", text="")
             row = self.layout.row()
-            row.label("Emission Range:")
-            row.column().prop(context.object, "rangeEmit", text="")
-            
-            row = self.layout.row()
-            
-            
+            col = row.column()
+            col.label("Emission Range:")
+            col.prop(context.object, "ellipsoidalRange", text="as ellipsoide")
+            col = row.column()
+            col.prop(context.object, "rangeEmit", text="")
             
             row = self.layout.row()
             row.label("Color Settings", icon='COLOR')
@@ -348,10 +358,12 @@ class sssEmit(bpy.types.Panel):
             row = self.layout.row()
             row.label("Start Speed:")
             row.prop(context.object, "startspeed", text="Start Speed")
+            row.prop(context.object, "startspeedRadial", text="")
             
             row = self.layout.row()
             row.label("End Speed:")
             row.prop(context.object, "endspeed", text="End Speed")
+            row.prop(context.object, "endspeedRadial", text="")
             
             row = self.layout.row(align=True)
             row.label("Speed Fading:")

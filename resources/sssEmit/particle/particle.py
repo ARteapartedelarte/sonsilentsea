@@ -153,6 +153,11 @@ class generate_particle_system(bpy.types.Operator):
         bpy.context.object.game.properties['prop'].name = 'rangeEmitZ'
         bpy.context.object.game.properties['rangeEmitZ'].type = 'FLOAT'
         bpy.context.object.game.properties['rangeEmitZ'].value = 0.0
+
+        bpy.ops.object.game_property_new()
+        bpy.context.object.game.properties['prop'].name = 'ellipsoidalRange'
+        bpy.context.object.game.properties['ellipsoidalRange'].type = 'BOOL'
+        bpy.context.object.game.properties['ellipsoidalRange'].value = False
         
         ### particle startcolor
         bpy.ops.object.game_property_new()
@@ -209,12 +214,20 @@ class generate_particle_system(bpy.types.Operator):
         bpy.context.object.game.properties['prop'].name = 'startspeed'
         bpy.context.object.game.properties['startspeed'].type = 'FLOAT'
         bpy.context.object.game.properties['startspeed'].value = 0.0
+        bpy.ops.object.game_property_new()
+        bpy.context.object.game.properties['prop'].name = 'startspeedRadial'
+        bpy.context.object.game.properties['startspeedRadial'].type = 'STRING'
+        bpy.context.object.game.properties['startspeedRadial'].value = '1'
         
         ### particle endspeed
         bpy.ops.object.game_property_new()
         bpy.context.object.game.properties['prop'].name = 'endspeed'
         bpy.context.object.game.properties['endspeed'].type = 'FLOAT'
         bpy.context.object.game.properties['endspeed'].value = 0.1
+        bpy.ops.object.game_property_new()
+        bpy.context.object.game.properties['prop'].name = 'endspeedRadial'
+        bpy.context.object.game.properties['endspeedRadial'].type = 'STRING'
+        bpy.context.object.game.properties['endspeedRadial'].value = '1'
         
         ### particle random movemen
         bpy.ops.object.game_property_new()
@@ -439,6 +452,7 @@ class apply_values(bpy.types.Operator):
         bpy.context.object.game.properties['rangeEmitX'].value = bpy.context.object.rangeEmit[0]
         bpy.context.object.game.properties['rangeEmitY'].value = bpy.context.object.rangeEmit[1]
         bpy.context.object.game.properties['rangeEmitZ'].value = bpy.context.object.rangeEmit[2]
+        bpy.context.object.game.properties['ellipsoidalRange'].value = bpy.context.object.ellipsoidalRange
         bpy.context.active_object.dimensions = bpy.context.object.rangeEmit*2 + mathutils.Vector((1,1,1))
 
         
@@ -448,7 +462,9 @@ class apply_values(bpy.types.Operator):
         bpy.context.object.game.properties['speedfade_end'].value = bpy.context.object.speedfade_end
         
         bpy.context.object.game.properties['startspeed'].value = bpy.context.object.startspeed
+        bpy.context.object.game.properties['startspeedRadial'].value = bpy.context.object.startspeedRadial
         bpy.context.object.game.properties['endspeed'].value = bpy.context.object.endspeed
+        bpy.context.object.game.properties['endspeedRadial'].value = bpy.context.object.endspeedRadial
         bpy.context.object.game.properties['randomMovement'].value = bpy.context.object.randomMovement
         
         bpy.context.object.game.properties['coneX'].value = bpy.context.object.cone[0]
