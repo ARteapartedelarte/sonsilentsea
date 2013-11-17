@@ -1,0 +1,67 @@
+\section{Conclusiones} 
+
+\subsection{Resultado del experimento}
+\begin{frame}{Resultado}
+\begin{columns}
+  \begin{column}{0.5\textwidth}
+    \textbf{\underline{Blender}}
+    
+    \textbf{2745 líneas de código ``comparables''}
+
+	\begin{figure}
+		\includegraphics[scale=0.15]{python_logo} 
+	\end{figure}
+  \end{column}
+
+  \begin{column}{0.5\textwidth}
+    \textbf{\underline{OGRE}}
+    
+    \textbf{15050 líneas de código ``comparables''}
+
+	\begin{figure}
+		\includegraphics[scale=0.8]{C_plus_plus} 
+	\end{figure}
+  \end{column}
+\end{columns}
+
+\vspace{0.5cm}
+Según la estimación (en la que he tratado de restringir al máximo los
+efectos al cambio de lenguaje de programación) el código en C++ parece
+requerir 5.5 líneas más de código que una implementación en Python.
+
+\vspace{0.5cm}
+La medida queda fuera del valor que obtuvimos muestreando
+algunos algoritmos de ordenación ($2.7 \pm 1.6$).
+
+\end{frame}
+
+\subsection{Conclusiones}
+\begin{frame}{Conclusiones}
+\begin{itemize}
+	\item Existe una gran cantidad de información y comparaciones fiables sobre la
+	velocidad de códigos implementados en ambos lenguajes. \pause
+	\item Existen estimaciones del número de errores que se cometen en cada
+	lenguaje por línea de código escrita (0.69 vs. 0.005 bugs per KLOC). \pause
+	\item No parecen existir estudios serios acerca de la diferencia de esfuerzo
+	en el desarrollo dependiendo del lenguaje empleado.
+	Por ejemplo, si en \CC $\,$ se requiren 10 líneas más de código que en Python
+	para llevar a cabo la misma tarea, el índice de errores estará artificialmente
+	incrementado un orden de magnitud. \pause
+	\item Se ha tratado de estimar la influencia del lenguaje de programación
+	en una aplicación compleja, usando como indicador el número de líneas
+	de código. Para ello se ha tratado de eliminar todo elemento ``no comparable''.
+	\pause
+	\item Ambas aplicaciones son demasiado diferentes, así que el resultado no
+	debe considerarse una buena medida. \pause
+	\item Tal y como se podía esperar en \CC $\,$ se ha obtenido un incremento
+	significativo de las líneas de código necesarias. \pause
+	\item Tampoco se ha abordado la dependencia con el ámbito de aplicación.
+\end{itemize}
+\end{frame}
+
+\subsection{Demostración}
+\begin{frame}{Demostración}
+\begin{center}
+{\Huge Demo}
+\end{center}
+\end{frame}

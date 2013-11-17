@@ -1,0 +1,140 @@
+\documentclass[8pt,compress]{beamer}
+\setbeamertemplate{navigation symbols}{}
+
+\usepackage{graphicx}
+\graphicspath{{./FIGURES/}}
+\usepackage{color}
+\usepackage[utf8x]{inputenc}
+% \usepackage{beamerthemetree}
+% \usepackage{beamerthemelined}
+% \usepackage{beamerthemesplit}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{draftcopy}
+\usepackage{fontenc}
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepackage{times}
+\usepackage{tikz}
+\usepackage[T1]{fontenc}
+
+% \usetheme{Warsaw}
+% \usetheme{Rochester}
+% \usetheme{bars}
+% \usetheme{Bergen}
+% \usetheme{Boadilla}
+% \usetheme{Boxes}
+% \usetheme{classic}
+% \usetheme{Madrid}
+% \usetheme{Pittsburgh}
+% \usetheme{Antibes}
+% \usetheme{Montpellier}
+% \usetheme{Berkeley}
+% \usetheme{PaloAlto}
+% \usetheme{Goettingen}
+% \usetheme{Marburg}
+% \usetheme{Hannover}
+% \usetheme{JuanLesPins}
+% \usetheme{Berlin}
+% \usetheme{Ilmenau}
+% \usetheme{Dresden}
+% \usetheme{Luebeck}
+% \usetheme{Darmstadt}
+% \usetheme{Frankfurt}
+% \usetheme{Singapore}
+% \usetheme{Szeged}
+\usetheme{Copenhagen}
+% \usetheme{lined}
+% \usetheme{Malmoe}
+% \usetheme{Tree}
+% \usetheme{shadow}
+% \usetheme{sidebar}
+% \usetheme{split}
+% \usetheme{default}
+\setbeamercovered{transparent}
+
+%%%%%%%%%% Choose color scheme%%%%%%%%
+\usecolortheme{default}
+% \usecolortheme{sidebartab}
+% \usecolortheme{albatross}
+% \usecolortheme{beetle}
+% \usecolortheme{crane}
+% \usecolortheme{dolphin}
+% \usecolortheme{dove}
+% \usecolortheme{fly}
+% \usecolortheme{seagull}
+% \usecolortheme{lily}
+% \usecolortheme{orchid}
+% \usecolortheme{seahorse}
+% \usecolortheme{rose}
+% \usecolortheme{whale}
+% \usecolortheme{structure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \useoutertheme{shadow}
+\useoutertheme{infolines}
+% \useoutertheme{split}
+
+% * Redistribute the spaces in the foot line
+% * Set the author without institution
+\defbeamertemplate*{footline}{infolines}
+{
+    \leavevmode%
+    \hbox{%
+    \begin{beamercolorbox}[wd=.25\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+		\usebeamerfont{author in head/foot}Jose Luis Cercos-Pita
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+        \usebeamerfont{title in head/foot}\insertshorttitle
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.25\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+        \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+        \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+    \end{beamercolorbox}}%
+    \vskip0pt%
+}
+
+\newcommand{\CC}{C\nolinebreak\hspace{-.30em}\raisebox{.2ex}{ +}\nolinebreak\hspace{-.10em}\raisebox{.2ex}{+}}
+
+% \hypersetup{pdfpagemode=FullScreen}
+
+\usepackage{tikz}
+\usetikzlibrary{calc,shapes}
+\tikzstyle{yellowbox}=[rectangle,draw=black,fill=yellow,
+                       font=\scriptsize\sffamily\bfseries,inner sep=6pt]
+\tikzstyle{greybox}=[rectangle,draw=black,fill=gray,
+                     font=\scriptsize\sffamily\bfseries,inner sep=2pt]
+\tikzstyle{whitebox}=[rectangle,draw=black,fill=white,
+                      font=\scriptsize\sffamily\bfseries,inner sep=2pt]
+\tikzstyle{arr}=[-latex,black,line width=1pt]
+\newcommand\nodelabel[3][30em]{\parbox{#1}{\centering #2 \\ #3 }}
+\newcommand\nodelabell[3][21em]{\parbox{#1}{\centering #2 \\ #3 }}
+\newcommand\vertspacing{-1.0}
+
+\begin{document}
+
+\title{SonSilentSea, creación de juegos en Blender con Python}  
+\author{Jose Luis Cercos-Pita}
+\date{\today} 
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame} \frametitle{Tabla de contenidos}
+\tableofcontents
+\end{frame} 
+
+\input{010_introduction}
+
+\input{020_structure}
+\input{021_input}
+\input{022_environment}
+\input{023_gui}
+\input{024_sound}
+\input{025_entities}
+
+\input{030_summary}
+
+\end{document}

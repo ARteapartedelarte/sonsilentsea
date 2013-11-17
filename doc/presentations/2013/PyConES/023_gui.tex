@@ -1,0 +1,31 @@
+\begin{frame}{GUI}
+\begin{columns}
+  \begin{column}{0.5\textwidth}
+    \textbf{\underline{Blender}} (\textcolor{red}{-98-38-2500} líneas)
+    
+    \vspace{0.4cm}
+    \begin{tikzpicture}[scale=0.8]
+    	\node [whitebox] (bgui) at ($(-5,\vertspacing*1)$) {
+    		\nodelabel{bgui tool}{\textit{2500 líneas}}
+    	};
+    	\node [whitebox] (Ventanas) at ($(-5,\vertspacing*3)$) {
+    		\nodelabel{Código para manejar las ventanas}{\textit{362 líneas (que cuentan para comparar)}}
+    	};
+    \end{tikzpicture}
+  \end{column}
+
+  \begin{column}{0.5\textwidth}
+    \textbf{\underline{OGRE}} (\textcolor{red}{-1054-379-159-11877-8220} líneas)
+    
+    \vspace{0.4cm}
+    \begin{tikzpicture}[scale=0.8]
+    	\node [whitebox] (CEGUI) at ($(-5,\vertspacing*1)$) {
+    		\nodelabel{CEGUI}{\textit{0 líneas}}
+    	};
+    	\node [whitebox] (Ventanas) at ($(-5,\vertspacing*3)$) {
+    		\nodelabel{Código para manejar las ventanas}{\textit{1895 líneas (que cuentan para comparar)}}
+    	};
+    \end{tikzpicture}
+  \end{column}
+\end{columns}
+\end{frame}

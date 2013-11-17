@@ -1,0 +1,66 @@
+\section{Estructura} 
+
+\subsection{Estructura general} 
+\begin{frame}{Estructura general}
+\begin{columns}
+  \begin{column}{0.5\textwidth}
+    \textbf{\underline{Blender}}
+    
+    7975 líneas de código
+    
+    \begin{tikzpicture}[scale=0.8]
+    	\node [greybox] (main) at ($(-5,\vertspacing*1)$) {
+    		\nodelabel{main}{\textit{Blender}}
+    	};
+    	\node [greybox] (frame listener) at ($(-5,\vertspacing*2)$) {
+    		\nodelabel{frame listener}{\textit{Blender logic}}
+    	};
+    	\node [whitebox] (input manager) at ($(-4,\vertspacing*3)$) {
+    		\nodelabell{input manager}{\textit{Blender logic}}
+    	};
+    	\node [whitebox] (Environment) at ($(-4,\vertspacing*4)$) {
+    		\nodelabell{Environment}{\textit{Water plane}}
+    	};
+    	\node [whitebox] (GUI) at ($(-4,\vertspacing*5)$) {
+    		\nodelabell{GUI}{\textit{bgui}}
+    	};
+    	\node [whitebox] (Sound) at ($(-4,\vertspacing*6)$) {
+    		\nodelabell{Sound}{\textit{Blender internal engine}}
+    	};
+    	\node [whitebox] (Entities) at ($(-4,\vertspacing*7)$) {
+    		\nodelabell{Entities}{\textit{Player/AI control \& ship motions}}
+    	};
+    \end{tikzpicture}
+  \end{column}
+
+  \begin{column}{0.5\textwidth}
+    \textbf{\underline{OGRE}}
+
+	39211 líneas de código (\textcolor{red}{-1054} líneas)
+
+    \begin{tikzpicture}[scale=0.8]
+    	\node [whitebox] (main) at ($(-5,\vertspacing*1)$) {
+    		\nodelabel{main}{\textit{112+257+303 líneas}}
+    	};
+    	\node [whitebox] (frame listener) at ($(-5,\vertspacing*2)$) {
+    		\nodelabel{frame listener}{\textit{242+140 líneas}}
+    	};
+    	\node [whitebox] (input manager) at ($(-4,\vertspacing*3)$) {
+    		\nodelabell{input manager}{\textit{OIS reading}}
+    	};
+    	\node [whitebox] (Environment) at ($(-4,\vertspacing*4)$) {
+    		\nodelabell{Environment}{\textit{PSSM + HydraX + SkyX}}
+    	};
+    	\node [whitebox] (GUI) at ($(-4,\vertspacing*5)$) {
+    		\nodelabell{GUI}{\textit{CEGUI}}
+    	};
+    	\node [whitebox] (Sound) at ($(-4,\vertspacing*6)$) {
+    		\nodelabell{Sound}{\textit{ALSA + OGG Vorbis}}
+    	};
+    	\node [whitebox] (Entities) at ($(-4,\vertspacing*7)$) {
+    		\nodelabell{Entities}{\textit{Ship motions}}
+    	};
+    \end{tikzpicture}
+  \end{column}
+\end{columns}
+\end{frame}

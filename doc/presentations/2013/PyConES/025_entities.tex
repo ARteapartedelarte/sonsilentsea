@@ -1,0 +1,35 @@
+\begin{frame}{Entidades}
+\begin{columns}
+  \begin{column}{0.5\textwidth}
+    \textbf{\underline{Blender}}
+    
+    (\textcolor{red}{-98-38-2500-2206-388} líneas)
+    
+    \vspace{0.4cm}
+    \begin{tikzpicture}[scale=0.8]
+    	\node [whitebox] (easyEmit) at ($(-5,\vertspacing*1)$) {
+    		\nodelabel{Gestor de partículas adaptado de easyEmit}{\textit{2206 líneas}}
+    	};
+    	\node [whitebox] (AI) at ($(-5,\vertspacing*2)$) {
+    		\nodelabel{Contol del jugador / inteligencia artificial}{\textit{138+194+56 líneas}}
+    	};
+    \end{tikzpicture}
+  \end{column}
+
+  \begin{column}{0.5\textwidth}
+    \textbf{\underline{OGRE}}
+    
+    (\textcolor{red}{-1054-379-159-11877-8220-1880-592} líneas)
+    
+    \vspace{0.4cm}
+    \begin{tikzpicture}[scale=0.8]
+    	\node [whitebox] (particulas) at ($(-5,\vertspacing*1)$) {
+    		\nodelabel{Gestor de Partículas asistido por OGRE}{\textit{592 líneas}}
+    	};
+    	\node [whitebox] (particulas) at ($(-5,\vertspacing*2)$) {
+    		\nodelabel{Sin control implementado}{\textit{0 líneas}}
+    	};
+    \end{tikzpicture}
+  \end{column}
+\end{columns}
+\end{frame}
