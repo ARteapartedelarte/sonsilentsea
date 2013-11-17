@@ -1,0 +1,21 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 12.04.0 ] */
+
+/* [wxMaxima: input   start ] */
+assume(r>0);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+V(h,r) := %pi/3 * h^2 * (3*r - h);
+h(z,r) := z + r;
+VV(z,r) := V(h(z,r),r)$
+VV(z,r);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R : 1.3;
+wxplot2d([sqrt(R^2 - z^2),VV(z,R)], [z,-R,R])$
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

@@ -91,6 +91,22 @@ def load():
 	enemies[0]['angles'] = [-radians(15.0), -radians(3.0)]
 	enemies[0]['propulsion'] = 0.0
 	enemies[0].children['Ship.Liberty.Fire.left.000']['emitteron'] = True
+
+	print('Loading bouy object...')
+	Manager.load_blender_file('AI/Bouy/Bouy.blend')
+	active   = scene.objects
+	inactive = scene.objectsInactive
+	if (not 'Bouy' in active) and (not 'Bouy' in inactive):
+		print('FAIL! The file was not loaded')
+		return
+	if 'Bouy' in inactive:
+		obj = scene.addObject('Bouy', origin)
+	else:
+		print('Warning: The object is in an active layer. Just one instance could be used')
+		obj = active['Bouy']
+	obj.worldPosition = Vector((-190.0, 1900.0, 0.0))
+
+
 	print('OK!')
 
 	loaded = True
