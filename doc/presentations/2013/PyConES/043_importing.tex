@@ -1,0 +1,38 @@
+\subsection{Importando el nuevo objeto}
+
+\begin{frame}{Preparación de la escena}
+
+\begin{enumerate}
+	\item Nos aseguramos de que todas las luces y cámaras (si las hubiera) se
+	encuentran en capas inactivas.
+	\item Colocamos todos los objetos útiles en una capa inactiva. De no hacerlo
+	al cargar la ``librería'' el objeto se añadirá automáticamente a la escena,
+	y no se podrán crear más instancias del mismo.
+	\item Guardamos el archivo.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]{Edición de la misión}
+
+Cargamos la nueva ``librería'':
+\begin{verbatim}
+Manager.load_blender_file('AI/Bouy/Bouy.blend')
+\end{verbatim}
+
+Añadimos el objeto a la escena:
+\begin{verbatim}
+obj = scene.addObject('Bouy', origin)
+\end{verbatim}
+
+Y lo posicionamos:
+\begin{verbatim}
+obj.worldPosition = Vector((-190.0, 1900.0, 0.0))
+\end{verbatim}
+
+\begin{center}
+{\Huge ¡Hecho!}
+\end{center}
+
+\end{frame}
+

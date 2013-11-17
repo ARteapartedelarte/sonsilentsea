@@ -3,10 +3,15 @@
 \beamer@subsectionintoc {1}{1}{\IeC {\textquestiondown }Qui\IeC {\'e}n soy yo?}{3}{0}{1}
 \beamer@subsectionintoc {1}{2}{\IeC {\textquestiondown }Qu\IeC {\'e} es SonSilentSea?}{4}{0}{1}
 \beamer@subsectionintoc {1}{3}{\IeC {\textquestiondown }Qu\IeC {\'e} pretendo contar?}{5}{0}{1}
-\beamer@sectionintoc {2}{Estructura}{9}{0}{2}
+\beamer@sectionintoc {2}{L\IeC {\'\i }neas de c\IeC {\'o}digo}{9}{0}{2}
 \beamer@subsectionintoc {2}{1}{Estructura general}{9}{0}{2}
 \beamer@subsectionintoc {2}{2}{Componentes}{10}{0}{2}
 \beamer@sectionintoc {3}{Conclusiones}{19}{0}{3}
 \beamer@subsectionintoc {3}{1}{Resultado del experimento}{19}{0}{3}
 \beamer@subsectionintoc {3}{2}{Conclusiones}{20}{0}{3}
-\beamer@subsectionintoc {3}{3}{Demostraci\IeC {\'o}n}{27}{0}{3}
+\beamer@sectionintoc {4}{Preguntas}{27}{0}{4}
+\beamer@sectionintoc {5}{Demostraci\IeC {\'o}n}{28}{0}{5}
+\beamer@subsectionintoc {5}{1}{F\IeC {\'\i }sica}{29}{0}{5}
+\beamer@subsectionintoc {5}{2}{Hidrodin\IeC {\'a}mica}{31}{0}{5}
+\beamer@subsectionintoc {5}{3}{Importando el nuevo objeto}{37}{0}{5}
+\beamer@sectionintoc {6}{Fin}{39}{0}{6}

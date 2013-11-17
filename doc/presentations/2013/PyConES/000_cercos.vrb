@@ -1,0 +1,19 @@
+\frametitle {Edición de la misión}\par Cargamos la nueva ``librería'':
+\begin{verbatim}
+Manager.load_blender_file('AI/Bouy/Bouy.blend')
+\end{verbatim}
+
+Añadimos el objeto a la escena:
+\begin{verbatim}
+obj = scene.addObject('Bouy', origin)
+\end{verbatim}
+
+Y lo posicionamos:
+\begin{verbatim}
+obj.worldPosition = Vector((-190.0, 1900.0, 0.0))
+\end{verbatim}
+
+\begin{center}
+{\Huge ¡Hecho!}
+\end{center}
+
