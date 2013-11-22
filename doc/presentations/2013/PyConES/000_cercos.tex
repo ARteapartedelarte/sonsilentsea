@@ -113,6 +113,14 @@
 \newcommand\nodelabell[3][21em]{\parbox{#1}{\centering #2 \\ #3 }}
 \newcommand\vertspacing{-1.0}
 
+\AtBeginSection[]
+{
+  \begin{frame}
+  \frametitle{Contents}
+  \tableofcontents[currentsection]
+  \end{frame}
+}
+
 \begin{document}
 
 \title{SonSilentSea, creación de juegos en Blender con Python}  
