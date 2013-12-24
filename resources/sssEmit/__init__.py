@@ -444,7 +444,6 @@ class sssEmit(bpy.types.Panel):
         elif bpy.context.object.particle == False:
             # It is not a particle system, or a particle either, so
             # transforming it into a particles system can be offered
-            row = self.layout.row()
             row.operator("scene.generate_particle_system",
                          text="Create a particle system",
                          icon='PARTICLES')
@@ -455,7 +454,6 @@ class sssEmit(bpy.types.Panel):
                          icon='PARTICLES')
         else:
             # It is a particle
-            row = self.layout.row()
             row.operator("object.remove_from_particle_list",
                          text="Remove from the particles list",
                          icon='PARTICLES')
