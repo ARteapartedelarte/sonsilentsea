@@ -179,7 +179,10 @@ def emitter():
                     particle['variablespeed'] = True
                 particle['startspeed'] = [0,0,startspeed*startspeedRadial]
                 particle['endspeed_mode'] = endspeed_mode
-                particle['endspeed'] = [0,0,endspeed*endspeedRadial]
+                if(particle['endspeed_mode'] == 0):
+                    particle['endspeed'] = [0,0,endspeed*endspeedRadial]
+                else:
+                    particle['endspeed'] = [0,0,endspeed]
                 particle['randomMovement'] = obj['randomMovement']
                 
                 particle['colorfade_start'] = obj['colorfade_start']
@@ -218,7 +221,7 @@ def emitter():
      
     obj['emitcounter'] += obj['multiplier']
     
-def particle_update(obj, list, multiplier, emitter):
+def particle_update(obj, particles_list, multiplier, emitter):
     scene = bge.logic.getCurrentScene()
 
     if obj['lifeticker']%2 == 0:
@@ -231,7 +234,7 @@ def particle_update(obj, list, multiplier, emitter):
     obj['child'].applyRotation((obj['rotation']*multiplier*obj['randomDirection'],0,0),True)
 
 
-	###Fade between two colors###
+    ###Fade between two colors###
     if obj['lifeticker'] > emitter['colorCacheProgress']:
         if obj['lifeticker'] < obj['colorfade_start']:
             obj['tmpColor'] = obj['startcolor']
@@ -308,23 +311,23 @@ def particle_update(obj, list, multiplier, emitter):
             obj['speed'][0] = obj['startspeed'][0]
             obj['speed'][1] = obj['startspeed'][1]
             obj['speed'][2] = obj['startspeed'][2]
-		elif obj['speed_mode'] == 0:
-			# Start and end speeds are provided
-		    elif obj['lifeticker'] > obj['speedfade_start'] and obj['lifeticker'] < obj['speedfade_end']:
-		        obj['speed'][0] = obj['startspeed'][0] * speedfactor_up + obj['endspeed'][0] * speedfactor_down
-		        obj['speed'][1] = obj['startspeed'][1] * speedfactor_up + obj['endspeed'][1] * speedfactor_down
-		        obj['speed'][2] = obj['startspeed'][2] * speedfactor_up + obj['endspeed'][2] * speedfactor_down
-		        obj['speedticker'] += multiplier
-		    elif obj['lifeticker'] >= obj['speedfade_end']:
-		        obj['speed'][0] = obj['endspeed'][0]
-		        obj['speed'][1] = obj['endspeed'][1]
-		        obj['speed'][2] = obj['endspeed'][2]
-		else:
-			# Start and gravity are provided
-	        obj['speed'][0] += obj['endspeed'][0] / bge.logic.getLogicTicRate()
-	        obj['speed'][1] += obj['endspeed'][1] / bge.logic.getLogicTicRate()
-	        obj['speed'][2] += obj['endspeed'][2] / bge.logic.getLogicTicRate()
-			
+        elif obj['endspeed_mode'] == 0:
+            # Start and end speeds are provided
+            if obj['lifeticker'] > obj['speedfade_start'] and obj['lifeticker'] < obj['speedfade_end']:
+                obj['speed'][0] = obj['startspeed'][0] * speedfactor_up + obj['endspeed'][0] * speedfactor_down
+                obj['speed'][1] = obj['startspeed'][1] * speedfactor_up + obj['endspeed'][1] * speedfactor_down
+                obj['speed'][2] = obj['startspeed'][2] * speedfactor_up + obj['endspeed'][2] * speedfactor_down
+                obj['speedticker'] += multiplier
+            elif obj['lifeticker'] >= obj['speedfade_end']:
+                obj['speed'][0] = obj['endspeed'][0]
+                obj['speed'][1] = obj['endspeed'][1]
+                obj['speed'][2] = obj['endspeed'][2]
+        else:
+            # Start and gravity are provided
+            obj['speed'] = list(map(lambda x: x / (multiplier * 0.01), obj['speed']))
+            obj['speed'][0] += obj['endspeed'][0] / bge.logic.getLogicTicRate()
+            obj['speed'][1] += obj['endspeed'][1] / bge.logic.getLogicTicRate()
+            obj['speed'][2] += obj['endspeed'][2] / bge.logic.getLogicTicRate()
             
         obj['speed'][0] *= multiplier *0.01
         obj['speed'][1] *= multiplier *0.01
@@ -389,7 +392,7 @@ def particle_update(obj, list, multiplier, emitter):
     
 ###kill particle after lifetime  
     if (obj['lifeticker'] > obj['lifetime']) and obj['lifetime'] != 0:
-        list.remove(obj)
+        particles_list.remove(obj)
         obj["child"].endObject()
         obj.endObject()
 

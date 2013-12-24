@@ -668,19 +668,26 @@ class load_script(bpy.types.Operator):
             break
         if not filepath:
             raise Exception('I can not find the script file "emitter.py"')
-        bpy.ops.text.open(filepath=filepath,
-                          filter_blender=False,
-                          filter_image=False,
-                          filter_movie=False,
-                          filter_python=True,
-                          filter_font=False,
-                          filter_sound=False,
-                          filter_text=True,
-                          filter_btx=False,
-                          filter_collada=False,
-                          filter_folder=True,
-                          filemode=9,
-                          internal=True)
+        try:
+            text = bpy.data.texts['emitter.py']
+            text.clear()
+            f = open(filepath, 'r')
+            text.write(f.read())
+            f.close()
+        except:
+            bpy.ops.text.open(filepath=filepath,
+                filter_blender=False,
+                filter_image=False,
+                filter_movie=False,
+                filter_python=True,
+                filter_font=False,
+                filter_sound=False,
+                filter_text=True,
+                filter_btx=False,
+                filter_collada=False,
+                filter_folder=True,
+                filemode=9,
+                internal=True)
         return{'FINISHED'}
 
 class reload_upgrade(bpy.types.Operator):
