@@ -233,6 +233,15 @@ class sssEmit(bpy.types.Panel):
         default='1',
         update=update_values,
         description='Normalized radial multiplier factor for the starting particles speed (for instance "(1 - r)**2.0")')
+
+    modes = [('0', 'End speed', '0'),
+             ('1', 'Gravity', '1')]
+    bpy.types.Object.endspeed_mode = EnumProperty( name="Speed evolution mode",
+        items=modes,
+        default='0',
+        update=update_values,
+        description="Set the speed modifier")
+
     bpy.types.Object.endspeed = bpy.props.FloatProperty(name='',
         default=10,
         min=-100,
@@ -361,9 +370,17 @@ class sssEmit(bpy.types.Panel):
             row.prop(context.object, "startspeedRadial", text="")
             
             row = self.layout.row()
-            row.label("End Speed:")
-            row.prop(context.object, "endspeed", text="End Speed")
-            row.prop(context.object, "endspeedRadial", text="")
+            # row.label("End Speed:")
+            row.prop(context.object, "endspeed_mode", text="")
+            try:
+                if(context.object.game.properties['endspeed_mode'].value == '0'):
+                    row.prop(context.object, "endspeed", text="End Speed")
+                    row.prop(context.object, "endspeedRadial", text="")
+                else:
+                    row.prop(context.object, "endspeed", text="")
+            except:
+                row.prop(context.object, "endspeed", text="End Speed")
+                row.prop(context.object, "endspeedRadial", text="")
             
             row = self.layout.row(align=True)
             row.label("Speed Fading:")

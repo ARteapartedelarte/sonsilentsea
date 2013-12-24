@@ -221,6 +221,10 @@ class generate_particle_system(bpy.types.Operator):
         
         ### particle endspeed
         bpy.ops.object.game_property_new()
+        bpy.context.object.game.properties['prop'].name = 'endspeed_mode'
+        bpy.context.object.game.properties['endspeed_mode'].type = 'STRING'
+        bpy.context.object.game.properties['endspeed_mode'].value = '0'
+        bpy.ops.object.game_property_new()
         bpy.context.object.game.properties['prop'].name = 'endspeed'
         bpy.context.object.game.properties['endspeed'].type = 'FLOAT'
         bpy.context.object.game.properties['endspeed'].value = 0.1
@@ -463,6 +467,13 @@ class apply_values(bpy.types.Operator):
         
         bpy.context.object.game.properties['startspeed'].value = bpy.context.object.startspeed
         bpy.context.object.game.properties['startspeedRadial'].value = bpy.context.object.startspeedRadial
+        try:
+            bpy.context.object.game.properties['endspeed_mode'].value = bpy.context.object.endspeed_mode
+        except:
+            bpy.ops.object.game_property_new()
+            bpy.context.object.game.properties['prop'].name = 'endspeed_mode'
+            bpy.context.object.game.properties['endspeed_mode'].type = 'STRING'
+            bpy.context.object.game.properties['endspeed_mode'].value = bpy.context.object.endspeed_mode
         bpy.context.object.game.properties['endspeed'].value = bpy.context.object.endspeed
         bpy.context.object.game.properties['endspeedRadial'].value = bpy.context.object.endspeedRadial
         bpy.context.object.game.properties['randomMovement'].value = bpy.context.object.randomMovement
