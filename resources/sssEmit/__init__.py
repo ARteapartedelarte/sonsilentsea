@@ -303,7 +303,7 @@ class sssEmit(bpy.types.Panel):
                 need_reload = True
             
             if(need_reload):
-                row.operator("object.apply_values",
+                row.operator("object.reload_upgrade",
                     icon='RECOVER_LAST',
                     text=text_reload)
                 return
@@ -401,21 +401,18 @@ class sssEmit(bpy.types.Panel):
             row = self.layout.row()
             # row.label("End Speed:")
             row.prop(context.object, "endspeed_mode", text="")
-            try:
-                if(context.object.game.properties['endspeed_mode'].value == '0'):
-                    row.prop(context.object, "endspeed", text="End Speed")
-                    row.prop(context.object, "endspeedRadial", text="")
-                else:
-                    row.prop(context.object, "endspeed", text="")
-            except:
+            if(context.object.game.properties['endspeed_mode'].value == '0'):
                 row.prop(context.object, "endspeed", text="End Speed")
                 row.prop(context.object, "endspeedRadial", text="")
+            else:
+                row.prop(context.object, "endspeed", text="")
             
             row = self.layout.row(align=True)
             row.label("Speed Fading:")
             row.label("")
             row.prop(context.object, "speedfade_start", text="Start")
-            row.prop(context.object, "speedfade_end", text="End")
+            if(context.object.game.properties['endspeed_mode'].value == '0'):
+                row.prop(context.object, "speedfade_end", text="End")
             row = self.layout.row()
             row.label("Random Movement:")
             row.prop(context.object, "randomMovement", text="Random Movement")
@@ -484,6 +481,8 @@ def register():
     bpy.utils.register_class(apply_values)
     bpy.utils.register_class(particle_to_list)
     bpy.utils.register_class(particle_from_list)
+    bpy.utils.register_class(reload_upgrade)
+    bpy.utils.register_class(load_script)
     bpy.utils.register_class(create_default_particle)
     bpy.utils.register_class(add_to_particle_list)
     bpy.utils.register_class(remove_from_particle_list)
@@ -509,6 +508,8 @@ def unregister():
     bpy.utils.unregister_class(apply_values)
     bpy.utils.unregister_class(particle_to_list)
     bpy.utils.unregister_class(particle_from_list)
+    bpy.utils.unregister_class(reload_upgrade)
+    bpy.utils.unregister_class(load_script)
     bpy.utils.unregister_class(create_default_particle)
     bpy.utils.unregister_class(add_to_particle_list)
     bpy.utils.unregister_class(remove_from_particle_list)

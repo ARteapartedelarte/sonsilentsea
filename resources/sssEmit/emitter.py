@@ -152,9 +152,11 @@ def emitter():
                 # The radial multiplier is a new property, so may don't exist in older particles systems
                 try:
                     startspeedRadial = obj["startspeedRadial"]
+                    endspeed_mode = int(obj["endspeed_mode"])
                     endspeedRadial = obj["endspeedRadial"]
                 except:
                     startspeedRadial = '1.0'
+                    endspeed_mode = 0
                     endspeedRadial = '1.0'
                 a = obj['rangeEmitX']
                 b = obj['rangeEmitY']
@@ -176,6 +178,7 @@ def emitter():
                 if (startspeedRadial != 1.0) or (endspeedRadial != 1.0):
                     particle['variablespeed'] = True
                 particle['startspeed'] = [0,0,startspeed*startspeedRadial]
+                particle['endspeed_mode'] = endspeed_mode
                 particle['endspeed'] = [0,0,endspeed*endspeedRadial]
                 particle['randomMovement'] = obj['randomMovement']
                 
@@ -228,7 +231,7 @@ def particle_update(obj, list, multiplier, emitter):
     obj['child'].applyRotation((obj['rotation']*multiplier*obj['randomDirection'],0,0),True)
 
 
-###Fade between two colors###
+	###Fade between two colors###
     if obj['lifeticker'] > emitter['colorCacheProgress']:
         if obj['lifeticker'] < obj['colorfade_start']:
             obj['tmpColor'] = obj['startcolor']
@@ -305,15 +308,23 @@ def particle_update(obj, list, multiplier, emitter):
             obj['speed'][0] = obj['startspeed'][0]
             obj['speed'][1] = obj['startspeed'][1]
             obj['speed'][2] = obj['startspeed'][2]
-        elif obj['lifeticker'] > obj['speedfade_start'] and obj['lifeticker'] < obj['speedfade_end']:
-            obj['speed'][0] = obj['startspeed'][0] * speedfactor_up + obj['endspeed'][0] * speedfactor_down
-            obj['speed'][1] = obj['startspeed'][1] * speedfactor_up + obj['endspeed'][1] * speedfactor_down
-            obj['speed'][2] = obj['startspeed'][2] * speedfactor_up + obj['endspeed'][2] * speedfactor_down
-            obj['speedticker'] += multiplier
-        elif obj['lifeticker'] >= obj['speedfade_end']:
-            obj['speed'][0] = obj['endspeed'][0]
-            obj['speed'][1] = obj['endspeed'][1]
-            obj['speed'][2] = obj['endspeed'][2]
+		elif obj['speed_mode'] == 0:
+			# Start and end speeds are provided
+		    elif obj['lifeticker'] > obj['speedfade_start'] and obj['lifeticker'] < obj['speedfade_end']:
+		        obj['speed'][0] = obj['startspeed'][0] * speedfactor_up + obj['endspeed'][0] * speedfactor_down
+		        obj['speed'][1] = obj['startspeed'][1] * speedfactor_up + obj['endspeed'][1] * speedfactor_down
+		        obj['speed'][2] = obj['startspeed'][2] * speedfactor_up + obj['endspeed'][2] * speedfactor_down
+		        obj['speedticker'] += multiplier
+		    elif obj['lifeticker'] >= obj['speedfade_end']:
+		        obj['speed'][0] = obj['endspeed'][0]
+		        obj['speed'][1] = obj['endspeed'][1]
+		        obj['speed'][2] = obj['endspeed'][2]
+		else:
+			# Start and gravity are provided
+	        obj['speed'][0] += obj['endspeed'][0] / bge.logic.getLogicTicRate()
+	        obj['speed'][1] += obj['endspeed'][1] / bge.logic.getLogicTicRate()
+	        obj['speed'][2] += obj['endspeed'][2] / bge.logic.getLogicTicRate()
+			
             
         obj['speed'][0] *= multiplier *0.01
         obj['speed'][1] *= multiplier *0.01

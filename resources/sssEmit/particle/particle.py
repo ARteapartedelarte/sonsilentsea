@@ -434,8 +434,6 @@ class apply_values(bpy.types.Operator):
     bl_label = "Apply the values to the particle system"
     
     def execute(self, context):
-        bpy.ops.scene.update_particle_list()
-
         try:      
             bpy.context.object.game.properties['version'].value = '{0}.{1}'.format(
             sssEmit.SSS_EMIT_MAJOR_VERSION,
@@ -656,11 +654,11 @@ class update_particle_list(bpy.types.Operator):
         bpy.data.scenes[scene].objects.active = self.current_ob
         return{'FINISHED'}
 
-class create_default_particle(bpy.types.Operator):
-    bl_idname = "scene.create_default_particle"
-    bl_label = "Create the default particles"
-    
-    def loadScript(self):
+class load_script(bpy.types.Operator):
+    bl_idname = "scene.load_script"
+    bl_label = "Loads the emmiter script"
+
+    def execute(self, context):
         filepath = None
         for folder in addons_paths():
             f = path.join(folder, "sssEmit/emitter.py")
@@ -683,6 +681,24 @@ class create_default_particle(bpy.types.Operator):
                           filter_folder=True,
                           filemode=9,
                           internal=True)
+        return{'FINISHED'}
+
+class reload_upgrade(bpy.types.Operator):
+    bl_idname = "object.reload_upgrade"
+    bl_label = "Reload or upgrade the poarticles system"
+
+    def execute(self, context):
+        bpy.ops.scene.update_particle_list()
+        bpy.ops.object.apply_values()
+        bpy.ops.scene.load_script()
+        return{'FINISHED'}
+
+class create_default_particle(bpy.types.Operator):
+    bl_idname = "scene.create_default_particle"
+    bl_label = "Create the default particles"
+    
+    def loadScript(self):
+        bpy.ops.scene.load_script()
     
     def createParticle(self,name,nameNew,position,shape_type,shadeless,addmode):
         scene_layers = bpy.data.scenes[0].layers[:]
