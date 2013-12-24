@@ -6,11 +6,14 @@ from bpy.props import BoolProperty
 from sssEmit.preset import *
 from sssEmit.particle import *
 
+SSS_EMIT_MAJOR_VERSION = 0
+SSS_EMIT_MINOR_VERSION = 3
+
 bl_info = {
     "name": "SonSilentSea particles system",
     "author": "Andreas Esau, Jose Luis Cercos-Pita",
-    "version": (0, 2),
-    "blender": (2, 6, 8),
+    "version": (0, 3),
+    "blender": (2, 6, 9),
     "api": 60518,
     "location": "Properties > Particles",
     "description": "An Easy to use Particle System for the Blender Game Engine",
@@ -278,9 +281,35 @@ class sssEmit(bpy.types.Panel):
         scene = bpy.data.scenes[0]
         ob = context.object
         sce = context.scene
+        version = '{0}.{1}'.format(
+            SSS_EMIT_MAJOR_VERSION,
+            SSS_EMIT_MINOR_VERSION)
         
         if bpy.context.object.particlesystem == True:
+            need_reload = False
+            text_reload = 'Reload'
+            if('particles' not in bpy.types.Scene.__dict__.keys()):
+                need_reload = True
+                text_reload = 'Reload (Some data missed)'
+            if('version' not in ob.game.properties.keys()):
+                need_reload = True
+                text_reload = 'Upgrade (0.0 -> {0})'.format(version)
+            elif(ob.game.properties['version'].value != version):
+                obj_ver = ob.game.properties['version'].value
+                text_reload = 'Upgrade ({0} -> {1})'.format(obj_ver, version)
+                if float(obj_ver) < float(version):
+                    text_reload = 'Downgrade ({0} -> {1})'.format(obj_ver,
+                        version)
+                need_reload = True
+            
+            if(need_reload):
+                row.operator("object.apply_values",
+                    icon='RECOVER_LAST',
+                    text=text_reload)
+                return
+
             # It is a particle system, display all the options
+            row = self.layout.row()
             row.label("Emitter Settings", icon='GREASEPENCIL')
             
             row = self.layout.row()

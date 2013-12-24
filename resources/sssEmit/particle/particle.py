@@ -4,6 +4,8 @@ import mathutils
 from os import path
 from bpy.props import StringProperty, BoolProperty, EnumProperty
 
+import sssEmit
+
 def script_paths():
     """ Return all the possible locations for the scripts """
     paths = bpy.utils.script_paths(check_all=True)
@@ -72,279 +74,288 @@ class generate_particle_system(bpy.types.Operator):
             item.name = 'Particle_Fire'
  
     def gen_properties(self,context):
+        obj_game = bpy.context.object.game
+        ### sssEmit version
+        bpy.ops.object.game_property_new()
+        obj_game.properties['prop'].name = 'version'
+        obj_game.properties['version'].type = 'STRING'
+        obj_game.properties['version'].value = '{0}.{1}'.format(
+            sssEmit.SSS_EMIT_MAJOR_VERSION,
+            sssEmit.SSS_EMIT_MINOR_VERSION)
+
         ### frustum Culling
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'culling'
-        bpy.context.object.game.properties['culling'].type = 'BOOL'
-        bpy.context.object.game.properties['culling'].value = True
+        obj_game.properties['prop'].name = 'culling'
+        obj_game.properties['culling'].type = 'BOOL'
+        obj_game.properties['culling'].value = True
         
         ### frustum Culling Radius
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'cullingRadius'
-        bpy.context.object.game.properties['cullingRadius'].type = 'INT'
-        bpy.context.object.game.properties['cullingRadius'].value = 4
+        obj_game.properties['prop'].name = 'cullingRadius'
+        obj_game.properties['cullingRadius'].type = 'INT'
+        obj_game.properties['cullingRadius'].value = 4
         
         ### particle list
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'particleList'
-        bpy.context.object.game.properties['particleList'].type = 'STRING'
-        bpy.context.object.game.properties['particleList'].value = '[]'
+        obj_game.properties['prop'].name = 'particleList'
+        obj_game.properties['particleList'].type = 'STRING'
+        obj_game.properties['particleList'].value = '[]'
         
         ### particle list
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'particleAddMode'
-        bpy.context.object.game.properties['particleAddMode'].type = 'STRING'
-        bpy.context.object.game.properties['particleAddMode'].value = '[]'
+        obj_game.properties['prop'].name = 'particleAddMode'
+        obj_game.properties['particleAddMode'].type = 'STRING'
+        obj_game.properties['particleAddMode'].value = '[]'
         
         ### particle list
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'particleScale'
-        bpy.context.object.game.properties['particleScale'].type = 'STRING'
-        bpy.context.object.game.properties['particleScale'].value = '[]'
+        obj_game.properties['prop'].name = 'particleScale'
+        obj_game.properties['particleScale'].type = 'STRING'
+        obj_game.properties['particleScale'].value = '[]'
         
         ### particle emitter on/off
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'emitteron'
-        bpy.context.object.game.properties['emitteron'].type = 'BOOL'
-        bpy.context.object.game.properties['emitteron'].value = True
+        obj_game.properties['prop'].name = 'emitteron'
+        obj_game.properties['emitteron'].type = 'BOOL'
+        obj_game.properties['emitteron'].value = True
         
         ### particle local or global Emission
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'localEmit'
-        bpy.context.object.game.properties['localEmit'].type = 'BOOL'
-        bpy.context.object.game.properties['localEmit'].value = True
+        obj_game.properties['prop'].name = 'localEmit'
+        obj_game.properties['localEmit'].type = 'BOOL'
+        obj_game.properties['localEmit'].value = True
         
         ### particle amount
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'amount'
-        bpy.context.object.game.properties['amount'].type = 'INT'
-        bpy.context.object.game.properties['amount'].value = 1
+        obj_game.properties['prop'].name = 'amount'
+        obj_game.properties['amount'].type = 'INT'
+        obj_game.properties['amount'].value = 1
         
         ### particle emission time
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'emitTime'
-        bpy.context.object.game.properties['emitTime'].type = 'INT'
-        bpy.context.object.game.properties['emitTime'].value = 0
+        obj_game.properties['prop'].name = 'emitTime'
+        obj_game.properties['emitTime'].type = 'INT'
+        obj_game.properties['emitTime'].value = 0
         
         ### particle lifetime
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'lifetime'
-        bpy.context.object.game.properties['lifetime'].type = 'INT'
-        bpy.context.object.game.properties['lifetime'].value = 60
+        obj_game.properties['prop'].name = 'lifetime'
+        obj_game.properties['lifetime'].type = 'INT'
+        obj_game.properties['lifetime'].value = 60
         
         ### particle random lifetime
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'randomlifetimevalue'
-        bpy.context.object.game.properties['randomlifetimevalue'].type = 'INT'
-        bpy.context.object.game.properties['randomlifetimevalue'].value = 10
+        obj_game.properties['prop'].name = 'randomlifetimevalue'
+        obj_game.properties['randomlifetimevalue'].type = 'INT'
+        obj_game.properties['randomlifetimevalue'].value = 10
         
         ### particle range Emit
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'rangeEmitX'
-        bpy.context.object.game.properties['rangeEmitX'].type = 'FLOAT'
-        bpy.context.object.game.properties['rangeEmitX'].value = 0.0
+        obj_game.properties['prop'].name = 'rangeEmitX'
+        obj_game.properties['rangeEmitX'].type = 'FLOAT'
+        obj_game.properties['rangeEmitX'].value = 0.0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'rangeEmitY'
-        bpy.context.object.game.properties['rangeEmitY'].type = 'FLOAT'
-        bpy.context.object.game.properties['rangeEmitY'].value = 0.0
+        obj_game.properties['prop'].name = 'rangeEmitY'
+        obj_game.properties['rangeEmitY'].type = 'FLOAT'
+        obj_game.properties['rangeEmitY'].value = 0.0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'rangeEmitZ'
-        bpy.context.object.game.properties['rangeEmitZ'].type = 'FLOAT'
-        bpy.context.object.game.properties['rangeEmitZ'].value = 0.0
+        obj_game.properties['prop'].name = 'rangeEmitZ'
+        obj_game.properties['rangeEmitZ'].type = 'FLOAT'
+        obj_game.properties['rangeEmitZ'].value = 0.0
 
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'ellipsoidalRange'
-        bpy.context.object.game.properties['ellipsoidalRange'].type = 'BOOL'
-        bpy.context.object.game.properties['ellipsoidalRange'].value = False
+        obj_game.properties['prop'].name = 'ellipsoidalRange'
+        obj_game.properties['ellipsoidalRange'].type = 'BOOL'
+        obj_game.properties['ellipsoidalRange'].value = False
         
         ### particle startcolor
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'start_r'
-        bpy.context.object.game.properties['start_r'].type = 'FLOAT'
-        bpy.context.object.game.properties['start_r'].value = 1.0
+        obj_game.properties['prop'].name = 'start_r'
+        obj_game.properties['start_r'].type = 'FLOAT'
+        obj_game.properties['start_r'].value = 1.0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'start_g'
-        bpy.context.object.game.properties['start_g'].type = 'FLOAT'
-        bpy.context.object.game.properties['start_g'].value = 0.0
+        obj_game.properties['prop'].name = 'start_g'
+        obj_game.properties['start_g'].type = 'FLOAT'
+        obj_game.properties['start_g'].value = 0.0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'start_b'
-        bpy.context.object.game.properties['start_b'].type = 'FLOAT'
-        bpy.context.object.game.properties['start_b'].value = 0.0
+        obj_game.properties['prop'].name = 'start_b'
+        obj_game.properties['start_b'].type = 'FLOAT'
+        obj_game.properties['start_b'].value = 0.0
         
         ### particle endcolor
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'end_r'
-        bpy.context.object.game.properties['end_r'].type = 'FLOAT'
-        bpy.context.object.game.properties['end_r'].value = 0.0
+        obj_game.properties['prop'].name = 'end_r'
+        obj_game.properties['end_r'].type = 'FLOAT'
+        obj_game.properties['end_r'].value = 0.0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'end_g'
-        bpy.context.object.game.properties['end_g'].type = 'FLOAT'
-        bpy.context.object.game.properties['end_g'].value = 0.0
+        obj_game.properties['prop'].name = 'end_g'
+        obj_game.properties['end_g'].type = 'FLOAT'
+        obj_game.properties['end_g'].value = 0.0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'end_b'
-        bpy.context.object.game.properties['end_b'].type = 'FLOAT'
-        bpy.context.object.game.properties['end_b'].value = 1.0
+        obj_game.properties['prop'].name = 'end_b'
+        obj_game.properties['end_b'].type = 'FLOAT'
+        obj_game.properties['end_b'].value = 1.0
         
         ### particle alpha
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'alpha'
-        bpy.context.object.game.properties['alpha'].type = 'FLOAT'
-        bpy.context.object.game.properties['alpha'].value = 1.0
+        obj_game.properties['prop'].name = 'alpha'
+        obj_game.properties['alpha'].type = 'FLOAT'
+        obj_game.properties['alpha'].value = 1.0
         
         ### particle color fade start
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'colorfade_start'
-        bpy.context.object.game.properties['colorfade_start'].type = 'FLOAT'
-        bpy.context.object.game.properties['colorfade_start'].value = 1.0
+        obj_game.properties['prop'].name = 'colorfade_start'
+        obj_game.properties['colorfade_start'].type = 'FLOAT'
+        obj_game.properties['colorfade_start'].value = 1.0
         
         ### particle color fade end
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'colorfade_end'
-        bpy.context.object.game.properties['colorfade_end'].type = 'FLOAT'
-        bpy.context.object.game.properties['colorfade_end'].value = 1.0
+        obj_game.properties['prop'].name = 'colorfade_end'
+        obj_game.properties['colorfade_end'].type = 'FLOAT'
+        obj_game.properties['colorfade_end'].value = 1.0
         
         ### particle startspeed
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'startspeed'
-        bpy.context.object.game.properties['startspeed'].type = 'FLOAT'
-        bpy.context.object.game.properties['startspeed'].value = 0.0
+        obj_game.properties['prop'].name = 'startspeed'
+        obj_game.properties['startspeed'].type = 'FLOAT'
+        obj_game.properties['startspeed'].value = 0.0
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'startspeedRadial'
-        bpy.context.object.game.properties['startspeedRadial'].type = 'STRING'
-        bpy.context.object.game.properties['startspeedRadial'].value = '1'
+        obj_game.properties['prop'].name = 'startspeedRadial'
+        obj_game.properties['startspeedRadial'].type = 'STRING'
+        obj_game.properties['startspeedRadial'].value = '1'
         
         ### particle endspeed
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'endspeed_mode'
-        bpy.context.object.game.properties['endspeed_mode'].type = 'STRING'
-        bpy.context.object.game.properties['endspeed_mode'].value = '0'
+        obj_game.properties['prop'].name = 'endspeed_mode'
+        obj_game.properties['endspeed_mode'].type = 'STRING'
+        obj_game.properties['endspeed_mode'].value = '0'
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'endspeed'
-        bpy.context.object.game.properties['endspeed'].type = 'FLOAT'
-        bpy.context.object.game.properties['endspeed'].value = 0.1
+        obj_game.properties['prop'].name = 'endspeed'
+        obj_game.properties['endspeed'].type = 'FLOAT'
+        obj_game.properties['endspeed'].value = 0.1
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'endspeedRadial'
-        bpy.context.object.game.properties['endspeedRadial'].type = 'STRING'
-        bpy.context.object.game.properties['endspeedRadial'].value = '1'
+        obj_game.properties['prop'].name = 'endspeedRadial'
+        obj_game.properties['endspeedRadial'].type = 'STRING'
+        obj_game.properties['endspeedRadial'].value = '1'
         
         ### particle random movemen
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'randomMovement'
-        bpy.context.object.game.properties['randomMovement'].type = 'FLOAT'
-        bpy.context.object.game.properties['randomMovement'].value = 0.0
+        obj_game.properties['prop'].name = 'randomMovement'
+        obj_game.properties['randomMovement'].type = 'FLOAT'
+        obj_game.properties['randomMovement'].value = 0.0
         
         ### particle startscale
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'startscale_x'
-        bpy.context.object.game.properties['startscale_x'].type = 'FLOAT'
-        bpy.context.object.game.properties['startscale_x'].value = 1.0
+        obj_game.properties['prop'].name = 'startscale_x'
+        obj_game.properties['startscale_x'].type = 'FLOAT'
+        obj_game.properties['startscale_x'].value = 1.0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'startscale_y'
-        bpy.context.object.game.properties['startscale_y'].type = 'FLOAT'
-        bpy.context.object.game.properties['startscale_y'].value = 1.0
+        obj_game.properties['prop'].name = 'startscale_y'
+        obj_game.properties['startscale_y'].type = 'FLOAT'
+        obj_game.properties['startscale_y'].value = 1.0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'startscale_z'
-        bpy.context.object.game.properties['startscale_z'].type = 'FLOAT'
-        bpy.context.object.game.properties['startscale_z'].value = 1.0
+        obj_game.properties['prop'].name = 'startscale_z'
+        obj_game.properties['startscale_z'].type = 'FLOAT'
+        obj_game.properties['startscale_z'].value = 1.0
         
         ### particle endscale
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'endscale_x'
-        bpy.context.object.game.properties['endscale_x'].type = 'FLOAT'
-        bpy.context.object.game.properties['endscale_x'].value = 0.0
+        obj_game.properties['prop'].name = 'endscale_x'
+        obj_game.properties['endscale_x'].type = 'FLOAT'
+        obj_game.properties['endscale_x'].value = 0.0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'endscale_y'
-        bpy.context.object.game.properties['endscale_y'].type = 'FLOAT'
-        bpy.context.object.game.properties['endscale_y'].value = 0.0
+        obj_game.properties['prop'].name = 'endscale_y'
+        obj_game.properties['endscale_y'].type = 'FLOAT'
+        obj_game.properties['endscale_y'].value = 0.0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'endscale_z'
-        bpy.context.object.game.properties['endscale_z'].type = 'FLOAT'
-        bpy.context.object.game.properties['endscale_z'].value = 0.0
+        obj_game.properties['prop'].name = 'endscale_z'
+        obj_game.properties['endscale_z'].type = 'FLOAT'
+        obj_game.properties['endscale_z'].value = 0.0
         
         ### particle randomscale
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'randomscale'
-        bpy.context.object.game.properties['randomscale'].type = 'FLOAT'
-        bpy.context.object.game.properties['randomscale'].value = 1.0
+        obj_game.properties['prop'].name = 'randomscale'
+        obj_game.properties['randomscale'].type = 'FLOAT'
+        obj_game.properties['randomscale'].value = 1.0
         
         ### particle scalefade_start
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'scalefade_start'
-        bpy.context.object.game.properties['scalefade_start'].type = 'INT'
-        bpy.context.object.game.properties['scalefade_start'].value = 1.0
+        obj_game.properties['prop'].name = 'scalefade_start'
+        obj_game.properties['scalefade_start'].type = 'INT'
+        obj_game.properties['scalefade_start'].value = 1.0
         
         ### particle scalefade_end
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'scalefade_end'
-        bpy.context.object.game.properties['scalefade_end'].type = 'INT'
-        bpy.context.object.game.properties['scalefade_end'].value = 1.0
+        obj_game.properties['prop'].name = 'scalefade_end'
+        obj_game.properties['scalefade_end'].type = 'INT'
+        obj_game.properties['scalefade_end'].value = 1.0
         
         ### particle speedfade_start
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'speedfade_start'
-        bpy.context.object.game.properties['speedfade_start'].type = 'INT'
-        bpy.context.object.game.properties['speedfade_start'].value = 1.0
+        obj_game.properties['prop'].name = 'speedfade_start'
+        obj_game.properties['speedfade_start'].type = 'INT'
+        obj_game.properties['speedfade_start'].value = 1.0
         
         ### particle speedfade_end
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'speedfade_end'
-        bpy.context.object.game.properties['speedfade_end'].type = 'INT'
-        bpy.context.object.game.properties['speedfade_end'].value = 1.0
+        obj_game.properties['prop'].name = 'speedfade_end'
+        obj_game.properties['speedfade_end'].type = 'INT'
+        obj_game.properties['speedfade_end'].value = 1.0
     
         ### particle cone emission
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'coneX'
-        bpy.context.object.game.properties['coneX'].type = 'FLOAT'
-        bpy.context.object.game.properties['coneX'].value = 0
+        obj_game.properties['prop'].name = 'coneX'
+        obj_game.properties['coneX'].type = 'FLOAT'
+        obj_game.properties['coneX'].value = 0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'coneY'
-        bpy.context.object.game.properties['coneY'].type = 'FLOAT'
-        bpy.context.object.game.properties['coneY'].value = 0
+        obj_game.properties['prop'].name = 'coneY'
+        obj_game.properties['coneY'].type = 'FLOAT'
+        obj_game.properties['coneY'].value = 0
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'coneZ'
-        bpy.context.object.game.properties['coneZ'].type = 'FLOAT'
-        bpy.context.object.game.properties['coneZ'].value = 0
+        obj_game.properties['prop'].name = 'coneZ'
+        obj_game.properties['coneZ'].type = 'FLOAT'
+        obj_game.properties['coneZ'].value = 0
         
         ### particle fade in/out
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'fadein'
-        bpy.context.object.game.properties['fadein'].type = 'INT'
-        bpy.context.object.game.properties['fadein'].value = 10
+        obj_game.properties['prop'].name = 'fadein'
+        obj_game.properties['fadein'].type = 'INT'
+        obj_game.properties['fadein'].value = 10
         
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'fadeout'
-        bpy.context.object.game.properties['fadeout'].type = 'INT'
-        bpy.context.object.game.properties['fadeout'].value = 30
+        obj_game.properties['prop'].name = 'fadeout'
+        obj_game.properties['fadeout'].type = 'INT'
+        obj_game.properties['fadeout'].value = 30
         
         ### particle rotation speed
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'rotation'
-        bpy.context.object.game.properties['rotation'].type = 'FLOAT'
-        bpy.context.object.game.properties['rotation'].value = 0
+        obj_game.properties['prop'].name = 'rotation'
+        obj_game.properties['rotation'].type = 'FLOAT'
+        obj_game.properties['rotation'].value = 0
         
         ### particle halo -> particle is facing to camera
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'halo'
-        bpy.context.object.game.properties['halo'].type = 'BOOL'
-        bpy.context.object.game.properties['halo'].value = 1
+        obj_game.properties['prop'].name = 'halo'
+        obj_game.properties['halo'].type = 'BOOL'
+        obj_game.properties['halo'].value = 1
         
         ### kill the emitter
         bpy.ops.object.game_property_new()
-        bpy.context.object.game.properties['prop'].name = 'kill'
-        bpy.context.object.game.properties['kill'].type = 'BOOL'
-        bpy.context.object.game.properties['kill'].value = 0       
+        obj_game.properties['prop'].name = 'kill'
+        obj_game.properties['kill'].type = 'BOOL'
+        obj_game.properties['kill'].value = 0       
         
     def execute(self, context):
         active_ob = bpy.context.active_object
@@ -423,6 +434,21 @@ class apply_values(bpy.types.Operator):
     bl_label = "Apply the values to the particle system"
     
     def execute(self, context):
+        bpy.ops.scene.update_particle_list()
+
+        try:      
+            bpy.context.object.game.properties['version'].value = '{0}.{1}'.format(
+            sssEmit.SSS_EMIT_MAJOR_VERSION,
+            sssEmit.SSS_EMIT_MINOR_VERSION)
+        except:
+            bpy.ops.object.game_property_new()
+            bpy.context.object.game.properties['prop'].name = 'version'
+            bpy.context.object.game.properties['version'].type = 'STRING'
+            bpy.context.object.game.properties['version'].value = '{0}.{1}'.format(
+                sssEmit.SSS_EMIT_MAJOR_VERSION,
+                sssEmit.SSS_EMIT_MINOR_VERSION)
+
+
         bpy.context.object.game.properties['culling'].value = bpy.context.object.frustumCulling
         bpy.context.object.game.properties['cullingRadius'].value = bpy.context.object.frustumRadius
         
