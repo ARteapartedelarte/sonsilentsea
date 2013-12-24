@@ -88,10 +88,6 @@ class sssEmit(bpy.types.Panel):
         update=update_values,
         description='Distance to the emmiter where it is considered viewable')
     
-    bpy.types.Object.localEmit = bpy.props.BoolProperty(default=True,
-        update=update_values,
-        description='Particle is emitted global or local')
-    
     bpy.types.Object.emitTime = bpy.props.IntProperty(name='',
         default=0,
         min=0,

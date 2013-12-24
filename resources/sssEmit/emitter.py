@@ -120,7 +120,6 @@ def emitter():
                                                 
                 obj['particlelist'].append(particle)
                 particle['scale'] = obj['scale'][randParticle]
-                particle['localEmit'] = obj['localEmit']
                 particle['coneX'] = (obj['coneX'])/2
                 particle['coneY'] = (obj['coneY'])/2
                 particle['coneZ'] = (obj['coneZ'])/2
@@ -175,16 +174,25 @@ def emitter():
                 startspeedRadial = eval(startspeedRadial)
                 endspeedRadial = eval(endspeedRadial)
                 particle['variablespeed'] = False
-                if (startspeedRadial != 1.0) or (endspeedRadial != 1.0):
+                if(    startspeedRadial != 1.0
+                    or endspeedRadial != 1.0
+                    or obj['randomMovement'] != 0.0):
                     particle['variablespeed'] = True
-                particle['startspeed'] = [0,0,startspeed*startspeedRadial]
+                dir_vec = obj.getAxisVect(mathutils.Vector((0.0,0.0,1.0)))
+                dir_vec.rotate(mathutils.Euler((
+                    random.uniform(-obj['randomMovement'],obj['randomMovement']),
+                    0.0,
+                    random.uniform(0,2*math.pi)),
+                    'XYZ'))
+                particle['startspeed'] = list(map(lambda x: x*startspeed*startspeedRadial, dir_vec))
                 particle['endspeed_mode'] = endspeed_mode
                 if(particle['endspeed_mode'] == 0):
-                    particle['endspeed'] = [0,0,endspeed*endspeedRadial]
+                    particle['endspeed'] = list(map(lambda x: x*endspeed*endspeedRadial, dir_vec))
                 else:
                     particle['endspeed'] = [0,0,endspeed]
                 particle['randomMovement'] = obj['randomMovement']
-                
+                particle['speed'] = particle['startspeed'][:]
+
                 particle['colorfade_start'] = obj['colorfade_start']
                 particle['colorfade_end'] = obj['colorfade_end']
                 particle['scalefade_start'] = obj['scalefade_start']
@@ -339,7 +347,7 @@ def particle_update(obj, particles_list, multiplier, emitter):
     else:
         obj['speed'] = emitter['speedCache'][int(obj['lifeticker'] / multiplier)]
         
-    obj.applyMovement(obj['speed'], obj['localEmit'])
+    obj.applyMovement(obj['speed'], False)
 
     ##Calculate scale
     if obj['lifeticker'] > emitter['scaleCacheProgress']:
@@ -375,7 +383,7 @@ def particle_update(obj, particles_list, multiplier, emitter):
     else:
         obj['child'].localScale = emitter['scaleCache'][int(obj['lifeticker'] / multiplier)]
         
-### Random movement
+    ### Random movement
     if obj['lifeticker']%30 == 0:
         obj['randRotX'] = random.uniform((obj['RotX']-obj['randomMovement']),(obj['RotX']+obj['randomMovement']))
         obj['randRotY'] = random.uniform((obj['RotY']-obj['randomMovement']),(obj['RotY']+obj['randomMovement']))
@@ -385,7 +393,7 @@ def particle_update(obj, particles_list, multiplier, emitter):
     obj['RotY'] = obj['RotY'] * 0.9 + obj['randRotY'] * 0.1
     obj['RotZ'] = obj['RotZ'] * 0.9 + obj['randRotZ'] * 0.1
 
-    obj.worldOrientation = mathutils.Euler((obj['RotX'],obj['RotY'],obj['RotZ']), 'XYZ')
+    # obj.worldOrientation = mathutils.Euler((obj['RotX'],obj['RotY'],obj['RotZ']), 'XYZ')
 
 ###Lifeticker
     obj['lifeticker'] += multiplier

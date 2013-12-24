@@ -119,12 +119,6 @@ class generate_particle_system(bpy.types.Operator):
         obj_game.properties['emitteron'].type = 'BOOL'
         obj_game.properties['emitteron'].value = True
         
-        ### particle local or global Emission
-        bpy.ops.object.game_property_new()
-        obj_game.properties['prop'].name = 'localEmit'
-        obj_game.properties['localEmit'].type = 'BOOL'
-        obj_game.properties['localEmit'].value = True
-        
         ### particle amount
         bpy.ops.object.game_property_new()
         obj_game.properties['prop'].name = 'amount'
@@ -510,8 +504,6 @@ class apply_values(bpy.types.Operator):
         bpy.context.object.game.properties['fadeout'].value = bpy.context.object.fadeout
         
         bpy.context.object.hide_render = bpy.context.object.emitterinvisible
-        
-        bpy.context.object.game.properties['localEmit'].value = bpy.context.object.localEmit
         
         bpy.context.object.game.properties['rotation'].value = bpy.context.object.particlerotation
         bpy.context.object.game.properties['halo'].value = bpy.context.object.halo
