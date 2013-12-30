@@ -178,12 +178,13 @@ def emitter():
                     or endspeedRadial != 1.0
                     or obj['randomMovement'] != 0.0):
                     particle['variablespeed'] = True
-                dir_vec = obj.getAxisVect(mathutils.Vector((0.0,0.0,1.0)))
+                dir_vec = mathutils.Vector((0.0,0.0,1.0))
                 dir_vec.rotate(mathutils.Euler((
                     random.uniform(-obj['randomMovement'],obj['randomMovement']),
                     0.0,
                     random.uniform(0,2*math.pi)),
                     'XYZ'))
+                dir_vec = obj.getAxisVect(dir_vec)
                 particle['startspeed'] = list(map(lambda x: x*startspeed*startspeedRadial, dir_vec))
                 particle['endspeed_mode'] = endspeed_mode
                 if(particle['endspeed_mode'] == 0):
