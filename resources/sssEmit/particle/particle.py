@@ -21,7 +21,29 @@
 import bpy
 import math
 import mathutils
-from os import path
 
 
+def updateValues():
+    """Update the particle values."""
+    pass
 
+
+def generateObjectProperties(update_callback):
+    """Generate the Blender object properties.
+
+    Position arguments:
+    update_callback -- Function that must be called when the object is
+    modified. It must be included into a bpy.types.Panel class.
+    """
+    pass
+
+
+def draw(context, layout):
+    """Draw the emitter stuff.
+
+    Position arguments:
+    context -- Calling context.
+    layout -- Window layout assigned for the emitter.
+    """
+    row = layout.row()
+    row.label("Particle settings", icon='GREASEPENCIL')

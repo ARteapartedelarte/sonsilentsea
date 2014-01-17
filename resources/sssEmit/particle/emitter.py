@@ -173,6 +173,9 @@ def draw(context, layout):
     layout -- Window layout assigned for the emitter.
     """
     row = layout.row()
+    row.label("Emitter settings", icon='GREASEPENCIL')
+
+    row = layout.row()
     row.prop(context.object,
              "frustrum_culling",
              text="Frustum based culling")

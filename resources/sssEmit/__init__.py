@@ -49,8 +49,10 @@ class sssEmit(bpy.types.Panel):
         """ Method called when data has been changed.
         """
         emitter.updateValues()
+        particle.updateValues()
 
     emitter.generateObjectProperties(updateValues)
+    particle.generateObjectProperties(updateValues)
 
     @classmethod
     def poll(cls, context):
@@ -70,10 +72,8 @@ class sssEmit(bpy.types.Panel):
                          text="Remove the emitter stuff from the object",
                          icon='CANCEL')
 
-            row = self.layout.row()
-            row.label("Emitter Settings", icon='GREASEPENCIL')
-
             emitter.draw(context, self.layout)
+            particle.draw(context, self.layout)
 
         else:
             row = self.layout.row()
