@@ -67,6 +67,8 @@ class sssEmit(bpy.types.Panel):
         sce = context.scene
 
         if obj.emitter is True:
+            emitter.draw(self.layout)
+
             row = self.layout.row()
             row.label("Emitter Settings", icon='GREASEPENCIL')
 
@@ -82,6 +84,11 @@ class sssEmit(bpy.types.Panel):
             row.prop(context.object,
                      "frustrum_radius",
                      text="Radius")
+
+            row = self.layout.row()
+            row.prop(context.object,
+                     "viewable",
+                     text="Visible emitter")
 
         else:
             row.operator("scene.create_emitter",

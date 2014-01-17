@@ -82,12 +82,14 @@ def generateProperties():
     """Ensure that the object has the required properties."""
     addProperty('culling', 'BOOL', True)
     addProperty('culling_radius', 'FLOAT', 0.0)
+    addProperty('show', 'BOOL', False)
 
 
 def removeProperties():
     """Remove the properties the object."""
     delProperty('culling')
     delProperty('culling_radius')
+    delProperty('show')
 
 
 def updateValues():
@@ -97,6 +99,7 @@ def updateValues():
     obj = bpy.context.object
     obj.game.properties['culling'].value = obj.frustrum_culling
     obj.game.properties['culling_radius'].value = obj.frustrum_radius
+    obj.game.properties['show'].value = obj.viewable
 
 
 def loadScript():
@@ -156,6 +159,10 @@ def generateObjectProperties(update_callback):
         update=update_callback,
         description='Distance to the emitter where it is considered'
         ' viewable')
+    bpy.types.Object.viewable = bpy.props.BoolProperty(
+        default=True,
+        update=update_callback,
+        description='Set the emitter viewable itself')
 
 
 class create_emitter(bpy.types.Operator):
