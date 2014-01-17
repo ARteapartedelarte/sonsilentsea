@@ -165,6 +165,27 @@ def generateObjectProperties(update_callback):
         description='Set the emitter viewable itself')
 
 
+def draw(context, layout):
+    """Draw the emitter stuff.
+
+    Position arguments:
+    context -- Calling context.
+    layout -- Window layout assigned for the emitter.
+    """
+    row = layout.row()
+    row.prop(context.object,
+             "frustrum_culling",
+             text="Frustum based culling")
+    row.prop(context.object,
+             "frustrum_radius",
+             text="Radius")
+
+    row = layout.row()
+    row.prop(context.object,
+             "viewable",
+             text="Visible emitter")
+
+
 class create_emitter(bpy.types.Operator):
     bl_idname = "scene.create_emitter"
     bl_label = "Transform into an emitter"

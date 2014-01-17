@@ -59,38 +59,24 @@ class sssEmit(bpy.types.Panel):
         return ob and ob.game and (rd.engine in cls.COMPAT_ENGINES)
 
     def draw(self, context):
-        col = self.layout.column()
-        row = self.layout.row()
-        split = self.layout.split()
-        scene = bpy.data.scenes[0]
+        self.layout.column()
+        self.layout.row()
+        self.layout.split()
         obj = context.object
-        sce = context.scene
 
         if obj.emitter is True:
-            emitter.draw(self.layout)
-
-            row = self.layout.row()
-            row.label("Emitter Settings", icon='GREASEPENCIL')
-
             row = self.layout.row()
             row.operator("object.remove_emitter",
                          text="Remove the emitter stuff from the object",
                          icon='CANCEL')
 
             row = self.layout.row()
-            row.prop(context.object,
-                     "frustrum_culling",
-                     text="Frustum based culling")
-            row.prop(context.object,
-                     "frustrum_radius",
-                     text="Radius")
+            row.label("Emitter Settings", icon='GREASEPENCIL')
 
-            row = self.layout.row()
-            row.prop(context.object,
-                     "viewable",
-                     text="Visible emitter")
+            emitter.draw(context, self.layout)
 
         else:
+            row = self.layout.row()
             row.operator("scene.create_emitter",
                          text="Transform into an emitter",
                          icon='PARTICLES')
