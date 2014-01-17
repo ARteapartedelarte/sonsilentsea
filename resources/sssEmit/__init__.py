@@ -50,20 +50,7 @@ class sssEmit(bpy.types.Panel):
         """
         emitter.updateValues()
 
-    bpy.types.Object.emitter = bpy.props.BoolProperty(default=False)
-    bpy.types.Object.draw_type_back = bpy.props.StringProperty()
-
-    bpy.types.Object.frustrum_culling = bpy.props.BoolProperty(
-        default=True,
-        update=updateValues,
-        description='Allows you to disable the Emitter automatically if it is'
-        ' not viewable (in the camera frustrum)')
-    bpy.types.Object.frustrum_radius = bpy.props.IntProperty(
-        default=4,
-        min=1,
-        update=updateValues,
-        description='Distance to the emitter where it is considered'
-        ' viewable')
+    emitter.generateObjectProperties(updateValues)
 
     @classmethod
     def poll(cls, context):

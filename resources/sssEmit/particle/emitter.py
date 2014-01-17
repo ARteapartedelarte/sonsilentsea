@@ -81,13 +81,13 @@ def delProperty(name):
 def generateProperties():
     """Ensure that the object has the required properties."""
     addProperty('culling', 'BOOL', True)
-    addProperty('cullingRadius', 'FLOAT', 0.0)
+    addProperty('culling_radius', 'FLOAT', 0.0)
 
 
 def removeProperties():
     """Remove the properties the object."""
     delProperty('culling')
-    delProperty('cullingRadius')
+    delProperty('culling_radius')
 
 
 def updateValues():
@@ -96,7 +96,7 @@ def updateValues():
 
     obj = bpy.context.object
     obj.game.properties['culling'].value = obj.frustrum_culling
-    obj.game.properties['cullingRadius'].value = obj.frustrum_radius
+    obj.game.properties['culling_radius'].value = obj.frustrum_radius
 
 
 def loadScript():
@@ -133,6 +133,23 @@ def loadScript():
                           filter_folder=True,
                           filemode=9,
                           internal=True)
+
+
+def generateObjectProperties(update_callback):
+    bpy.types.Object.emitter = bpy.props.BoolProperty(default=False)
+    bpy.types.Object.draw_type_back = bpy.props.StringProperty()
+
+    bpy.types.Object.frustrum_culling = bpy.props.BoolProperty(
+        default=True,
+        update=update_callback,
+        description=('Allows you to disable the Emitter automatically if it is'
+                     ' not viewable (in the camera frustrum)'))
+    bpy.types.Object.frustrum_radius = bpy.props.FloatProperty(
+        default=100.0,
+        min=0,
+        update=update_callback,
+        description='Distance to the emitter where it is considered'
+        ' viewable')
 
 
 class create_emitter(bpy.types.Operator):
