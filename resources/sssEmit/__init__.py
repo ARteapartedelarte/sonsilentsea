@@ -23,6 +23,7 @@ from bpy import types, props
 
 import math
 
+from sssEmit.particle import emitter
 from sssEmit.particle import particle
 
 
@@ -47,9 +48,9 @@ class sssEmit(bpy.types.Panel):
     def updateValues(self, context):
         """ Method called when data has been changed.
         """
-        particle.updateValues()
+        emitter.updateValues()
 
-    bpy.types.Object.emmiter = bpy.props.BoolProperty(default=False)
+    bpy.types.Object.emitter = bpy.props.BoolProperty(default=False)
     bpy.types.Object.draw_type_back = bpy.props.StringProperty()
 
     bpy.types.Object.frustrum_culling = bpy.props.BoolProperty(
@@ -61,7 +62,7 @@ class sssEmit(bpy.types.Panel):
         default=4,
         min=1,
         update=updateValues,
-        description='Distance to the emmiter where it is considered'
+        description='Distance to the emitter where it is considered'
         ' viewable')
 
     @classmethod
@@ -78,13 +79,13 @@ class sssEmit(bpy.types.Panel):
         obj = context.object
         sce = context.scene
 
-        if obj.emmiter is True:
+        if obj.emitter is True:
             row = self.layout.row()
             row.label("Emitter Settings", icon='GREASEPENCIL')
 
             row = self.layout.row()
-            row.operator("object.remove_emmiter",
-                         text="Remove the emmiter stuff from the object",
+            row.operator("object.remove_emitter",
+                         text="Remove the emitter stuff from the object",
                          icon='CANCEL')
 
             row = self.layout.row()
@@ -96,20 +97,20 @@ class sssEmit(bpy.types.Panel):
                      text="Radius")
 
         else:
-            row.operator("scene.create_emmiter",
-                         text="Transform into an emmiter",
+            row.operator("scene.create_emitter",
+                         text="Transform into an emitter",
                          icon='PARTICLES')
 
 
 def register():
-    bpy.utils.register_class(particle.create_emmiter)
-    bpy.utils.register_class(particle.remove_emmiter)
+    bpy.utils.register_class(emitter.create_emitter)
+    bpy.utils.register_class(emitter.remove_emitter)
     bpy.utils.register_class(sssEmit)
 
 
 def unregister():
-    bpy.utils.unregister_class(particle.create_emmiter)
-    bpy.utils.unregister_class(particle.remove_emmiter)
+    bpy.utils.unregister_class(emitter.create_emitter)
+    bpy.utils.unregister_class(emitter.remove_emitter)
     bpy.utils.unregister_class(sssEmit)
 
 if __name__ == "__main__":
