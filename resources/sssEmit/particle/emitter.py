@@ -136,14 +136,20 @@ def loadScript():
 
 
 def generateObjectProperties(update_callback):
+    """Generate the Blender object properties.
+
+    Position arguments:
+    update_callback -- Function that must be called when the object is
+    modified. It must be included into a bpy.types.Panel class.
+    """
     bpy.types.Object.emitter = bpy.props.BoolProperty(default=False)
     bpy.types.Object.draw_type_back = bpy.props.StringProperty()
 
     bpy.types.Object.frustrum_culling = bpy.props.BoolProperty(
         default=True,
         update=update_callback,
-        description=('Allows you to disable the Emitter automatically if it is'
-                     ' not viewable (in the camera frustrum)'))
+        description='Allows you to disable the Emitter automatically if it is'
+                     ' not viewable (in the camera frustrum)')
     bpy.types.Object.frustrum_radius = bpy.props.FloatProperty(
         default=100.0,
         min=0,
