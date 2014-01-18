@@ -24,7 +24,8 @@ import mathutils
 from os import path
 
 
-EMIT_POINT_ALTERNATIVES = ('CENTER', 'VERTEX', 'MESH')
+POINT_ALTERNATIVES = ('CENTER', 'VERTEX', 'MESH')
+DIR_ALTERNATIVES = ('Z', 'Y', 'X', 'z', 'y', 'x', 'NORMAL')
 
 
 def scriptPaths():
@@ -86,7 +87,9 @@ def generateProperties():
     addProperty('culling', 'BOOL', True)
     addProperty('culling_radius', 'FLOAT', 0.0)
     addProperty('show', 'BOOL', False)
-    addProperty('emit_point', 'STRING', EMIT_POINT_ALTERNATIVES[0])
+    addProperty('point', 'STRING', POINT_ALTERNATIVES[0])
+    addProperty('direction', 'STRING', DIR_ALTERNATIVES[0])
+    addProperty('rate', 'FLOAT', 30.0)
 
 
 def removeProperties():
@@ -94,7 +97,9 @@ def removeProperties():
     delProperty('culling')
     delProperty('culling_radius')
     delProperty('show')
-    delProperty('emit_point')
+    delProperty('point')
+    delProperty('direction')
+    delProperty('rate')
 
 def updateValues():
     """Update the particles emitter values."""
@@ -104,8 +109,9 @@ def updateValues():
     obj.game.properties['culling'].value = obj.frustrum_culling
     obj.game.properties['culling_radius'].value = obj.frustrum_radius
     obj.game.properties['show'].value = obj.viewable
-    obj.game.properties['emit_point'].value = EMIT_POINT_ALTERNATIVES[
-        int(obj.emit_point)]
+    obj.game.properties['point'].value = POINT_ALTERNATIVES[int(obj.point)]
+    obj.game.properties['direction'].value = DIR_ALTERNATIVES[int(obj.dir)]
+    obj.game.properties['rate'].value = obj.rate
 
 
 def loadScript():
@@ -170,15 +176,38 @@ def generateObjectProperties(update_callback):
         update=update_callback,
         description='Set the emitter viewable itself')
 
-    modes = [('0', 'Object center', '0'),
-             ('1', 'Random mesh vertex', '1'),
-             ('2', 'Random point in the mesh', '2')]
-    bpy.types.Object.emit_point = bpy.props.EnumProperty(
+    modes = [('0', 'Object center', ('The particles are generated in the'
+                                     ' center of the emitter object')),
+             ('1', 'Random mesh vertex', ('Each particle is generated in a'
+                                          'randomly selected mesh vertex')),
+             ('2', 'Random point in the mesh', ('Each particle is generated'
+                                                'in a randomly selected mesh'
+                                                ' point'))]
+    bpy.types.Object.point = bpy.props.EnumProperty(
         name="Particles generation point",
         items=modes,
         default='0',
         update=update_callback,
         description="Set the points where a particle can be generated")
+    modes = [('0', 'Global Z', 'Global Z direction'),
+             ('1', 'Global Y', 'Global Y direction'),
+             ('2', 'Global X', 'Global X direction'),
+             ('3', 'Local Z', 'Local Z direction'),
+             ('4', 'Local Y', 'Local Y direction'),
+             ('5', 'Local X', 'Local X direction'),
+             ('6', 'Mesh normal', ('Take the normal of the mesh in the'
+                                   ' generation point'))]
+    bpy.types.Object.dir = bpy.props.EnumProperty(
+        name="Particles generation direction",
+        items=modes,
+        default='0',
+        update=update_callback,
+        description="Set the direction for the generated particles")
+    bpy.types.Object.rate = bpy.props.FloatProperty(
+        default=30.0,
+        min=0,
+        update=update_callback,
+        description='Particle emission rate (Hz)')
 
 
 def draw(context, layout):
@@ -188,6 +217,8 @@ def draw(context, layout):
     context -- Calling context.
     layout -- Window layout assigned for the emitter.
     """
+    obj = bpy.context.object
+
     row = layout.row()
     row.label("Emitter settings", icon='GREASEPENCIL')
 
@@ -206,8 +237,16 @@ def draw(context, layout):
 
     row = layout.row()
     row.prop(context.object,
-             "emit_point",
+             "point",
              text="Emission point")
+    row = layout.row()
+    row.prop(context.object,
+             "dir",
+             text="Emission direction")
+    row = layout.row()
+    row.prop(context.object,
+             "rate",
+             text="Emission rate")
 
 
 class create_emitter(bpy.types.Operator):
