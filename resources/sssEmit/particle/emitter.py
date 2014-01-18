@@ -200,7 +200,7 @@ def generateObjectProperties(update_callback):
     bpy.types.Object.dir = bpy.props.EnumProperty(
         name="Particles generation direction",
         items=modes,
-        default='0',
+        default='3',
         update=update_callback,
         description="Set the direction for the generated particles")
     bpy.types.Object.rate = bpy.props.FloatProperty(
