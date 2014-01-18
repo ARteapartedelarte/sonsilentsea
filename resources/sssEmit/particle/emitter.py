@@ -1,27 +1,30 @@
-###############################################################################
-#                                                                             #
-#  This file is part of SonSilentSea, a free ships based combatr game.        #
-#  Copyright (C) 2014  Jose Luis Cercos Pita <jlcercos@gmail.com>             #
-#                                                                             #
-#  AQUAgpusph is free software: you can redistribute it and/or modify         #
-#  it under the terms of the GNU General Public License as published by       #
-#  the Free Software Foundation, either version 3 of the License, or          #
-#  (at your option) any later version.                                        #
-#                                                                             #
-#  AQUAgpusph is distributed in the hope that it will be useful,              #
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of             #
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              #
-#  GNU General Public License for more details.                               #
-#                                                                             #
-#  You should have received a copy of the GNU General Public License          #
-#  along with AQUAgpusph.  If not, see <http://www.gnu.org/licenses/>.        #
-#                                                                             #
-###############################################################################
+##############################################################################
+#                                                                            #
+#  This file is part of SonSilentSea, a free ships based combatr game.       #
+#  Copyright (C) 2014  Jose Luis Cercos Pita <jlcercos@gmail.com>            #
+#                                                                            #
+#  AQUAgpusph is free software: you can redistribute it and/or modify        #
+#  it under the terms of the GNU General Public License as published by      #
+#  the Free Software Foundation, either version 3 of the License, or         #
+#  (at your option) any later version.                                       #
+#                                                                            #
+#  AQUAgpusph is distributed in the hope that it will be useful,             #
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+#  GNU General Public License for more details.                              #
+#                                                                            #
+#  You should have received a copy of the GNU General Public License         #
+#  along with AQUAgpusph.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                            #
+##############################################################################
 
 import bpy
 import math
 import mathutils
 from os import path
+
+
+EMIT_POINT_ALTERNATIVES = ('CENTER', 'VERTEX', 'MESH')
 
 
 def scriptPaths():
@@ -83,6 +86,7 @@ def generateProperties():
     addProperty('culling', 'BOOL', True)
     addProperty('culling_radius', 'FLOAT', 0.0)
     addProperty('show', 'BOOL', False)
+    addProperty('emit_point', 'STRING', EMIT_POINT_ALTERNATIVES[0])
 
 
 def removeProperties():
@@ -90,7 +94,7 @@ def removeProperties():
     delProperty('culling')
     delProperty('culling_radius')
     delProperty('show')
-
+    delProperty('emit_point')
 
 def updateValues():
     """Update the particles emitter values."""
@@ -100,6 +104,8 @@ def updateValues():
     obj.game.properties['culling'].value = obj.frustrum_culling
     obj.game.properties['culling_radius'].value = obj.frustrum_radius
     obj.game.properties['show'].value = obj.viewable
+    obj.game.properties['emit_point'].value = EMIT_POINT_ALTERNATIVES[
+        int(obj.emit_point)]
 
 
 def loadScript():
@@ -164,6 +170,16 @@ def generateObjectProperties(update_callback):
         update=update_callback,
         description='Set the emitter viewable itself')
 
+    modes = [('0', 'Object center', '0'),
+             ('1', 'Random mesh vertex', '1'),
+             ('2', 'Random point in the mesh', '2')]
+    bpy.types.Object.emit_point = bpy.props.EnumProperty(
+        name="Particles generation point",
+        items=modes,
+        default='0',
+        update=update_callback,
+        description="Set the points where a particle can be generated")
+
 
 def draw(context, layout):
     """Draw the emitter stuff.
@@ -187,6 +203,11 @@ def draw(context, layout):
     row.prop(context.object,
              "viewable",
              text="Visible emitter")
+
+    row = layout.row()
+    row.prop(context.object,
+             "emit_point",
+             text="Emission point")
 
 
 class create_emitter(bpy.types.Operator):
