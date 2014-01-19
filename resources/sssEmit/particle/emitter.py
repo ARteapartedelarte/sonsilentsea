@@ -127,6 +127,8 @@ def generateProperties():
     addProperty('point', 'STRING', POINT_ALTERNATIVES[0])
     addProperty('direction', 'STRING', DIR_ALTERNATIVES[0])
     addProperty('direction_var', 'FLOAT', 0.0)
+    addProperty('velocity', 'FLOAT', 0.0)
+    addProperty('velocity_var', 'FLOAT', 0.0)
 
 
 def removeProperties():
@@ -138,6 +140,8 @@ def removeProperties():
     delProperty('point')
     delProperty('direction')
     delProperty('direction_var')
+    delProperty('velocity')
+    delProperty('velocity_var')
 
 
 def updateValues():
@@ -175,6 +179,8 @@ def updateValues():
         description=bpy.types.Object.dir[1]['description'])
     obj.game.properties['direction'].value = DIR_ALTERNATIVES[int(obj.dir)]
     obj.game.properties['direction_var'].value = math.radians(obj.dir_var)
+    obj.game.properties['velocity'].value = obj.vel
+    obj.game.properties['velocity_var'].value = obj.vel_var
 
 
 def generateObjectProperties(update_callback):
@@ -244,6 +250,15 @@ def generateObjectProperties(update_callback):
         min=0.0,
         update=update_callback,
         description='Direction random variation')
+    bpy.types.Object.vel = bpy.props.FloatProperty(
+        default=0.0,
+        update=update_callback,
+        description='Initial velocity')
+    bpy.types.Object.vel_var = bpy.props.FloatProperty(
+        default=0.0,
+        min=0.0,
+        update=update_callback,
+        description='Initial velocity random variation')
 
 
 def draw(context, layout):
@@ -277,19 +292,35 @@ def draw(context, layout):
              text="Emission rate")
 
     row = layout.row()
+    row.label(text="Emission point:")
+    row = layout.row()
     row.prop(context.object,
              "point",
-             text="Emission point")
+             text="")
+
+    row = layout.row()
+    row.label(text="Emission direction:")
     row = layout.row()
     row.prop(context.object,
              "dir",
-             text="Emission direction")
-    row = layout.row()
+             text="")
     row.label(text="+-")
     row.prop(context.object,
              "dir_var",
              text="")
     row.label(text="degrees")
+
+    row = layout.row()
+    row.label(text="Initial velocity:")
+    row = layout.row()
+    row.prop(context.object,
+             "vel",
+             text="")
+    row.label(text="+-")
+    row.prop(context.object,
+             "vel_var",
+             text="")
+    row.label(text="m/s")
 
 
 class create_emitter(bpy.types.Operator):
