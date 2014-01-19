@@ -50,6 +50,42 @@ def addonsPaths():
     return paths
 
 
+def loadScript():
+    """Load/update the text script in text editor."""
+    filepath = None
+    for folder in addonsPaths():
+        f = path.join(folder, "sssEmit/emitter.py")
+        if not path.isfile(f):
+            continue
+        filepath = f
+        break
+    if not filepath:
+        raise Exception('I can not find the script file "emitter.py"')
+
+    # We can try to update it, and if the operation fails is just because the
+    # file has not been loaded yet
+    try:
+        text = bpy.data.texts['emitter.py']
+        text.clear()
+        f = open(filepath, 'r')
+        text.write(f.read())
+        f.close()
+    except:
+        bpy.ops.text.open(filepath=filepath,
+                          filter_blender=False,
+                          filter_image=False,
+                          filter_movie=False,
+                          filter_python=True,
+                          filter_font=False,
+                          filter_sound=False,
+                          filter_text=True,
+                          filter_btx=False,
+                          filter_collada=False,
+                          filter_folder=True,
+                          filemode=9,
+                          internal=True)
+
+
 def addProperty(name, type_id, value):
     """Test if a property exist in the object, adding it otherwise.
 
@@ -87,9 +123,10 @@ def generateProperties():
     addProperty('culling', 'BOOL', True)
     addProperty('culling_radius', 'FLOAT', 0.0)
     addProperty('show', 'BOOL', False)
+    addProperty('rate', 'FLOAT', 30.0)
     addProperty('point', 'STRING', POINT_ALTERNATIVES[0])
     addProperty('direction', 'STRING', DIR_ALTERNATIVES[0])
-    addProperty('rate', 'FLOAT', 30.0)
+    addProperty('direction_var', 'FLOAT', 0.0)
 
 
 def removeProperties():
@@ -97,9 +134,11 @@ def removeProperties():
     delProperty('culling')
     delProperty('culling_radius')
     delProperty('show')
+    delProperty('rate')
     delProperty('point')
     delProperty('direction')
-    delProperty('rate')
+    delProperty('direction_var')
+
 
 def updateValues():
     """Update the particles emitter values."""
@@ -109,6 +148,9 @@ def updateValues():
     obj.game.properties['culling'].value = obj.frustrum_culling
     obj.game.properties['culling_radius'].value = obj.frustrum_radius
     obj.game.properties['show'].value = obj.viewable
+
+    obj.game.properties['rate'].value = obj.rate
+
     obj.game.properties['point'].value = POINT_ALTERNATIVES[int(obj.point)]
     # We must modify the direction alternatives depending on the selected
     # generation point, due to the mesh normal option will be available if
@@ -124,7 +166,7 @@ def updateValues():
     if int(obj.point) == 0:
         modes = modes[:-1]
     if int(obj.dir) >= len(modes):
-        obj.dir = str(3) # Default option
+        obj.dir = str(3)  # Default option
     bpy.types.Object.dir = bpy.props.EnumProperty(
         name=bpy.types.Object.dir[1]['name'],
         items=modes,
@@ -132,43 +174,7 @@ def updateValues():
         update=bpy.types.Object.dir[1]['update'],
         description=bpy.types.Object.dir[1]['description'])
     obj.game.properties['direction'].value = DIR_ALTERNATIVES[int(obj.dir)]
-    obj.game.properties['rate'].value = obj.rate
-
-
-def loadScript():
-    """Load/update the text script in text editor."""
-    filepath = None
-    for folder in addonsPaths():
-        f = path.join(folder, "sssEmit/emitter.py")
-        if not path.isfile(f):
-            continue
-        filepath = f
-        break
-    if not filepath:
-        raise Exception('I can not find the script file "emitter.py"')
-
-    # We can try to update it, and if the operation fails is just because the
-    # file has not been loaded yet
-    try:
-        text = bpy.data.texts['emitter.py']
-        text.clear()
-        f = open(filepath, 'r')
-        text.write(f.read())
-        f.close()
-    except:
-        bpy.ops.text.open(filepath=filepath,
-                          filter_blender=False,
-                          filter_image=False,
-                          filter_movie=False,
-                          filter_python=True,
-                          filter_font=False,
-                          filter_sound=False,
-                          filter_text=True,
-                          filter_btx=False,
-                          filter_collada=False,
-                          filter_folder=True,
-                          filemode=9,
-                          internal=True)
+    obj.game.properties['direction_var'].value = math.radians(obj.dir_var)
 
 
 def generateObjectProperties(update_callback):
@@ -184,8 +190,8 @@ def generateObjectProperties(update_callback):
     bpy.types.Object.frustrum_culling = bpy.props.BoolProperty(
         default=True,
         update=update_callback,
-        description='Allows you to disable the Emitter automatically if it is'
-                     ' not viewable (in the camera frustrum)')
+        description=('Allows you to disable the Emitter automatically if it'
+                     ' is not viewable (in the camera frustrum)'))
     bpy.types.Object.frustrum_radius = bpy.props.FloatProperty(
         default=100.0,
         min=0,
@@ -193,9 +199,15 @@ def generateObjectProperties(update_callback):
         description='Distance to the emitter where it is considered'
         ' viewable')
     bpy.types.Object.viewable = bpy.props.BoolProperty(
-        default=True,
+        default=False,
         update=update_callback,
         description='Set the emitter viewable itself')
+
+    bpy.types.Object.rate = bpy.props.FloatProperty(
+        default=30.0,
+        min=0.0,
+        update=update_callback,
+        description='Particle emission rate (Hz)')
 
     modes = [('0', 'Object center', ('The particles are generated in the'
                                      ' center of the emitter object')),
@@ -227,11 +239,11 @@ def generateObjectProperties(update_callback):
         default='3',
         update=update_callback,
         description="Set the direction for the generated particles")
-    bpy.types.Object.rate = bpy.props.FloatProperty(
-        default=30.0,
-        min=0,
+    bpy.types.Object.dir_var = bpy.props.FloatProperty(
+        default=0.0,
+        min=0.0,
         update=update_callback,
-        description='Particle emission rate (Hz)')
+        description='Direction random variation')
 
 
 def draw(context, layout):
@@ -261,6 +273,11 @@ def draw(context, layout):
 
     row = layout.row()
     row.prop(context.object,
+             "rate",
+             text="Emission rate")
+
+    row = layout.row()
+    row.prop(context.object,
              "point",
              text="Emission point")
     row = layout.row()
@@ -268,9 +285,11 @@ def draw(context, layout):
              "dir",
              text="Emission direction")
     row = layout.row()
+    row.label(text="+-")
     row.prop(context.object,
-             "rate",
-             text="Emission rate")
+             "dir_var",
+             text="")
+    row.label(text="degrees")
 
 
 class create_emitter(bpy.types.Operator):
