@@ -110,6 +110,27 @@ def updateValues():
     obj.game.properties['culling_radius'].value = obj.frustrum_radius
     obj.game.properties['show'].value = obj.viewable
     obj.game.properties['point'].value = POINT_ALTERNATIVES[int(obj.point)]
+    # We must modify the direction alternatives depending on the selected
+    # generation point, due to the mesh normal option will be available if
+    # the object center is not selected
+    modes = [('0', 'Global Z', 'Global Z direction'),
+             ('1', 'Global Y', 'Global Y direction'),
+             ('2', 'Global X', 'Global X direction'),
+             ('3', 'Local Z', 'Local Z direction'),
+             ('4', 'Local Y', 'Local Y direction'),
+             ('5', 'Local X', 'Local X direction'),
+             ('6', 'Mesh normal', ('Take the normal of the mesh in the'
+                                   ' generation point'))]
+    if int(obj.point) == 0:
+        modes = modes[:-1]
+    if int(obj.dir) >= len(modes):
+        obj.dir = str(3) # Default option
+    bpy.types.Object.dir = bpy.props.EnumProperty(
+        name=bpy.types.Object.dir[1]['name'],
+        items=modes,
+        default=obj.dir,
+        update=bpy.types.Object.dir[1]['update'],
+        description=bpy.types.Object.dir[1]['description'])
     obj.game.properties['direction'].value = DIR_ALTERNATIVES[int(obj.dir)]
     obj.game.properties['rate'].value = obj.rate
 
@@ -197,6 +218,9 @@ def generateObjectProperties(update_callback):
              ('5', 'Local X', 'Local X direction'),
              ('6', 'Mesh normal', ('Take the normal of the mesh in the'
                                    ' generation point'))]
+    # Since the default option is the object center emission, mesh normal
+    # option should not be available
+    modes = modes[:-1]
     bpy.types.Object.dir = bpy.props.EnumProperty(
         name="Particles generation direction",
         items=modes,
