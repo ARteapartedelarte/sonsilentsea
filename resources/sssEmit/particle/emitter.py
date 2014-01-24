@@ -123,6 +123,8 @@ def generateProperties():
     """Ensure that the object has the required properties."""
     addProperty('culling', 'BOOL', True)
     addProperty('culling_radius', 'FLOAT', 0.0)
+    addProperty('is_lifetime', 'BOOL', False)
+    addProperty('lifetime', 'FLOAT', 0.0)
     addProperty('rate', 'FLOAT', 30.0)
     addProperty('point', 'STRING', POINT_ALTERNATIVES[0])
     addProperty('direction', 'STRING', DIR_ALTERNATIVES[0])
@@ -136,7 +138,9 @@ def removeProperties():
     """Remove the properties the object."""
     delProperty('culling')
     delProperty('culling_radius')
-    delProperty('show')
+    delProperty('is_lifetime')
+    delProperty('lifetime')
+    delProperty('rate')
     delProperty('point')
     delProperty('direction')
     delProperty('direction_var')
@@ -153,6 +157,8 @@ def updateValues():
     obj.game.properties['culling'].value = obj.frustrum_culling
     obj.game.properties['culling_radius'].value = obj.frustrum_radius
 
+    obj.game.properties['is_lifetime'].value = obj.is_lifetime
+    obj.game.properties['lifetime'].value = obj.lifetime
     obj.game.properties['rate'].value = obj.rate
 
     obj.game.properties['point'].value = POINT_ALTERNATIVES[int(obj.point)]
@@ -204,6 +210,17 @@ def generateObjectProperties(update_callback):
         update=update_callback,
         description='Distance to the emitter where it is considered'
         ' viewable')
+
+    bpy.types.Object.is_lifetime = bpy.props.BoolProperty(
+        default=False,
+        update=update_callback,
+        description='Should be the emitter destroyed after some time?')
+    bpy.types.Object.lifetime = bpy.props.FloatProperty(
+        default=0.0,
+        min=0.0,
+        update=update_callback,
+        description='Particles emission time (after this time the object will'
+        ' be removed from the escene).')
 
     bpy.types.Object.rate = bpy.props.FloatProperty(
         default=30.0,
@@ -276,6 +293,15 @@ def draw(context, layout):
     row.prop(context.object,
              "frustrum_radius",
              text="Radius")
+
+    row = layout.row()
+    row.prop(context.object,
+             "is_lifetime",
+             text="Emitter lifetime")
+    if(obj.is_lifetime):
+        row.prop(context.object,
+                 "lifetime",
+                 text="")
 
     row = layout.row()
     row.prop(context.object,
