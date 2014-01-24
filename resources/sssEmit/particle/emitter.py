@@ -123,7 +123,6 @@ def generateProperties():
     """Ensure that the object has the required properties."""
     addProperty('culling', 'BOOL', True)
     addProperty('culling_radius', 'FLOAT', 0.0)
-    addProperty('show', 'BOOL', False)
     addProperty('rate', 'FLOAT', 30.0)
     addProperty('point', 'STRING', POINT_ALTERNATIVES[0])
     addProperty('direction', 'STRING', DIR_ALTERNATIVES[0])
@@ -138,7 +137,6 @@ def removeProperties():
     delProperty('culling')
     delProperty('culling_radius')
     delProperty('show')
-    delProperty('rate')
     delProperty('point')
     delProperty('direction')
     delProperty('direction_var')
@@ -154,7 +152,6 @@ def updateValues():
     obj = bpy.context.object
     obj.game.properties['culling'].value = obj.frustrum_culling
     obj.game.properties['culling_radius'].value = obj.frustrum_radius
-    obj.game.properties['show'].value = obj.viewable
 
     obj.game.properties['rate'].value = obj.rate
 
@@ -207,10 +204,6 @@ def generateObjectProperties(update_callback):
         update=update_callback,
         description='Distance to the emitter where it is considered'
         ' viewable')
-    bpy.types.Object.viewable = bpy.props.BoolProperty(
-        default=False,
-        update=update_callback,
-        description='Set the emitter viewable itself')
 
     bpy.types.Object.rate = bpy.props.FloatProperty(
         default=30.0,
@@ -286,11 +279,6 @@ def draw(context, layout):
 
     row = layout.row()
     row.prop(context.object,
-             "viewable",
-             text="Visible emitter")
-
-    row = layout.row()
-    row.prop(context.object,
              "rate",
              text="Emission rate")
 
@@ -335,21 +323,21 @@ class create_emitter(bpy.types.Operator):
         obj = bpy.context.object
         bpy.context.active_object.draw_type = 'WIRE'
         # Only at start execution
-        bpy.ops.logic.sensor_add(type='ALWAYS', name="", object="")
-        obj.game.sensors['Always'].frequency = 0
-        obj.game.sensors['Always'].use_pulse_true_level = False
-        bpy.ops.logic.controller_add(type='PYTHON', name="", object="")
-        obj.game.controllers['Python'].mode = 'MODULE'
-        obj.game.controllers['Python'].module = 'emitter.load'
-        obj.game.controllers['Python'].link(obj.game.sensors['Always'])
+        bpy.ops.logic.sensor_add(type='ALWAYS', name="sssEmit.init", object="")
+        obj.game.sensors['sssEmit.init'].frequency = 0
+        obj.game.sensors['sssEmit.init'].use_pulse_true_level = False
+        bpy.ops.logic.controller_add(type='PYTHON', name="sssEmit.init", object="")
+        obj.game.controllers['sssEmit.init'].mode = 'MODULE'
+        obj.game.controllers['sssEmit.init'].module = 'emitter.load'
+        obj.game.controllers['sssEmit.init'].link(obj.game.sensors['sssEmit.init'])
         # Per frame executing
-        bpy.ops.logic.sensor_add(type='ALWAYS', name="", object="")
-        obj.game.sensors['Always'].frequency = 0
-        obj.game.sensors['Always'].use_pulse_true_level = True
-        bpy.ops.logic.controller_add(type='PYTHON', name="", object="")
-        obj.game.controllers['Python'].mode = 'MODULE'
-        obj.game.controllers['Python'].module = 'emitter.update'
-        obj.game.controllers['Python'].link(obj.game.sensors['Always'])
+        bpy.ops.logic.sensor_add(type='ALWAYS', name="sssEmit.update", object="")
+        obj.game.sensors['sssEmit.update'].frequency = 0
+        obj.game.sensors['sssEmit.update'].use_pulse_true_level = True
+        bpy.ops.logic.controller_add(type='PYTHON', name="sssEmit.update", object="")
+        obj.game.controllers['sssEmit.update'].mode = 'MODULE'
+        obj.game.controllers['sssEmit.update'].module = 'emitter.update'
+        obj.game.controllers['sssEmit.update'].link(obj.game.sensors['sssEmit.update'])
 
         # Add a controller to reference the script (but never used). It is
         # useful if the object will be imported from other blender file,
