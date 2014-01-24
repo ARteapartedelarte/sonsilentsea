@@ -22,6 +22,7 @@ import bpy
 import math
 import mathutils
 from os import path
+from . import particle
 
 
 POINT_ALTERNATIVES = ('CENTER', 'VERTEX', 'MESH')
@@ -129,6 +130,7 @@ def generateProperties():
     addProperty('direction_var', 'FLOAT', 0.0)
     addProperty('velocity', 'FLOAT', 0.0)
     addProperty('velocity_var', 'FLOAT', 0.0)
+    addProperty('particle', 'STRING', '')
 
 
 def removeProperties():
@@ -142,6 +144,7 @@ def removeProperties():
     delProperty('direction_var')
     delProperty('velocity')
     delProperty('velocity_var')
+    delProperty('particle')
 
 
 def updateValues():
@@ -371,6 +374,9 @@ class create_emitter(bpy.types.Operator):
         bpy.context.scene.objects.active = obj
         bpy.context.scene.objects[obj.name].select = True
 
+        part_name = particle.create_particle()
+        obj.game.properties['particle'].value = part_name
+
         return{'FINISHED'}
 
 
@@ -390,6 +396,8 @@ class remove_emitter(bpy.types.Operator):
 
     def execute(self, context):
         obj = bpy.context.active_object
+
+        particle.remove_particle()
 
         obj.emitter = False
         obj.draw_type = obj.draw_type_back
