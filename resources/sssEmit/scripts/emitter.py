@@ -226,8 +226,6 @@ def update():
     """Method called each frame while the emitter exist"""
     cont = g.getCurrentController()
     obj = cont.owner
-    scene = bge.logic.getCurrentScene()
-    cam = scene.active_camera
 
     # Targeted number of particles and remaining ones to achieve it
     dt = 1.0/g.getLogicTicRate()

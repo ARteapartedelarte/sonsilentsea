@@ -21,11 +21,148 @@
 import bpy
 import math
 import mathutils
+from os import path
+
+
+def scriptPaths():
+    """Return all the possible locations for the scripts."""
+    paths = bpy.utils.script_paths(check_all=True)
+    paths.append(path.join(bpy.utils.resource_path('USER'), 'scripts'))
+    paths.append(path.join(bpy.utils.resource_path('LOCAL'), 'scripts'))
+    paths.append(path.join(bpy.utils.resource_path('SYSTEM'), 'scripts'))
+    return paths
+
+
+def addonsPaths():
+    """ Return all the possible locations for the addons """
+    paths = []
+    for folder in scriptPaths():
+        f = path.join(folder, 'addons')
+        if path.isdir(f):
+            paths.append(f)
+        f = path.join(folder, 'addons_extern')
+        if path.isdir(f):
+            paths.append(f)
+    return paths
+
+
+def loadScript():
+    """Load/update the text script in text editor."""
+    filepath = None
+    for folder in addonsPaths():
+        f = path.join(folder, "sssEmit/scripts/particle.py")
+        if not path.isfile(f):
+            continue
+        filepath = f
+        break
+    if not filepath:
+        raise Exception('I can not find the script file "particle.py"')
+
+    # We can try to update it, and if the operation fails is just because the
+    # file has not been loaded yet
+    try:
+        text = bpy.data.texts['particle.py']
+        text.clear()
+        f = open(filepath, 'r')
+        text.write(f.read())
+        f.close()
+    except:
+        bpy.ops.text.open(filepath=filepath,
+                          filter_blender=False,
+                          filter_image=False,
+                          filter_movie=False,
+                          filter_python=True,
+                          filter_font=False,
+                          filter_sound=False,
+                          filter_text=True,
+                          filter_btx=False,
+                          filter_collada=False,
+                          filter_folder=True,
+                          filemode=9,
+                          internal=True)
+
+
+def getParticle():
+    """Get the particle object"""
+    name = bpy.context.active_object.game.properties['particle'].value
+    return bpy.context.scene.objects[name]
+
+
+def addProperty(name, type_id, value, obj=None):
+    """Test if a property exist in the object, adding it otherwise.
+
+    Keyword arguments:
+    name -- Property name
+    type_id -- Type of property
+    value -- Property value
+    """
+    if obj is None:
+        obj = getParticle()
+
+    # We must select the object before
+    obj_backup = bpy.context.active_object
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.context.scene.objects.active = obj
+    obj.select = True
+
+    if not name in obj.game.properties.keys():
+        bpy.ops.object.game_property_new()
+        obj.game.properties['prop'].name = name
+        obj.game.properties[name].type = type_id
+        obj.game.properties[name].value = value
+
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.context.scene.objects.active = obj_backup
+    obj_backup.select = True
+
+
+def delProperty(name, obj=None):
+    """Remove a property from the object if it exist.
+
+    Keyword arguments:
+    name -- Property name
+    """
+    if obj is None:
+        obj = getParticle()
+    if not name in obj.game.properties.keys():
+        return
+
+    # We must select the object before
+    obj_backup = bpy.context.active_object
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.context.scene.objects.active = obj
+    obj.select = True
+
+    for i, p in enumerate(obj.game.properties):
+        if p.name == name:
+            bpy.ops.object.game_property_remove(i)
+            break
+
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.context.scene.objects.active = obj_backup
+    obj_backup.select = True
+
+
+def generateProperties(obj=None):
+    """Ensure that the object has the required properties."""
+    if obj is None:
+        obj = getParticle()
+    addProperty('billboard', 'BOOL', True, obj)
+
+
+def removeProperties(obj=None):
+    """Remove the properties the object."""
+    if obj is None:
+        obj = getParticle()
+    delProperty('billboard')
 
 
 def updateValues():
-    """Update the particle values."""
-    pass
+    """Update the particles emitter values."""
+    generateProperties()
+
+    obj = getParticle()
+    obj.game.properties['billboard'].value = obj.billboard
 
 
 def generateObjectProperties(update_callback):
@@ -35,7 +172,11 @@ def generateObjectProperties(update_callback):
     update_callback -- Function that must be called when the object is
     modified. It must be included into a bpy.types.Panel class.
     """
-    pass
+    bpy.types.Object.billboard = bpy.props.BoolProperty(
+        default=True,
+        update=update_callback,
+        description=('Set the orientation of the particle such that it will'
+                     ' look at the camera all the time'))
 
 
 def draw(context, layout):
@@ -47,6 +188,49 @@ def draw(context, layout):
     """
     row = layout.row()
     row.label("Particle settings", icon='GREASEPENCIL')
+
+    row = layout.row()
+    row.prop(context.object,
+             "billboard",
+             text="Billboard")
+
+
+def createLogic(obj=None):
+    if obj is None:
+        obj = getParticle()
+
+    # One time execution
+    bpy.ops.logic.sensor_add(type='ALWAYS', name="sssParticle.init", object=obj.name)
+    obj.game.sensors[-1].frequency = 0
+    obj.game.sensors[-1].use_pulse_true_level = False
+    bpy.ops.logic.controller_add(type='PYTHON', name="sssParticle.pyinit", object=obj.name)
+    obj.game.controllers[-1].mode = 'MODULE'
+    obj.game.controllers[-1].module = 'particle.load'
+    obj.game.controllers[-1].link(obj.game.sensors[-1])
+    # Per frame executing
+    bpy.ops.logic.sensor_add(type='ALWAYS', name="sssParticle.update", object=obj.name)
+    obj.game.sensors[-1].frequency = 0
+    obj.game.sensors[-1].use_pulse_true_level = True
+    bpy.ops.logic.controller_add(type='PYTHON', name="sssParticle.pyupdate", object=obj.name)
+    obj.game.controllers[-1].mode = 'MODULE'
+    obj.game.controllers[-1].module = 'particle.update'
+    obj.game.controllers[-1].link(obj.game.sensors[-1])
+
+    # Add a controller to reference the script (but never used). It is
+    # useful if the object will be imported from other blender file,
+    # inserting the script in the importer scene
+    bpy.ops.logic.controller_add(type='PYTHON',
+                                 name="sssParticle.reference",
+                                 object=obj.name)
+    text = None
+    for t in bpy.data.texts:
+        if t.name == 'particle.py':
+            text = t
+            break
+    if text is None:
+        raise Exception('The script "particle.py is not loaded"')
+    obj.game.controllers[-1].mode = 'SCRIPT'
+    obj.game.controllers[-1].text = text
 
 
 def create_particle():
@@ -63,6 +247,10 @@ def create_particle():
     bpy.context.scene.objects[obj_backup.name].select = True
 
     obj.name = basename + ".sssemit_particle"
+
+    generateProperties(obj)
+    loadScript()
+    createLogic(obj)
 
     return obj.name
 
@@ -88,8 +276,3 @@ def remove_particle():
     bpy.context.scene.objects.active = obj_backup
     obj_backup.select = True
     bpy.context.scene.layers = layers
-    
-
-    
-
-

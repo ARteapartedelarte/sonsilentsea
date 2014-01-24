@@ -350,26 +350,26 @@ class create_emitter(bpy.types.Operator):
         bpy.context.active_object.draw_type = 'WIRE'
         # One time execution
         bpy.ops.logic.sensor_add(type='ALWAYS', name="sssEmit.init", object="")
-        obj.game.sensors['sssEmit.init'].frequency = 0
-        obj.game.sensors['sssEmit.init'].use_pulse_true_level = False
+        obj.game.sensors[-1].frequency = 0
+        obj.game.sensors[-1].use_pulse_true_level = False
         bpy.ops.logic.controller_add(type='PYTHON', name="sssEmit.pyinit", object="")
-        obj.game.controllers['sssEmit.pyinit'].mode = 'MODULE'
-        obj.game.controllers['sssEmit.pyinit'].module = 'emitter.load'
-        obj.game.controllers['sssEmit.pyinit'].link(obj.game.sensors['sssEmit.init'])
+        obj.game.controllers[-1].mode = 'MODULE'
+        obj.game.controllers[-1].module = 'emitter.load'
+        obj.game.controllers[-1].link(obj.game.sensors[-1])
         # Per frame executing
         bpy.ops.logic.sensor_add(type='ALWAYS', name="sssEmit.update", object="")
-        obj.game.sensors['sssEmit.update'].frequency = 0
-        obj.game.sensors['sssEmit.update'].use_pulse_true_level = True
+        obj.game.sensors[-1].frequency = 0
+        obj.game.sensors[-1].use_pulse_true_level = True
         bpy.ops.logic.controller_add(type='PYTHON', name="sssEmit.pyupdate", object="")
-        obj.game.controllers['sssEmit.pyupdate'].mode = 'MODULE'
-        obj.game.controllers['sssEmit.pyupdate'].module = 'emitter.update'
-        obj.game.controllers['sssEmit.pyupdate'].link(obj.game.sensors['sssEmit.update'])
+        obj.game.controllers[-1].mode = 'MODULE'
+        obj.game.controllers[-1].module = 'emitter.update'
+        obj.game.controllers[-1].link(obj.game.sensors[-1])
 
         # Add a controller to reference the script (but never used). It is
         # useful if the object will be imported from other blender file,
         # inserting the script in the importer scene
         bpy.ops.logic.controller_add(type='PYTHON',
-                                     name="Reference",
+                                     name="sssEmit.reference",
                                      object="")
         text = None
         for t in bpy.data.texts:
@@ -378,8 +378,8 @@ class create_emitter(bpy.types.Operator):
                 break
         if text is None:
             raise Exception('The script "emitter.py is not loaded"')
-        obj.game.controllers['Reference'].mode = 'SCRIPT'
-        obj.game.controllers['Reference'].text = text
+        obj.game.controllers[-1].mode = 'SCRIPT'
+        obj.game.controllers[-1].text = text
 
     def execute(self, context):
         obj = bpy.context.active_object
