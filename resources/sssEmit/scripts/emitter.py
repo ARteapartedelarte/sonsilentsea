@@ -136,18 +136,57 @@ def velocity(obj, n):
     vel = mathutils.Vector((0.0, 0.0, 0.0))
     if obj['direction'] == DIR_ALTERNATIVES[0]:
         vel = mathutils.Vector((0.0, 0.0, 1.0))
+        vel.rotate(mathutils.Euler((
+            random.uniform(-obj['direction_var'], obj['direction_var']),
+            0.0,
+            random.uniform(0, 2.0 * math.pi)),
+            'XYZ'))
     elif obj['direction'] == DIR_ALTERNATIVES[1]:
         vel = mathutils.Vector((0.0, 1.0, 0.0))
+        vel.rotate(mathutils.Euler((
+            random.uniform(-obj['direction_var'], obj['direction_var']),
+            random.uniform(0, 2.0 * math.pi),
+            0.0),
+            'XYZ'))
     elif obj['direction'] == DIR_ALTERNATIVES[2]:
         vel = mathutils.Vector((1.0, 0.0, 0.0))
+        vel.rotate(mathutils.Euler((
+            random.uniform(0, 2.0 * math.pi),
+            0.0,
+            random.uniform(-obj['direction_var'], obj['direction_var'])),
+            'ZYX'))
     if obj['direction'] == DIR_ALTERNATIVES[3]:
-        vel = obj.getAxisVect(mathutils.Vector((0.0, 0.0, 1.0)))
+        vel = mathutils.Vector((0.0, 0.0, 1.0))
+        vel.rotate(mathutils.Euler((
+            random.uniform(-obj['direction_var'], obj['direction_var']),
+            0.0,
+            random.uniform(0, 2.0 * math.pi)),
+            'XYZ'))
+        vel = obj.getAxisVect(vel)
     elif obj['direction'] == DIR_ALTERNATIVES[4]:
-        vel = obj.getAxisVect(mathutils.Vector((0.0, 1.0, 0.0)))
+        vel.rotate(mathutils.Euler((
+            random.uniform(-obj['direction_var'], obj['direction_var']),
+            random.uniform(0, 2.0 * math.pi),
+            0.0),
+            'XYZ'))
+        vel = obj.getAxisVect(vel)
     elif obj['direction'] == DIR_ALTERNATIVES[5]:
-        vel = obj.getAxisVect(mathutils.Vector((1.0, 0.0, 0.0)))
+        vel = mathutils.Vector((1.0, 0.0, 0.0))
+        vel.rotate(mathutils.Euler((
+            random.uniform(0, 2.0 * math.pi),
+            0.0,
+            random.uniform(-obj['direction_var'], obj['direction_var'])),
+            'ZYX'))
+        vel = obj.getAxisVect(vel)
     elif obj['direction'] == DIR_ALTERNATIVES[6]:
-        vel = n
+        vel = mathutils.Vector((0.0, 0.0, 1.0))
+        diff = vel.rotation_difference(n)
+        vel.rotate(mathutils.Euler((
+            random.uniform(-obj['direction_var'], obj['direction_var']),
+            0.0,
+            random.uniform(0, 2.0 * math.pi)),
+            'XYZ'))
+        vel.rotate(diff)
 
     norm = obj['velocity'] + random.uniform(-obj['velocity_var'],
                                             obj['velocity_var'])
