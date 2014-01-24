@@ -55,7 +55,7 @@ def loadScript():
     """Load/update the text script in text editor."""
     filepath = None
     for folder in addonsPaths():
-        f = path.join(folder, "sssEmit/emitter.py")
+        f = path.join(folder, "sssEmit/scripts/emitter.py")
         if not path.isfile(f):
             continue
         filepath = f
@@ -334,16 +334,23 @@ class create_emitter(bpy.types.Operator):
     def createLogic(self):
         obj = bpy.context.object
         bpy.context.active_object.draw_type = 'WIRE'
-        # Add a sensor in order to execute the script each frame
+        # Only at start execution
+        bpy.ops.logic.sensor_add(type='ALWAYS', name="", object="")
+        obj.game.sensors['Always'].frequency = 0
+        obj.game.sensors['Always'].use_pulse_true_level = False
+        bpy.ops.logic.controller_add(type='PYTHON', name="", object="")
+        obj.game.controllers['Python'].mode = 'MODULE'
+        obj.game.controllers['Python'].module = 'emitter.load'
+        obj.game.controllers['Python'].link(obj.game.sensors['Always'])
+        # Per frame executing
         bpy.ops.logic.sensor_add(type='ALWAYS', name="", object="")
         obj.game.sensors['Always'].frequency = 0
         obj.game.sensors['Always'].use_pulse_true_level = True
-        # Add a controller to launch the script
         bpy.ops.logic.controller_add(type='PYTHON', name="", object="")
         obj.game.controllers['Python'].mode = 'MODULE'
-        obj.game.controllers['Python'].module = 'emitter.emitter'
+        obj.game.controllers['Python'].module = 'emitter.update'
         obj.game.controllers['Python'].link(obj.game.sensors['Always'])
-        obj.game.physics_type = 'NO_COLLISION'
+
         # Add a controller to reference the script (but never used). It is
         # useful if the object will be imported from other blender file,
         # inserting the script in the importer scene
