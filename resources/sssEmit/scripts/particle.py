@@ -36,4 +36,12 @@ def load():
 
 def update():
     """Method called each frame while the emitter exist"""
+    cont = g.getCurrentController()
+    obj = cont.owner
+    scene = g.getCurrentScene()
+    cam = scene.active_camera
+
+    if obj['billboard']:
+        obj.alignAxisToVect(-cam.getScreenVect(0.5, 0.5), 2 , 1.0)
+
     return

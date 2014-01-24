@@ -176,7 +176,7 @@ def generateObjectProperties(update_callback):
         default=True,
         update=update_callback,
         description=('Set the orientation of the particle such that it will'
-                     ' look at the camera all the time'))
+                     ' look at the camera all the time (with the local z)'))
 
 
 def draw(context, layout):
