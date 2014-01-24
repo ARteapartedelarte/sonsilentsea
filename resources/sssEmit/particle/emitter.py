@@ -322,22 +322,22 @@ class create_emitter(bpy.types.Operator):
     def createLogic(self):
         obj = bpy.context.object
         bpy.context.active_object.draw_type = 'WIRE'
-        # Only at start execution
+        # One time execution
         bpy.ops.logic.sensor_add(type='ALWAYS', name="sssEmit.init", object="")
         obj.game.sensors['sssEmit.init'].frequency = 0
         obj.game.sensors['sssEmit.init'].use_pulse_true_level = False
-        bpy.ops.logic.controller_add(type='PYTHON', name="sssEmit.init", object="")
-        obj.game.controllers['sssEmit.init'].mode = 'MODULE'
-        obj.game.controllers['sssEmit.init'].module = 'emitter.load'
-        obj.game.controllers['sssEmit.init'].link(obj.game.sensors['sssEmit.init'])
+        bpy.ops.logic.controller_add(type='PYTHON', name="sssEmit.pyinit", object="")
+        obj.game.controllers['sssEmit.pyinit'].mode = 'MODULE'
+        obj.game.controllers['sssEmit.pyinit'].module = 'emitter.load'
+        obj.game.controllers['sssEmit.pyinit'].link(obj.game.sensors['sssEmit.init'])
         # Per frame executing
         bpy.ops.logic.sensor_add(type='ALWAYS', name="sssEmit.update", object="")
         obj.game.sensors['sssEmit.update'].frequency = 0
         obj.game.sensors['sssEmit.update'].use_pulse_true_level = True
-        bpy.ops.logic.controller_add(type='PYTHON', name="sssEmit.update", object="")
-        obj.game.controllers['sssEmit.update'].mode = 'MODULE'
-        obj.game.controllers['sssEmit.update'].module = 'emitter.update'
-        obj.game.controllers['sssEmit.update'].link(obj.game.sensors['sssEmit.update'])
+        bpy.ops.logic.controller_add(type='PYTHON', name="sssEmit.pyupdate", object="")
+        obj.game.controllers['sssEmit.pyupdate'].mode = 'MODULE'
+        obj.game.controllers['sssEmit.pyupdate'].module = 'emitter.update'
+        obj.game.controllers['sssEmit.pyupdate'].link(obj.game.sensors['sssEmit.update'])
 
         # Add a controller to reference the script (but never used). It is
         # useful if the object will be imported from other blender file,
