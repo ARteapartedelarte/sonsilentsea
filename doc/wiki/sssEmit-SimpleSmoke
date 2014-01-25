@@ -25,8 +25,12 @@ Let's start scaling the plane by a factor of 0.5 (press the `S` key, and then, w
 To set the material we must start creating a convenient UV coordinates. 
 To do that, with the plane selected, press the `TAB` key (which will enter in the edit mode), and then press the `U` key (I'm assuming that all the vertexes are selected, otherwise press the key `A` as many times as needed to wet all the object highlighted in an orange color), selecting the **Unwrap** option:
 
-![Plane creation](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/plane_uv_unwrap.png?raw=true)
+![Plane UV coordinates generation](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/plane_uv_unwrap.png?raw=true)
 
 Now your object has a set of UV coordinates. Press the `TAB` key again to exit the edit mode.
 
+To create the material go to the properties panel and select **the materials tab**, pressing the button **New** to generate a new material for our object.
 
+![Adding a new material](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/new_material.png?raw=true)
+
+You may call it **particle.smoke** again.
