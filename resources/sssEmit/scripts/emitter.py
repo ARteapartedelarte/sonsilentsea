@@ -228,8 +228,6 @@ def update():
     obj = cont.owner
 
     # Targeted number of particles and remaining ones to achieve it
-    dt = 1.0/g.getLogicTicRate()
-    obj['t'] += dt
     target = int(obj['t']*obj['rate'])
     n = target - obj['count']
 

@@ -147,6 +147,7 @@ def generateProperties(obj=None):
     """Ensure that the object has the required properties."""
     if obj is None:
         obj = getParticle()
+    addProperty('t', 'TIMER', 0.0, obj)
     addProperty('billboard', 'BOOL', True, obj)
 
 

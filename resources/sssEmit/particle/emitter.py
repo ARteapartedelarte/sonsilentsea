@@ -121,7 +121,7 @@ def delProperty(name):
 
 def generateProperties():
     """Ensure that the object has the required properties."""
-    addProperty('t', 'BOOL', True)
+    addProperty('t', 'TIMER', 0.0)
     addProperty('culling', 'BOOL', True)
     addProperty('culling_radius', 'FLOAT', 0.0)
     addProperty('is_lifetime', 'BOOL', False)

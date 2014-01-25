@@ -31,6 +31,13 @@ DIR_ALTERNATIVES = ('Z', 'Y', 'X', 'z', 'y', 'x', 'NORMAL')
 
 def load():
     """Method called one time at the emitter generation"""
+    cont = g.getCurrentController()
+    obj = cont.owner
+    scene = g.getCurrentScene()
+    cam = scene.active_camera
+
+    if obj['billboard']:
+        obj.worldOrientation = cam.worldOrientation
     return
 
 
@@ -42,6 +49,6 @@ def update():
     cam = scene.active_camera
 
     if obj['billboard']:
-        obj.alignAxisToVect(-cam.getScreenVect(0.5, 0.5), 2 , 1.0)
+        obj.worldOrientation = cam.worldOrientation
 
     return
