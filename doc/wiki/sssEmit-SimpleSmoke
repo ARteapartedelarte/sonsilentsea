@@ -1,0 +1,9 @@
+# Simple smoke example
+
+In this example we will explain how to generate a simple smoke.
+
+# Particle viewable generation
+
+In sssEmit the particles are just empty objects which are not visible in the scene, letting you to generate the most convenient viewable instance.
+
+Before start working ensure yourself to appropriately [start the Blender Game Engine environment](sssEmit-StartingBlender).
