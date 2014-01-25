@@ -291,9 +291,10 @@ def draw(context, layout):
     row.prop(context.object,
              "frustrum_culling",
              text="Frustum based culling")
-    row.prop(context.object,
-             "frustrum_radius",
-             text="Radius")
+    if(obj.frustrum_culling):
+        row.prop(context.object,
+                 "frustrum_radius",
+                 text="Radius")
 
     row = layout.row()
     row.prop(context.object,
