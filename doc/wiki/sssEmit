@@ -1,0 +1,31 @@
+# Introduction
+sssEmit is a SonSilentSea's subproject, which simplifies the particles emitter generation process.
+
+# Installation
+## Downloading sssEmit
+sssEmit can be found in the sonsilentsea resources/sssEmit subfolder:
+```
+git clone https://github.com/sanguinariojoe/sonsilentsea.git
+cd sonsilentsea/resources/sssEmit
+```
+## Installing sssEmit (Linux)
+You can execute as root:
+```
+make install
+```
+If you want to install it in a different location you can use the PREFIX option.
+## Activating the extension in [Blender](http://www.blender.org)
+The first time that you launch [Blender](http://www.blender.org) just after the installation of the module it is necessary to activate it:
+
+* Go to **File/User Preferences**
+* Select the tab **Addons**
+* Mark the supported level **Testing**
+* Type in the searching field **particle**
+* Activate the extension
+
+![Activating sssEmit](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/activating_sssEmit.png?raw=true)
+
+# Examples
+Following some examples are explained:
+
+* [Simple smoke](sssEmit-SimpleSmoke)
