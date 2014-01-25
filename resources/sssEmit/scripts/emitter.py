@@ -204,11 +204,16 @@ def initialValues(obj):
 def generateParticle(obj):
     """Generate a particle from the emitter"""
     scene = g.getCurrentScene()
+    cam = scene.active_camera
+
     part = scene.addObject(obj['particle'], obj, 0)
 
     p, v = initialValues(obj)
     part.worldPosition = p
     part.setLinearVelocity(v)
+    if part['billboard']:
+        part.worldOrientation = cam.worldOrientation
+
 
     obj['count'] += 1
     return
