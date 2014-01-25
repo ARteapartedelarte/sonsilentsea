@@ -149,13 +149,18 @@ def generateProperties(obj=None):
         obj = getParticle()
     addProperty('t', 'TIMER', 0.0, obj)
     addProperty('billboard', 'BOOL', True, obj)
+    addProperty('is_lifetime', 'BOOL', False, obj)
+    addProperty('lifetime', 'FLOAT', 0.0, obj)
 
 
 def removeProperties(obj=None):
     """Remove the properties the object."""
     if obj is None:
         obj = getParticle()
+    delProperty('t')
     delProperty('billboard')
+    delProperty('is_lifetime')
+    delProperty('lifetime')
 
 
 def updateValues():
@@ -163,7 +168,11 @@ def updateValues():
     generateProperties()
 
     obj = getParticle()
-    obj.game.properties['billboard'].value = obj.billboard
+    emit = bpy.context.object
+
+    obj.game.properties['billboard'].value = emit.billboard
+    obj.game.properties['is_lifetime'].value = emit.is_part_lifetime
+    obj.game.properties['lifetime'].value = emit.part_lifetime
 
 
 def generateObjectProperties(update_callback):
@@ -178,6 +187,15 @@ def generateObjectProperties(update_callback):
         update=update_callback,
         description=('Set the orientation of the particle such that it will'
                      ' look at the camera all the time (with the local z)'))
+    bpy.types.Object.is_part_lifetime = bpy.props.BoolProperty(
+        default=False,
+        update=update_callback,
+        description='Should be the particle destroyed after some time?')
+    bpy.types.Object.part_lifetime = bpy.props.FloatProperty(
+        default=0.0,
+        min=0.0,
+        update=update_callback,
+        description='Particle lifetime.')
 
 
 def draw(context, layout):
@@ -194,6 +212,15 @@ def draw(context, layout):
     row.prop(context.object,
              "billboard",
              text="Billboard")
+
+    row = layout.row()
+    row.prop(context.object,
+             "is_part_lifetime",
+             text="Particle lifetime")
+    if(context.object.is_part_lifetime):
+        row.prop(context.object,
+                 "part_lifetime",
+                 text="")
 
 
 def createLogic(obj=None):

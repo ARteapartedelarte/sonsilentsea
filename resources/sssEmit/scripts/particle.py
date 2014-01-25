@@ -41,6 +41,14 @@ def load():
     return
 
 
+def lifetime(obj):
+    """Test the object lifetime"""
+    if not obj['is_lifetime']:
+        return
+    if obj['t'] >= obj['lifetime']:
+        obj.endObject()
+
+
 def update():
     """Method called each frame while the emitter exist"""
     cont = g.getCurrentController()
@@ -50,5 +58,8 @@ def update():
 
     if obj['billboard']:
         obj.worldOrientation = cam.worldOrientation
+
+    # Test if the object must end
+    lifetime(obj)
 
     return
