@@ -234,6 +234,15 @@ def createLogic(obj=None):
     obj.game.controllers[-1].text = text
 
 
+def createPhysics(obj=None):
+    if obj is None:
+        obj = getParticle()
+
+    obj.game.physics_type = 'RIGID_BODY'
+    obj.game.use_actor = False
+    obj.game.use_ghost = True
+
+
 def create_particle():
     """Create a particle object in the last layer, and return its name"""
     obj_backup = bpy.context.active_object
@@ -252,6 +261,7 @@ def create_particle():
     generateProperties(obj)
     loadScript()
     createLogic(obj)
+    createPhysics(obj)
 
     return obj.name
 
