@@ -1,0 +1,40 @@
+# Starting blender
+
+If you have not changed the default blender preferences it will start ready for graphics design work, but we are interested in use it as a game workbench, so let's change some settings.
+
+_During the tutorials it will be assumed that these changes have been performed._
+
+## Remove the default cube
+
+Just select the starting cube and remove it from the scene pressing the key `X` and answering yes pressing the `INTRO` key.
+
+![Removing default generated cube](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/deleting_default_cube.png?raw=true)
+
+## Set the game environment
+
+### Blender game engine renderer
+
+Let's start changing the renderer to the BGE selecting it in the top panel (Info panel):
+
+![Setting the blender game engine as the render one](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/set_blender_game.png?raw=true)
+
+### Game logic working environment
+
+We can use the predefined environment for the game logic, selecting it in the top panel again:
+
+![Setting the blender game logic working environment](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/set_game_logic.png?raw=true)
+
+### GLSL shading
+
+In order to see the final visual results the GLSL shading view must be activated.
+First press the key `N` to show the 3D view properties panel, and go down to the shading section (click on it to deplegate its content). Here you can move from the Multitexture shading to the GLSL one:
+
+![Setting the GLSL shading](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/set_GLSL_shading.png?raw=true)
+
+You can press the key `N` to hide the panel again.
+
+Finally the objects must be shown in texture mode (probably you will change this set several times during your work, just remember to set it to texture mode before launching the simulation):
+
+![Setting the textured view mode](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/set_texture_mode.png?raw=true)
+
+
