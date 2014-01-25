@@ -2,8 +2,31 @@
 
 In this example we will explain how to generate a simple smoke.
 
-# Particle viewable generation
+## Particle viewable generation
 
 In sssEmit the particles are just empty objects which are not visible in the scene, letting you to generate the most convenient viewable instance.
 
 Before start working ensure yourself to appropriately [start the Blender Game Engine environment](sssEmit-StartingBlender).
+
+### Creating the plane
+
+You can move to the last layer (where the particle empty object will be generated) pressing the keys combination `Alt+0`, and set the upper view (which would be more convenient now) pressing the key `7_`.
+
+To create the plane just go to the bottom panel of the 3D view and press Add/Mesh/Plane
+
+![Plane creation](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/add_mesh_plane.png?raw=true)
+
+Which will generate a plane of 2x2 units (probably you are seeing it completely black due to there are no any light in this layer).
+You may name it **particle.smoke**
+Let's start scaling the plane by a factor of 0.5 (press the `S` key, and then, with the `Ctrl` key pressed move the cursor closer to the centre of the object until the factor reach the value 0.5).
+
+### Setting the material
+
+To set the material we must start creating a convenient UV coordinates. 
+To do that, with the plane selected, press the `TAB` key (which will enter in the edit mode), and then press the `U` key (I'm assuming that all the vertexes are selected, otherwise press the key `A` as many times as needed to wet all the object highlighted in an orange color), selecting the **Unwrap** option:
+
+![Plane creation](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/plane_uv_unwrap.png?raw=true)
+
+Now your object has a set of UV coordinates. Press the `TAB` key again to exit the edit mode.
+
+
