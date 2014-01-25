@@ -201,12 +201,12 @@ def generateObjectProperties(update_callback):
     bpy.types.Object.draw_type_back = bpy.props.StringProperty()
 
     bpy.types.Object.frustrum_culling = bpy.props.BoolProperty(
-        default=True,
+        default=False,
         update=update_callback,
         description=('Allows you to disable the Emitter automatically if it'
                      ' is not viewable (in the camera frustrum)'))
     bpy.types.Object.frustrum_radius = bpy.props.FloatProperty(
-        default=100.0,
+        default=0.0,
         min=0,
         update=update_callback,
         description='Distance to the emitter where it is considered'

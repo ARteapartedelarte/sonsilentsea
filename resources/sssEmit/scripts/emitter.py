@@ -38,6 +38,17 @@ def load():
     return
 
 
+def testFrustrum(obj):
+    """Test if the object is unactive due to the frsutrum culling"""
+    scene = g.getCurrentScene()
+    cam = scene.active_camera
+
+    p = obj.worldPosition
+    r = obj['culling_radius']
+    if obj['culling'] and cam.sphereInsideFrustum(p, r) == cam.OUTSIDE:
+        return False
+    return True
+
 def getVertexes(obj):
     """Get the vertexes of an object"""
     vertexes = []
@@ -231,6 +242,10 @@ def update():
     """Method called each frame while the emitter exist"""
     cont = g.getCurrentController()
     obj = cont.owner
+
+    # Test if we must not work due to the frustrum based culling
+    if not testFrustrum(obj):
+        return
 
     # Targeted number of particles and remaining ones to achieve it
     target = int(obj['t']*obj['rate'])
