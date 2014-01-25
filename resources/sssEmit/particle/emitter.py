@@ -98,7 +98,7 @@ def addProperty(name, type_id, value):
     obj = bpy.context.object
     if not name in obj.game.properties.keys():
         bpy.ops.object.game_property_new()
-        obj.game.properties['prop'].name = name
+        obj.game.properties[-1].name = name
         obj.game.properties[name].type = type_id
         obj.game.properties[name].value = value
 
@@ -121,6 +121,7 @@ def delProperty(name):
 
 def generateProperties():
     """Ensure that the object has the required properties."""
+    addProperty('t', 'BOOL', True)
     addProperty('culling', 'BOOL', True)
     addProperty('culling_radius', 'FLOAT', 0.0)
     addProperty('is_lifetime', 'BOOL', False)

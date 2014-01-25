@@ -107,7 +107,7 @@ def addProperty(name, type_id, value, obj=None):
 
     if not name in obj.game.properties.keys():
         bpy.ops.object.game_property_new()
-        obj.game.properties['prop'].name = name
+        obj.game.properties[-1].name = name
         obj.game.properties[name].type = type_id
         obj.game.properties[name].value = value
 
