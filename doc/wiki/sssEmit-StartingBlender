@@ -37,4 +37,6 @@ Finally the objects must be shown in texture mode (probably you will change this
 
 ![Setting the textured view mode](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/set_texture_mode.png?raw=true)
 
+## Saving the new environment as the default one
 
+Optionally you can save this setup as the default one pressing the keys combination `Ctrl+U` and the `INTRO` key to confirm the command.
