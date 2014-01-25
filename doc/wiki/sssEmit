@@ -29,3 +29,5 @@ The first time that you launch [Blender](http://www.blender.org) just after the 
 Following some examples are explained:
 
 * [Simple smoke](sssEmit-SimpleSmoke)
+
+_In the tutorials, when a number is pressed it could be referenced to the usual ones, or to the keypad ones. In the first case the number key will be denoted by `0`, but in the case of the keypad it will be denoted by `0_`._
