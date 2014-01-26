@@ -155,6 +155,12 @@ def generateProperties(obj=None):
     addProperty('scale_fade', 'FLOAT', 1.0, obj)
     addProperty('scale_fade_in', 'FLOAT', 0.0, obj)
     addProperty('scale_fade_out', 'FLOAT', 0.0, obj)
+    addProperty('is_color_fade', 'BOOL', False, obj)
+    addProperty('color_fade.r', 'FLOAT', 1.0, obj)
+    addProperty('color_fade.g', 'FLOAT', 1.0, obj)
+    addProperty('color_fade.b', 'FLOAT', 1.0, obj)
+    addProperty('color_fade_in', 'FLOAT', 0.0, obj)
+    addProperty('color_fade_out', 'FLOAT', 0.0, obj)
 
 
 def removeProperties(obj=None):
@@ -169,6 +175,12 @@ def removeProperties(obj=None):
     delProperty('scale_fade')
     delProperty('scale_fade_in')
     delProperty('scale_fade_out')
+    delProperty('is_color_fade')
+    delProperty('color_fade.r')
+    delProperty('color_fade.g')
+    delProperty('color_fade.b')
+    delProperty('color_fade_in')
+    delProperty('color_fade_out')
 
 
 def updateValues():
@@ -195,6 +207,22 @@ def updateValues():
         precision=bpy.types.Object.scale_fade_out[1]['precision'],
         update=bpy.types.Object.scale_fade_out[1]['update'],
         description=bpy.types.Object.scale_fade_out[1]['description'])
+    obj.game.properties['is_color_fade'].value = emit.is_color_fade
+    obj.game.properties['color_fade.r'].value = emit.color_fade.r
+    obj.game.properties['color_fade.g'].value = emit.color_fade.g
+    obj.game.properties['color_fade.b'].value = emit.color_fade.b
+    obj.game.properties['color_fade_in'].value = emit.color_fade_in
+    # The minimum value of the scale fade out must be greater than the
+    # scale fade in one
+    min_fade_out = emit.color_fade_in + 0.001
+    fade_out = max(emit.color_fade_out, min_fade_out)
+    obj.game.properties['color_fade_out'].value = fade_out
+    bpy.types.Object.color_fade_out = bpy.props.FloatProperty(
+        default=fade_out,
+        min=min_fade_out,
+        precision=bpy.types.Object.color_fade_out[1]['precision'],
+        update=bpy.types.Object.color_fade_out[1]['update'],
+        description=bpy.types.Object.color_fade_out[1]['description'])
 
 
 def generateObjectProperties(update_callback):
@@ -226,7 +254,7 @@ def generateObjectProperties(update_callback):
         default=1.0,
         min=0.0,
         update=update_callback,
-        description='Final scale (relatrive factor to the original one).')
+        description='Final scale (relative factor to the original one).')
     bpy.types.Object.scale_fade_in = bpy.props.FloatProperty(
         default=0.0,
         min=0.0,
@@ -234,6 +262,32 @@ def generateObjectProperties(update_callback):
         update=update_callback,
         description='Fade start instant.')
     bpy.types.Object.scale_fade_out = bpy.props.FloatProperty(
+        default=0.0,
+        min=0.001,
+        precision=3,
+        update=update_callback,
+        description='Fade end instant.')
+    bpy.types.Object.is_color_fade = bpy.props.BoolProperty(
+        default=False,
+        update=update_callback,
+        description='Should be the particle color changed along the time?')
+    bpy.types.Object.color_fade = bpy.props.FloatVectorProperty(
+        default=(1.0, 1.0, 1.0),
+        min=0.0,
+        max=1.0,
+        step=1,
+        precision=3,
+        subtype='COLOR_GAMMA',
+        size=3,
+        update=update_callback,
+        description='Final color.')
+    bpy.types.Object.color_fade_in = bpy.props.FloatProperty(
+        default=0.0,
+        min=0.0,
+        precision=3,
+        update=update_callback,
+        description='Fade start instant.')
+    bpy.types.Object.color_fade_out = bpy.props.FloatProperty(
         default=0.0,
         min=0.001,
         precision=3,
@@ -279,6 +333,22 @@ def draw(context, layout):
                  text="in")
         row.prop(context.object,
                  "scale_fade_out",
+                 text="out")
+
+    row = layout.row()
+    row.prop(context.object,
+             "is_color_fade",
+             text="Particle color fade")
+    if(context.object.is_color_fade):
+        row.prop(context.object,
+                 "color_fade",
+                 text="")
+        row = layout.row()
+        row.prop(context.object,
+                 "color_fade_in",
+                 text="in")
+        row.prop(context.object,
+                 "color_fade_out",
                  text="out")
 
 
