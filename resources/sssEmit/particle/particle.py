@@ -50,18 +50,18 @@ def loadScript():
     """Load/update the text script in text editor."""
     filepath = None
     for folder in addonsPaths():
-        f = path.join(folder, "sssEmit/scripts/particle.py")
+        f = path.join(folder, "sssEmit/scripts/sss_particle.py")
         if not path.isfile(f):
             continue
         filepath = f
         break
     if not filepath:
-        raise Exception('I can not find the script file "particle.py"')
+        raise Exception('I can not find the script file "sss_particle.py"')
 
     # We can try to update it, and if the operation fails is just because the
     # file has not been loaded yet
     try:
-        text = bpy.data.texts['particle.py']
+        text = bpy.data.texts['sss_particle.py']
         text.clear()
         f = open(filepath, 'r')
         text.write(f.read())
@@ -151,6 +151,10 @@ def generateProperties(obj=None):
     addProperty('billboard', 'BOOL', True, obj)
     addProperty('is_lifetime', 'BOOL', False, obj)
     addProperty('lifetime', 'FLOAT', 0.0, obj)
+    addProperty('is_scale_fade', 'BOOL', False, obj)
+    addProperty('scale_fade', 'FLOAT', 1.0, obj)
+    addProperty('scale_fade_in', 'FLOAT', 0.0, obj)
+    addProperty('scale_fade_out', 'FLOAT', 0.0, obj)
 
 
 def removeProperties(obj=None):
@@ -161,6 +165,10 @@ def removeProperties(obj=None):
     delProperty('billboard')
     delProperty('is_lifetime')
     delProperty('lifetime')
+    delProperty('is_scale_fade')
+    delProperty('scale_fade')
+    delProperty('scale_fade_in')
+    delProperty('scale_fade_out')
 
 
 def updateValues():
@@ -173,6 +181,20 @@ def updateValues():
     obj.game.properties['billboard'].value = emit.billboard
     obj.game.properties['is_lifetime'].value = emit.is_part_lifetime
     obj.game.properties['lifetime'].value = emit.part_lifetime
+    obj.game.properties['is_scale_fade'].value = emit.is_scale_fade
+    obj.game.properties['scale_fade'].value = emit.scale_fade
+    obj.game.properties['scale_fade_in'].value = emit.scale_fade_in
+    # The minimum value of the scale fade out must be greater than the
+    # scale fade in one
+    min_fade_out = emit.scale_fade_in + 0.001
+    fade_out = max(emit.scale_fade_out, min_fade_out)
+    obj.game.properties['scale_fade_out'].value = fade_out
+    bpy.types.Object.scale_fade_out = bpy.props.FloatProperty(
+        default=fade_out,
+        min=min_fade_out,
+        precision=bpy.types.Object.scale_fade_out[1]['precision'],
+        update=bpy.types.Object.scale_fade_out[1]['update'],
+        description=bpy.types.Object.scale_fade_out[1]['description'])
 
 
 def generateObjectProperties(update_callback):
@@ -196,6 +218,27 @@ def generateObjectProperties(update_callback):
         min=0.0,
         update=update_callback,
         description='Particle lifetime.')
+    bpy.types.Object.is_scale_fade = bpy.props.BoolProperty(
+        default=False,
+        update=update_callback,
+        description='Should be the particle scale changed along the time?')
+    bpy.types.Object.scale_fade = bpy.props.FloatProperty(
+        default=1.0,
+        min=0.0,
+        update=update_callback,
+        description='Final scale (relatrive factor to the original one).')
+    bpy.types.Object.scale_fade_in = bpy.props.FloatProperty(
+        default=0.0,
+        min=0.0,
+        precision=3,
+        update=update_callback,
+        description='Fade start instant.')
+    bpy.types.Object.scale_fade_out = bpy.props.FloatProperty(
+        default=0.0,
+        min=0.001,
+        precision=3,
+        update=update_callback,
+        description='Fade end instant.')
 
 
 def draw(context, layout):
@@ -222,6 +265,22 @@ def draw(context, layout):
                  "part_lifetime",
                  text="")
 
+    row = layout.row()
+    row.prop(context.object,
+             "is_scale_fade",
+             text="Particle scale fade")
+    if(context.object.is_scale_fade):
+        row.prop(context.object,
+                 "scale_fade",
+                 text="")
+        row = layout.row()
+        row.prop(context.object,
+                 "scale_fade_in",
+                 text="in")
+        row.prop(context.object,
+                 "scale_fade_out",
+                 text="out")
+
 
 def createLogic(obj=None):
     if obj is None:
@@ -233,7 +292,7 @@ def createLogic(obj=None):
     obj.game.sensors[-1].use_pulse_true_level = False
     bpy.ops.logic.controller_add(type='PYTHON', name="sssParticle.pyinit", object=obj.name)
     obj.game.controllers[-1].mode = 'MODULE'
-    obj.game.controllers[-1].module = 'particle.load'
+    obj.game.controllers[-1].module = 'sss_particle.load'
     obj.game.controllers[-1].link(obj.game.sensors[-1])
     # Per frame executing
     bpy.ops.logic.sensor_add(type='ALWAYS', name="sssParticle.update", object=obj.name)
@@ -241,7 +300,7 @@ def createLogic(obj=None):
     obj.game.sensors[-1].use_pulse_true_level = True
     bpy.ops.logic.controller_add(type='PYTHON', name="sssParticle.pyupdate", object=obj.name)
     obj.game.controllers[-1].mode = 'MODULE'
-    obj.game.controllers[-1].module = 'particle.update'
+    obj.game.controllers[-1].module = 'sss_particle.update'
     obj.game.controllers[-1].link(obj.game.sensors[-1])
 
     # Add a controller to reference the script (but never used). It is
@@ -252,11 +311,11 @@ def createLogic(obj=None):
                                  object=obj.name)
     text = None
     for t in bpy.data.texts:
-        if t.name == 'particle.py':
+        if t.name == 'sss_particle.py':
             text = t
             break
     if text is None:
-        raise Exception('The script "particle.py is not loaded"')
+        raise Exception('The script "sss_particle.py is not loaded"')
     obj.game.controllers[-1].mode = 'SCRIPT'
     obj.game.controllers[-1].text = text
 

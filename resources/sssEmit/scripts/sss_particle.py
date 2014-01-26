@@ -38,7 +38,11 @@ def load():
 
     if obj['billboard']:
         obj.worldOrientation = cam.worldOrientation
-    return
+
+    if obj['is_scale_fade']:
+        obj['scale.x'] = obj.localScale.x
+        obj['scale.y'] = obj.localScale.y
+        obj['scale.z'] = obj.localScale.z
 
 
 def lifetime(obj):
@@ -47,6 +51,22 @@ def lifetime(obj):
         return
     if obj['t'] >= obj['lifetime']:
         obj.endObject()
+
+
+def scaleFade(obj):
+    """Perform the scale fade if it is required"""
+    if not obj['is_scale_fade']:
+        return
+    t = max(obj['t'] - obj['scale_fade_in'], 0.0)
+    T = obj['scale_fade_out'] - obj['scale_fade_in']
+    f = t/T
+    if f > 1.0:
+        f = 1.0
+        obj['is_scale_fade'] = False
+    s = f * obj['scale_fade'] + (1.0 - f)
+    obj.localScale.x = s * obj['scale.x']
+    obj.localScale.y = s * obj['scale.y']
+    obj.localScale.z = s * obj['scale.z']
 
 
 def update():
@@ -58,6 +78,9 @@ def update():
 
     if obj['billboard']:
         obj.worldOrientation = cam.worldOrientation
+
+    # Fades
+    scaleFade(obj)
 
     # Test if the object must end
     lifetime(obj)
