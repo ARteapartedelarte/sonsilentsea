@@ -40,9 +40,7 @@ def load():
         obj.worldOrientation = cam.worldOrientation
 
     if obj['is_scale_fade']:
-        obj['scale.x'] = obj.localScale.x
-        obj['scale.y'] = obj.localScale.y
-        obj['scale.z'] = obj.localScale.z
+        obj['scale'] = obj.localScale.xyz
 
 
 def lifetime(obj):
@@ -64,9 +62,7 @@ def scaleFade(obj):
         f = 1.0
         obj['is_scale_fade'] = False
     s = f * obj['scale_fade'] + (1.0 - f)
-    obj.localScale.x = s * obj['scale.x']
-    obj.localScale.y = s * obj['scale.y']
-    obj.localScale.z = s * obj['scale.z']
+    obj.localScale = s * obj['scale']
 
 
 def update():
