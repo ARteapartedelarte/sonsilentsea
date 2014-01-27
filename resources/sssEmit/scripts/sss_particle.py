@@ -29,6 +29,24 @@ POINT_ALTERNATIVES = ('CENTER', 'VERTEX', 'MESH')
 DIR_ALTERNATIVES = ('Z', 'Y', 'X', 'z', 'y', 'x', 'NORMAL')
 
 
+def loadColors(obj):
+    """Try to load and store the original color of all the children objects"""
+    for c in obj.children:
+        try:
+            c['color'] = c.color.xyz
+        except:
+            continue
+
+
+def loadAlphas(obj):
+    """Try to load and store the original alpha of all the children objects"""
+    for c in obj.children:
+        try:
+            c['alpha'] = c.color.w
+        except:
+            continue
+
+
 def load():
     """Method called one time at the emitter generation"""
     cont = g.getCurrentController()
@@ -38,7 +56,17 @@ def load():
 
     if obj['billboard']:
         obj.worldOrientation = cam.worldOrientation
-    return
+
+    if obj['is_scale_fade']:
+        obj['scale'] = obj.localScale.xyz
+
+    if obj['is_color_fade']:
+        obj['color_fade'] = mathutils.Vector((obj['color_fade.r'],
+                                              obj['color_fade.g'],
+                                              obj['color_fade.b']))
+        loadColors(obj)
+    if obj['is_alpha_fade']:
+        loadAlphas(obj)
 
 
 def lifetime(obj):
@@ -47,6 +75,56 @@ def lifetime(obj):
         return
     if obj['t'] >= obj['lifetime']:
         obj.endObject()
+
+
+def scaleFade(obj):
+    """Perform the scale fade if it is required"""
+    if not obj['is_scale_fade']:
+        return
+    t = max(obj['t'] - obj['scale_fade_in'], 0.0)
+    T = obj['scale_fade_out'] - obj['scale_fade_in']
+    f = t/T
+    if f > 1.0:
+        f = 1.0
+        obj['is_scale_fade'] = False
+    s = f * obj['scale_fade'] + (1.0 - f)
+    obj.localScale = s * obj['scale']
+
+
+def colorFade(obj):
+    """Perform the color fade if it is required"""
+    if not obj['is_color_fade']:
+        return
+    t = max(obj['t'] - obj['color_fade_in'], 0.0)
+    T = obj['color_fade_out'] - obj['color_fade_in']
+    f = t/T
+    if f > 1.0:
+        f = 1.0
+        obj['is_color_fade'] = False
+    ff = 1.0 - f
+    for c in obj.children:
+        try:
+            c.color.xyz = f * obj['color_fade'] + ff * c['color']
+        except:
+            continue
+
+
+def alphaFade(obj):
+    """Perform the alpha fade if it is required"""
+    if not obj['is_alpha_fade']:
+        return
+    t = max(obj['t'] - obj['alpha_fade_in'], 0.0)
+    T = obj['alpha_fade_out'] - obj['alpha_fade_in']
+    f = t/T
+    if f > 1.0:
+        f = 1.0
+        obj['is_alpha_fade'] = False
+    ff = 1.0 - f
+    for c in obj.children:
+        try:
+            c.color.w = f * obj['alpha_fade'] + ff * c['alpha']
+        except:
+            continue
 
 
 def update():
@@ -58,6 +136,11 @@ def update():
 
     if obj['billboard']:
         obj.worldOrientation = cam.worldOrientation
+
+    # Fades
+    scaleFade(obj)
+    colorFade(obj)
+    alphaFade(obj)
 
     # Test if the object must end
     lifetime(obj)

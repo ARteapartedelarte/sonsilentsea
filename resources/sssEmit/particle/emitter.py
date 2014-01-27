@@ -55,18 +55,18 @@ def loadScript():
     """Load/update the text script in text editor."""
     filepath = None
     for folder in addonsPaths():
-        f = path.join(folder, "sssEmit/scripts/emitter.py")
+        f = path.join(folder, "sssEmit/scripts/sss_emitter.py")
         if not path.isfile(f):
             continue
         filepath = f
         break
     if not filepath:
-        raise Exception('I can not find the script file "emitter.py"')
+        raise Exception('I can not find the script file "sss_emitter.py"')
 
     # We can try to update it, and if the operation fails is just because the
     # file has not been loaded yet
     try:
-        text = bpy.data.texts['emitter.py']
+        text = bpy.data.texts['sss_emitter.py']
         text.clear()
         f = open(filepath, 'r')
         text.write(f.read())
@@ -356,7 +356,7 @@ class create_emitter(bpy.types.Operator):
         obj.game.sensors[-1].use_pulse_true_level = False
         bpy.ops.logic.controller_add(type='PYTHON', name="sssEmit.pyinit", object="")
         obj.game.controllers[-1].mode = 'MODULE'
-        obj.game.controllers[-1].module = 'emitter.load'
+        obj.game.controllers[-1].module = 'sss_emitter.load'
         obj.game.controllers[-1].link(obj.game.sensors[-1])
         # Per frame executing
         bpy.ops.logic.sensor_add(type='ALWAYS', name="sssEmit.update", object="")
@@ -364,7 +364,7 @@ class create_emitter(bpy.types.Operator):
         obj.game.sensors[-1].use_pulse_true_level = True
         bpy.ops.logic.controller_add(type='PYTHON', name="sssEmit.pyupdate", object="")
         obj.game.controllers[-1].mode = 'MODULE'
-        obj.game.controllers[-1].module = 'emitter.update'
+        obj.game.controllers[-1].module = 'sss_emitter.update'
         obj.game.controllers[-1].link(obj.game.sensors[-1])
 
         # Add a controller to reference the script (but never used). It is
@@ -375,11 +375,11 @@ class create_emitter(bpy.types.Operator):
                                      object="")
         text = None
         for t in bpy.data.texts:
-            if t.name == 'emitter.py':
+            if t.name == 'sss_emitter.py':
                 text = t
                 break
         if text is None:
-            raise Exception('The script "emitter.py is not loaded"')
+            raise Exception('The script "sss_emitter.py is not loaded"')
         obj.game.controllers[-1].mode = 'SCRIPT'
         obj.game.controllers[-1].text = text
 
