@@ -33,4 +33,32 @@ To create the material go to the properties panel and select **the materials tab
 
 ![Adding a new material](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/new_material.png?raw=true)
 
-You may call it **particle.smoke** again.
+You may call it **particle.smoke** again. In the **shading section** we must mark the **Shadeless** option (which will neglect the lighting effects), in the **Options section** the option **Object color** must be selected, and finally in the **transparency section** the **transparency** with an **alpha value of 0.0** must be activated:
+
+![Setting a shadeless material](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/material_shadeless.png?raw=true)
+![Setting an object controlled color](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/material_object_color.png?raw=true)
+![Setting a transparent object](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/material_transparency.png?raw=true)
+
+### Setting the smoke texture
+
+If you have done all the previous tasks probably you are seeing that your plane is invisible (it is transparent). Now let's set a texture to conveniently modify the alpha value. First download and save the following texture:
+
+![Smoke alpha texture](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/particle_smoke.png?raw=true)
+
+And the go to the **textures** tab, and press the **new** button to create a new texture:
+
+![Adding a new texture](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/new_texture.png?raw=true)
+
+You may name it **particle.smoke**, and select as type **Image or Movie**. Then, in the section **Image** you can use the button open to load the texture that you already downloaded. Now you only need to go to the section **Influence** and deactivate **Color** and activate **Alpha**:
+
+![Setting texture alpha influence](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/texture_influence_alpha.png?raw=true)
+
+In this moment your object has recovered the visibility in the 3D screen.
+
+### Setting the color
+
+Now the object color is controlled in the **Object tab**, section **display**. Let's set a grey color (0.025, 0.025, 0.025):
+
+![Setting the object color](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/object_color.png?raw=true)
+
+
