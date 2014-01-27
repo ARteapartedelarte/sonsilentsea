@@ -38,6 +38,15 @@ def loadColors(obj):
             continue
 
 
+def loadAlphas(obj):
+    """Try to load and store the original alpha of all the children objects"""
+    for c in obj.children:
+        try:
+            c['alpha'] = c.color.w
+        except:
+            continue
+
+
 def load():
     """Method called one time at the emitter generation"""
     cont = g.getCurrentController()
@@ -56,6 +65,8 @@ def load():
                                               obj['color_fade.g'],
                                               obj['color_fade.b']))
         loadColors(obj)
+    if obj['is_alpha_fade']:
+        loadAlphas(obj)
 
 
 def lifetime(obj):
@@ -98,6 +109,24 @@ def colorFade(obj):
             continue
 
 
+def alphaFade(obj):
+    """Perform the alpha fade if it is required"""
+    if not obj['is_alpha_fade']:
+        return
+    t = max(obj['t'] - obj['alpha_fade_in'], 0.0)
+    T = obj['alpha_fade_out'] - obj['alpha_fade_in']
+    f = t/T
+    if f > 1.0:
+        f = 1.0
+        obj['is_alpha_fade'] = False
+    ff = 1.0 - f
+    for c in obj.children:
+        try:
+            c.color.w = f * obj['alpha_fade'] + ff * c['alpha']
+        except:
+            continue
+
+
 def update():
     """Method called each frame while the emitter exist"""
     cont = g.getCurrentController()
@@ -111,6 +140,7 @@ def update():
     # Fades
     scaleFade(obj)
     colorFade(obj)
+    alphaFade(obj)
 
     # Test if the object must end
     lifetime(obj)

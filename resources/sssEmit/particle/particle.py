@@ -161,6 +161,10 @@ def generateProperties(obj=None):
     addProperty('color_fade.b', 'FLOAT', 1.0, obj)
     addProperty('color_fade_in', 'FLOAT', 0.0, obj)
     addProperty('color_fade_out', 'FLOAT', 0.0, obj)
+    addProperty('is_alpha_fade', 'BOOL', False, obj)
+    addProperty('alpha_fade', 'FLOAT', 1.0, obj)
+    addProperty('alpha_fade_in', 'FLOAT', 0.0, obj)
+    addProperty('alpha_fade_out', 'FLOAT', 0.0, obj)
 
 
 def removeProperties(obj=None):
@@ -181,6 +185,10 @@ def removeProperties(obj=None):
     delProperty('color_fade.b')
     delProperty('color_fade_in')
     delProperty('color_fade_out')
+    delProperty('is_alpha_fade')
+    delProperty('alpha_fade')
+    delProperty('alpha_fade_in')
+    delProperty('alpha_fade_out')
 
 
 def updateValues():
@@ -212,8 +220,8 @@ def updateValues():
     obj.game.properties['color_fade.g'].value = emit.color_fade.g
     obj.game.properties['color_fade.b'].value = emit.color_fade.b
     obj.game.properties['color_fade_in'].value = emit.color_fade_in
-    # The minimum value of the scale fade out must be greater than the
-    # scale fade in one
+    # The minimum value of the color fade out must be greater than the
+    # color fade in one
     min_fade_out = emit.color_fade_in + 0.001
     fade_out = max(emit.color_fade_out, min_fade_out)
     obj.game.properties['color_fade_out'].value = fade_out
@@ -223,6 +231,20 @@ def updateValues():
         precision=bpy.types.Object.color_fade_out[1]['precision'],
         update=bpy.types.Object.color_fade_out[1]['update'],
         description=bpy.types.Object.color_fade_out[1]['description'])
+    obj.game.properties['is_alpha_fade'].value = emit.is_alpha_fade
+    obj.game.properties['alpha_fade'].value = emit.alpha_fade
+    obj.game.properties['alpha_fade_in'].value = emit.alpha_fade_in
+    # The minimum value of the alpha fade out must be greater than the
+    # alpha fade in one
+    min_fade_out = emit.alpha_fade_in + 0.001
+    fade_out = max(emit.alpha_fade_out, min_fade_out)
+    obj.game.properties['alpha_fade_out'].value = fade_out
+    bpy.types.Object.alpha_fade_out = bpy.props.FloatProperty(
+        default=fade_out,
+        min=min_fade_out,
+        precision=bpy.types.Object.alpha_fade_out[1]['precision'],
+        update=bpy.types.Object.alpha_fade_out[1]['update'],
+        description=bpy.types.Object.alpha_fade_out[1]['description'])
 
 
 def generateObjectProperties(update_callback):
@@ -293,6 +315,27 @@ def generateObjectProperties(update_callback):
         precision=3,
         update=update_callback,
         description='Fade end instant.')
+    bpy.types.Object.is_alpha_fade = bpy.props.BoolProperty(
+        default=False,
+        update=update_callback,
+        description='Should be the alpha transparency changed along the time?')
+    bpy.types.Object.alpha_fade = bpy.props.FloatProperty(
+        default=1.0,
+        min=0.0,
+        update=update_callback,
+        description='Final alpha.')
+    bpy.types.Object.alpha_fade_in = bpy.props.FloatProperty(
+        default=0.0,
+        min=0.0,
+        precision=3,
+        update=update_callback,
+        description='Fade start instant.')
+    bpy.types.Object.alpha_fade_out = bpy.props.FloatProperty(
+        default=0.0,
+        min=0.001,
+        precision=3,
+        update=update_callback,
+        description='Fade end instant.')
 
 
 def draw(context, layout):
@@ -349,6 +392,21 @@ def draw(context, layout):
                  text="in")
         row.prop(context.object,
                  "color_fade_out",
+                 text="out")
+    row = layout.row()
+    row.prop(context.object,
+             "is_alpha_fade",
+             text="Particle alpha fade")
+    if(context.object.is_alpha_fade):
+        row.prop(context.object,
+                 "alpha_fade",
+                 text="")
+        row = layout.row()
+        row.prop(context.object,
+                 "alpha_fade_in",
+                 text="in")
+        row.prop(context.object,
+                 "alpha_fade_out",
                  text="out")
 
 
