@@ -36,7 +36,9 @@ To create the material go to the properties panel and select **the materials tab
 You may call it **particle.smoke** again. In the **shading section** we must mark the **Shadeless** option (which will neglect the lighting effects), in the **Options section** the option **Object color** must be selected, and finally in the **transparency section** the **transparency** with an **alpha value of 0.0** must be activated:
 
 ![Setting a shadeless material](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/material_shadeless.png?raw=true)
+
 ![Setting an object controlled color](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/material_object_color.png?raw=true)
+
 ![Setting a transparent object](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/material_transparency.png?raw=true)
 
 ### Setting the smoke texture
@@ -134,3 +136,16 @@ Let's try our new particles system. Go to the first layer pressing `1` key, and 
 ![Final result](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/simple_smoke_result.png?raw=true)
 
 You can play a little bit to achieve some different effects.
+
+### Simple smoke
+
+It is just this example. You can find it [here](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/blends/sssEmit-SimpleSmoke.blend?raw=true)
+
+![Simple smoke](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/simple_smoke_result.png?raw=true)
+
+### Simple fire
+
+A similar sample to create a fire effect. You can find it [here](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/blends/sssEmit-SimpleFire.blend?raw=true)
+
+![Simple fire](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/simple_fire_result.png?raw=true)
+
