@@ -57,8 +57,80 @@ In this moment your object has recovered the visibility in the 3D screen.
 
 ### Setting the color
 
-Now the object color is controlled in the **Object tab**, section **display**. Let's set a grey color (0.025, 0.025, 0.025):
+Now the object color is controlled in the **Object tab**, section **display**.
+
+It is caused by the **Object color** option selected before, and it is a critical point to can perform alpha and color fade.
+
+Let's set a grey color (0.025, 0.025, 0.025):
 
 ![Setting the object color](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/object_color.png?raw=true)
 
+## Emitter generation
 
+### Creating the emitter
+
+We have generated our viewable plane for the particles, so now we need to create a particles emitter. Let's work on the first layer (remember that if you want that your emitter was dynamically added and removed to the scene you must place it in an inactive layer) pressing `1`, creating a plane again with **Add/Mesh/Plane** (name it **emitter.smoke**).
+
+The first thing that we will do is disabling the physical properties of the plane, and turn it invisible:
+
+![Setting the emitter physical properties](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/physics_nocollision_invisible.png?raw=true)
+
+And now we can convert our plane in an emitter instance going to the **particles** tab, and pressing **Transform into an emitter**:
+
+![Creating an emitter instance](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/new_emitter.png?raw=true)
+
+which will create some logic and game properties, and a particle object that we will discuss later.
+
+### Setting the emitter options
+
+The first option for the emitters is the **frustrum culling** one, which allows to deactivate the emitter when it is not visible by the camera (with a customizable radius). You can activate it and set a radius of 100.0 meters (It means that when the emitter is farther than 100.0 meters of the viewable zone it will stop emitting particles).
+
+The option **Emitter lifetime** can be used to limit the time while the emitter will be creating new particles (The emitter object will be destroyed after this time). Let's it inactive.
+
+Reduce the emission rate to 10.0 particles per second.
+
+Increase the emission angle variance to 15 degrees, increase the initial velocity to 1 m/s, and its variance to 0.5 m/s as well.
+
+![Setting the emitter options](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/emitter_options.png?raw=true)
+
+### Setting the particles options
+
+The **billboard** option is used to force that the particle z axis is ever oriented in the camera direction, which is really convenient for us, so let it active.
+
+We can use a particle lifetime to 3 seconds, such that after this time the particles will be destroyed.
+
+We will apply an scale fade to increase the particles size along the time. Let's increasing the scale 4 times starting at t=0, and ending when the particles will be destroyed (3 seconds).
+
+We can progressively change the smoke color, going to a full black for the second t=2.5.
+
+Apply an alpha fade as well, such that the particles start fading to alpha=0 in the second t=1.5, ending this process in the second t=3.
+
+![Setting the particles options](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/particle_options.png?raw=true)
+
+### Linking the particle viewable with the empty particle's object
+
+If you come back to the last layer with `Alt+0` you can see that a new empty object has been generated. This is the object that the emitter will generate as particles, and therefore you are interested into attaching you viewable to this new object.
+Just select your viewable object (particle.smoke), and with the `Shift` key pressed select the empty object (emitter.smoke.sssemit_particle), pressing the keys combination `Ctrl+P` and then the key `INTRO` to accept the linkage:
+
+![Linking the viewable to the particle](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/particle_linkage.png?raw=true)
+
+### Setting the physics of the particle
+
+Now select just the empty particle's object (emitter.smoke.sssemit_particle). By default in sssEmit the particles are rigid solid objects such that they will not interact with other objects (they are ghosts, so they are not receiving forces by collisions, and they are not actors not providing collisions).
+
+Therefore usually you only need to take care on the gravity. For instance, the smoke is floating in the air, and therefore we need an additional force to remove the gravity effect. To do it, in the **Logic** editor add a new **controller** of type **And**, and a new **actuator** of type **Motion**.
+Link the sensor **sssParticle.update** with the new controller, and this one with the new actuator.
+
+Set a force (0.0, 0.0, 10.0) deselecting the local coordinates. This force is slightly greater than the gravity one, so it will be enough to give a floating sensation.
+
+You can also set a torque (0.0, 0.0, 100.0) in local coordinates in order to slowly rotate the particles with the time.
+
+![The particle resulting logic](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/particle_logic.png?raw=true)
+
+## The final result
+
+Let's try our new particles system. Go to the first layer pressing `1` key, and run the Blender Game Engine pressing `P`:
+
+![Final result](https://github.com/sanguinariojoe/sonsilentsea/blob/wiki/doc/wiki/images/simple_smoke_result.png?raw=true)
+
+You can play a little bit to achieve some different effects.
