@@ -134,9 +134,15 @@ def point(obj):
         return obj.worldPosition, mathutils.Vector((0.0, 0.0, 0.0))
 
     elif obj['point'] == POINT_ALTERNATIVES[1]:
-        return meshVertex(obj)
+        p, n = meshVertex(obj)
+        p = obj.localOrientation * p + obj.worldPosition
+        n = obj.localOrientation * n
+        return p,n
 
-    return meshPoint(obj)
+    p, n = meshPoint(obj)
+    p = obj.localOrientation * p + obj.worldPosition
+    n = obj.localOrientation * n
+    return p,n
 
 
 def velocity(obj, n):
