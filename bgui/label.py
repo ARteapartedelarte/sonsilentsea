@@ -1,8 +1,7 @@
-from bgl import *
-import blf
+from .gl_utils import *
+from . import fonts as blf
+from .widget import Widget, BGUI_DEFAULT, BGUI_NO_NORMALIZE
 from math import *
-
-from .widget import Widget, BGUI_DEFAULT, BGUI_NORMALIZED
 
 
 class Label(Widget):
@@ -17,7 +16,7 @@ class Label(Widget):
 				'Size': 30,
 				}
 
-	def __init__(self, parent, name, text="", font=None, pt_size=None, color=None,
+	def __init__(self, parent, name=None, text="", font=None, pt_size=None, color=None,
 				outline_color=None, outline_size=None, outline_smoothing=None, pos=[0, 0], sub_theme='', options=BGUI_DEFAULT):
 		"""
 		:param parent: the widget's parent
@@ -40,7 +39,6 @@ class Label(Widget):
 			self.fontid = blf.load(font) if font else 0
 		blf.enable(self.fontid, blf.ROTATION)
 
-
 		if pt_size:
 			self.pt_size = pt_size
 		else:
@@ -52,7 +50,7 @@ class Label(Widget):
 			self.color = self.theme['Color']
 
 		if outline_color:
-			self.outline_color = color
+			self.outline_color = outline_color
 		else:
 			self.outline_color = self.theme['OutlineColor']
 
@@ -79,7 +77,7 @@ class Label(Widget):
 		blf.size(self.fontid, self.pt_size, 72)
 		size = [blf.dimensions(self.fontid, value)[0], blf.dimensions(self.fontid, 'Mj')[0]]
 
-		if self.options & BGUI_NORMALIZED:
+		if not (self.options & BGUI_NO_NORMALIZE):
 			size[0] /= self.parent.size[0]
 			size[1] /= self.parent.size[1]
 

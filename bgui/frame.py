@@ -1,4 +1,4 @@
-from bgl import *
+from .gl_utils import *
 from .widget import Widget, BGUI_DEFAULT
 
 
@@ -14,7 +14,7 @@ class Frame(Widget):
 				'BorderColor': (0, 0, 0, 1),
 				}
 
-	def __init__(self, parent, name, border=None, aspect=None, size=[1, 1], pos=[0, 0],
+	def __init__(self, parent, name=None, border=None, aspect=None, size=[1, 1], pos=[0, 0],
 				sub_theme='', options=BGUI_DEFAULT):
 		"""
 		:param parent: the widget's parent
@@ -30,37 +30,22 @@ class Frame(Widget):
 
 		Widget.__init__(self, parent, name, aspect, size, pos, sub_theme, options)
 
-		self._colors = [
+		#: The colors for the four corners of the frame.
+		self.colors = [
 				self.theme['Color1'],
 				self.theme['Color2'],
 				self.theme['Color3'],
 				self.theme['Color4']
 				]
 
+		#: The color of the border around the frame.
 		self.border_color = self.theme['BorderColor']
-
-		if border != None:
-			self._border = border
+		
+		#: The size of the border around the frame.
+		if border is not None:
+			self.border = border
 		else:
-			self._border = self.theme['BorderSize']
-
-	@property
-	def colors(self):
-		"""The colors for the four corners of the frame."""
-		return self._colors
-
-	@colors.setter
-	def colors(self, value):
-		self._colors = value
-
-	@property
-	def border(self):
-		"""The size of the border around the frame."""
-		return self._border
-
-	@border.setter
-	def border(self, value):
-		self._border = value
+			self.border = self.theme['BorderSize']
 
 	def _draw(self):
 		"""Draw the frame"""

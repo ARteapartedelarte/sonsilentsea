@@ -42,7 +42,7 @@ class ListBoxRenderer():
 		:param item: the item to be rendered
 		:rtype: :py:class:`bgui.label.Label`
 		"""
-		self.label.text = item.__repr__()
+		self.label.text = str(item)
 
 		return self.label
 
@@ -60,7 +60,7 @@ class ListBox(Widget):
 				'Padding': 0,
 				}
 
-	def __init__(self, parent, name, items=[], padding=0, aspect=None, size=[1, 1], pos=[0, 0], sub_theme='', options=BGUI_DEFAULT):
+	def __init__(self, parent, name=None, items=[], padding=0, aspect=None, size=[1, 1], pos=[0, 0], sub_theme='', options=BGUI_DEFAULT):
 		"""
 		:param parent: the widget's parent
 		:param name: the name of the widget
@@ -76,10 +76,8 @@ class ListBox(Widget):
 		Widget.__init__(self, parent, name, aspect=aspect, size=size, pos=pos, sub_theme='', options=options)
 
 		self._items = items
-		if padding:
-			self._padding = padding
-		else:
-			self._padding = self.theme['Padding']
+		#: The amount of extra spacing to put between items
+		self.padding = padding if padding is not None else self.theme['Padding']
 
 		self.highlight = Frame(self, "frame", border=1, size=[1, 1], pos=[0, 0])
 		self.highlight.visible = False
@@ -94,28 +92,8 @@ class ListBox(Widget):
 		self.selected = None
 		self._spatial_map = {}
 
-		self._renderer = ListBoxRenderer(self)
-
-	##
-	# These props are created simply for documentation purposes
-	#
-	@property
-	def renderer(self):
-		"""The ListBoxRenderer to use to display items"""
-		return self._renderer
-
-	@renderer.setter
-	def renderer(self, value):
-		self._renderer = value
-
-	@property
-	def padding(self):
-		"""The amount of extra spacing to put between items"""
-		return self._padding
-
-	@padding.setter
-	def padding(self, value):
-		self._padding = value
+		#: The ListBoxRenderer to use to display items
+		self.renderer = ListBoxRenderer(self)
 
 	@property
 	def items(self):

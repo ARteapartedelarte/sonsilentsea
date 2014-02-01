@@ -1,5 +1,5 @@
-from bgl import *
-from .widget import Widget, BGUI_MOUSE_NONE
+from .gl_utils import *
+from .widget import Widget, BGUI_MOUSE_NONE, BGUI_NO_NORMALIZE, BGUI_NO_THEME
 from .theme import Theme
 import weakref
 
@@ -23,23 +23,21 @@ class System(Widget):
 		# the position will be the top left of the screen
 
 		# Get some viewport info
-		view_buf = Buffer(GL_INT, 4)
-		glGetIntegerv(GL_VIEWPORT, view_buf)
-		view = view_buf.to_list() if hasattr(view_buf, "to_list") else view_buf.list
+		view = glGetIntegerv(GL_VIEWPORT)
 
 		# Theming
 		self._system = weakref.ref(self)
 		self.theme = Theme(theme)
 
 		Widget.__init__(self, self, "<System>", size=[view[2], view[3]],
-					pos=[0, 0], options=0)
+					pos=[0, 0], options=BGUI_NO_NORMALIZE|BGUI_NO_THEME)
 
 		self._focused_widget = weakref.ref(self)
 		self.lock_focus = False
 
 	@property
 	def focused_widget(self):
-		"""The widget which currently has \"focus\""""
+		'''The widget which currently has "focus"'''
 		return self._focused_widget()
 
 	@focused_widget.setter
@@ -82,9 +80,7 @@ class System(Widget):
 		"""
 
 		# Get some viewport info
-		view_buf = Buffer(GL_INT, 4)
-		glGetIntegerv(GL_VIEWPORT, view_buf)
-		view = view_buf.to_list() if hasattr(view_buf, "to_list") else view_buf.list
+		view = glGetIntegerv(GL_VIEWPORT)
 
 		# Update the size if the viewport has changed
 		if self.size != [view[2], view[3]]:

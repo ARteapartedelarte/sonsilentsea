@@ -1,15 +1,14 @@
-from bgl import *
-from bge import texture
-import aud
+from .gl_utils import *
+from .texture import VideoTexture
 
-from .widget import Widget, BGUI_DEFAULT
+from .widget import Widget, BGUI_DEFAULT, WeakMethod
 from .image import Image
 
 
 class Video(Image):
-	"""Widget for displaying video only (i.e., no sound)"""
+	"""Widget for displaying video"""
 
-	def __init__(self, parent, name, vid, play_audio=False, repeat=0, aspect=None, size=[1, 1], pos=[0, 0],
+	def __init__(self, parent, vid, name=None, play_audio=False, repeat=0, aspect=None, size=[1, 1], pos=[0, 0],
 				sub_theme='', options=BGUI_DEFAULT):
 		"""
 		:param parent: the widget's parent
@@ -27,82 +26,36 @@ class Video(Image):
 
 		Image.__init__(self, parent, name, None, aspect, size, pos, sub_theme=sub_theme, options=options)
 
-		# Bind and load the texture data
-		glBindTexture(GL_TEXTURE_2D, self.tex_id)
-		video = texture.VideoFFmpeg(vid)
-		video.repeat = repeat
-		video.play()
-		im_buf = video.image
+		self._texture = VideoTexture(vid, GL_LINEAR, repeat, play_audio)
 
-		if im_buf:
-			# Setup some parameters
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
-
-			# Upload the texture data
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, video.size[0], video.size[1],
-							0, GL_RGBA, GL_UNSIGNED_BYTE, im_buf)
-		else:
-			print("Unable to load the video:", vid)
-
-		if play_audio:
-			f = aud.Factory(vid)
-			self.aud_handle = aud.device().play(f)
-		else:
-			self.aud_handle = None
-
-		# Store the video for later
-		self.video = video
+		self._on_finish = None
+		self._on_finish_called = False
 
 	def play(self, start, end, use_frames=True, fps=None):
-		start = float(start)
-		end = float(end)
+		self._texture.play(start, end, use_frames, fps)
 
-		if use_frames:
-			if not fps:
-				fps = self.video.framerate
-				print("Using fps:", fps)
-			start /= fps
-			end /= fps
+		# Reset the on_finish callback after every play
+		self._on_finish_called = False
 
-		if start == end:
-			end += 0.1
-		self.video.stop()
-		self.video.range = [start, end]
-		self.video.play()
+	@property
+	def on_finish(self):
+		"""The widget's on_finish callback"""
+		return self._on_finish
 
-	def _cleanup(self):
-		if self.aud_handle:
-			self.aud_handle.stop()
-
-		# Set self.video to None to force VideoFFmpeg() to be deleted and free
-		# its video data.
-		self.video = None
-		Image._cleanup(self)
-
-	def update_image(self, img):
-		"""This does nothing on a Video widget"""
-
-		# This breaks the Liskov substitution principle, but I think the way to solve
-		# that is to change the Image interface a bit to avoid the problem.
-
-		Image.update_image(self, None)
+	@on_finish.setter
+	def on_finish(self, value):
+		self._on_finish = WeakMethod(value)
 
 	def _draw(self):
 		"""Draws the video frame"""
 
-		# Upload the next frame to the graphics
-		im_buf = self.video.image
-
-		if im_buf:
-			glBindTexture(GL_TEXTURE_2D, self.tex_id)
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.video.size[0], self.video.size[1],
-							0, GL_RGBA, GL_UNSIGNED_BYTE, im_buf)
+		self._texture.update()
 
 		# Draw the textured quad
 		Image._draw(self)
 
-		# Invalidate the image
-		self.video.refresh()
+		# Check if the video has finished playing through
+		if self._texture.video.status == 3:
+			if self._on_finish and not self._on_finish_called:
+				self.on_finish(self)
+				self._on_finish_called = True

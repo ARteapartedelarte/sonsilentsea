@@ -3,15 +3,14 @@
 This module defines the following constants:
 
 *Widget options*
-	* BGUI_NONE = 0
+	* BGUI_DEFAULT = 0
 	* BGUI_CENTERX = 1
 	* BGUI_CENTERY = 2
-	* BGUI_NORMALIZED = 4
-	* BGUI_THEMED = 8
+	* BGUI_NO_NORMALIZE = 4
+	* BGUI_NO_THEME = 8
 	* BGUI_NO_FOCUS = 16
 	* BGUI_CACHE = 32
 
-	* BGUI_DEFAULT = BGUI_NORMALIZED | BGUI_THEMED
 	* BGUI_CENTERED = BGUI_CENTERX | BGUI_CENTERY
 
 *Widget overflow*
@@ -38,15 +37,14 @@ import time
 from math import*
 
 # Widget options
-BGUI_NONE = 0
+BGUI_DEFAULT = 0
 BGUI_CENTERX = 1
 BGUI_CENTERY = 2
-BGUI_NORMALIZED = 4
-BGUI_THEMED = 8
+BGUI_NO_NORMALIZE = 4
+BGUI_NO_THEME = 8
 BGUI_NO_FOCUS = 16
 BGUI_CACHE = 32
 
-BGUI_DEFAULT = BGUI_NORMALIZED | BGUI_THEMED
 BGUI_CENTERED = BGUI_CENTERX | BGUI_CENTERY
 
 # Widget overflow
@@ -113,7 +111,7 @@ class ArrayAnimation(Animation):
 		super().__init__(widget, attrib, value, time_, callback)
 		self.prev_value = getattr(widget, attrib)[:]
 
-		if attrib == "position" and widget.options & BGUI_NORMALIZED:
+		if attrib == "position" and not (widget.options & BGUI_NO_NORMALIZE):
 			self.prev_value[0] /= widget.parent.size[0]
 			self.prev_value[1] /= widget.parent.size[1]
 
@@ -129,7 +127,7 @@ class ArrayAnimation(Animation):
 		self.last_update = time.time()
 
 		new_value = getattr(self.widget, self.attrib)[:]
-		if self.attrib == "position" and self.widget.options & BGUI_NORMALIZED:
+		if self.attrib == "position" and not (self.widget.options & BGUI_NO_NORMALIZE):
 			new_value[0] /= self.widget.parent.size[0]
 			new_value[1] /= self.widget.parent.size[1]
 
@@ -148,7 +146,7 @@ class Widget:
 	theme_section = 'Widget'
 	theme_options = {}
 
-	def __init__(self, parent, name, aspect=None, size=[0, 0], pos=[0, 0], sub_theme='',
+	def __init__(self, parent, name=None, aspect=None, size=[0, 0], pos=[0, 0], sub_theme='',
 			options=BGUI_DEFAULT):
 		"""
 		:param parent: the widget's parent
@@ -160,7 +158,13 @@ class Widget:
 		:param options: various other options
 		"""
 
-		self._name = name
+		if name is None:
+			name = "1"
+			while name in parent.children:
+				name = str(int(name) + 1)
+
+		#: The widget's name
+		self.name = name
 		self.options = options
 
 		# Store the system so children can access theming data
@@ -172,10 +176,12 @@ class Widget:
 		self._generate_theme()
 
 		self._hover = False
-		self._frozen = False
+		
+		#: Whether or not the widget should accept events
+		self.frozen = False
 
-		# The widget is visible by default
-		self._visible = True
+		#: Whether or not the widget is visible
+		self.visible = True
 
 		# Event callbacks
 		self._on_click = None
@@ -192,8 +198,9 @@ class Widget:
 		# A dictionary to store children widgets
 		self._children = OrderedDict()
 
-		# The z-index of the widget, determines drawing order
-		self._z_index = 0
+		#: The widget's z-index. Widget's with a higher z-index are drawn
+		#: over those that have a lower z-index
+		self.z_index = 0
 
 		# Setup the widget's position
 		self._position = [None] * 4
@@ -202,9 +209,9 @@ class Widget:
 
 		if aspect:
 			size = [self.size[1] * aspect, self.size[1]]
-			if self.options & BGUI_NORMALIZED:
+			if not (self.options & BGUI_NO_NORMALIZE):
 				size = [size[0] / self.parent.size[0], size[1] / self.parent.size[1]]
-			self._update_position(size, self._base_pos, self._base_rot)
+			self._update_position(size, self._base_pos)
 
 		# A list of running animations
 		self.anims = []
@@ -212,14 +219,14 @@ class Widget:
 	def __del__(self):
 		# Debug print
 		# print("Deleting", self.name)
-		self._cleanup()
+		pass
 
 	def _generate_theme(self):
 		if isinstance(self.theme_options, set):
 			if self.system.theme:
 				self.system.theme.warn_legacy(self.theme_section)
 			# Legacy theming
-			if self.system.theme and self.options & BGUI_THEMED and self.theme_section != Widget.theme_section:
+			if self.system.theme and not (self.options & BGUI_NO_THEME) and self.theme_section != Widget.theme_section:
 				if self.system.theme.supports(self):
 					self.theme = self.system.theme
 				else:
@@ -231,7 +238,7 @@ class Widget:
 			theme = self.system.theme
 			theme = theme[self.theme_section] if theme.has_section(self.theme_section) else None
 
-			if theme and self.options & BGUI_THEMED:
+			if theme and not (self.options & BGUI_NO_THEME):
 				self.theme = {}
 
 				for k, v in self.theme_options.items():
@@ -241,12 +248,6 @@ class Widget:
 						self.theme[k] = v
 			elif not hasattr(self, "theme"):
 				self.theme = self.theme_options
-
-	def _cleanup(self):
-		"""Override this if needed"""
-		for child in self.children:
-			self.children[child]._cleanup()
-		self._children = OrderedDict()
 
 	def _rotatePoint(self, point, center, angle):
 		p = point[:]
@@ -265,10 +266,12 @@ class Widget:
 
 	def _update_position(self, size=None, pos=None, rot=None):
 		if size is not None:
+			size = list(size)
 			self._base_size = size[:]
 		else:
 			size = self._base_size[:]
 		if pos is not None:
+			pos = list(pos)
 			self._base_pos = pos[:]
 		else:
 			pos = self._base_pos[:]
@@ -277,7 +280,7 @@ class Widget:
 		else:
 			rot = self._base_rot
 
-		if self.options & BGUI_NORMALIZED:
+		if not (self.options & BGUI_NO_NORMALIZE):
 			pos[0] *= self.parent.size[0]
 			pos[1] *= self.parent.size[1]
 
@@ -313,52 +316,15 @@ class Widget:
 
 		# Update any children
 		for widget in self.children.values():
-			widget._update_position(widget._base_size, widget._base_pos, widget._base_rot)
+			widget._update_position(widget._base_size,
+			                        widget._base_pos,
+			                        widget._base_rot)
 
 		# Rotate the widget
 		# In 2D the rotations are a linear application
 		self._rotation = rot
 		if(self.rotation):
 			self._rotate([x + 0.5*width, y + 0.5*height], rot)
-
-	@property
-	def name(self):
-		"""The widget's name"""
-		return self._name
-
-	@name.setter
-	def name(self, value):
-		self._name = value
-
-	@property
-	def z_index(self):
-		"""The widget's z-index. Widget's with a higher z-index are drawn
-		over those that have a lower z-index"""
-		return self._z_index
-
-	@z_index.setter
-	def z_index(self, value):
-		self._z_index = value
-		self.parent._children = OrderedDict(sorted(self.parent._children.items(),
-			key=lambda item: item[1].z_index))
-
-	@property
-	def frozen(self):
-		"""Whether or not the widget should accept events"""
-		return self._frozen
-
-	@frozen.setter
-	def frozen(self, value):
-		self._frozen = value
-
-	@property
-	def visible(self):
-		"""Whether or not the widget is visible"""
-		return self._visible
-
-	@visible.setter
-	def visible(self, value):
-		self._visible = value
 
 	@property
 	def on_click(self):
@@ -419,15 +385,15 @@ class Widget:
 		"""The widget's parent"""
 		return self._parent
 
+	@parent.setter
+	def parent(self, value):
+		self._parent = value
+		self._update_position(self._base_size, self._base_value)
+
 	@property
 	def system(self):
 		"""A reference to the system object"""
 		return self._system()
-
-	@parent.setter
-	def parent(self, value):
-		self._parent = value
-		self._update_position(self._base_size, self._base_value, self._base_rot)
 
 	@property
 	def children(self):
@@ -583,7 +549,7 @@ class Widget:
 		if not isinstance(widget, Widget):
 			raise TypeError("Expected a Widget object")
 
-		if widget in self.children:
+		if widget in self.children.values():
 			raise ValueError("%s is already attached to this widget" % (widget.name))
 
 		self.children[widget.name] = widget

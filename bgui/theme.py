@@ -1,8 +1,14 @@
-import configparser
+# Hack to make ReadTheDocs happy until they get Py3 support working again.
+try:
+	import configparser
 
-# The following is a bit of a hack so we can get our own SectionProxy in.
-# This allows us to return some nicer values from our config files
-configparser._SectionProxy = configparser.SectionProxy
+	# The following is a bit of a hack so we can get our own SectionProxy in.
+	# This allows us to return some nicer values from our config files
+	configparser._SectionProxy = configparser.SectionProxy
+except ImportError:
+	import ConfigParser as configparser
+	configparser._SectionProxy = object
+
 
 
 class NewSectionProxy(configparser._SectionProxy):

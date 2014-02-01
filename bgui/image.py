@@ -7,8 +7,8 @@ This module defines the following constants:
 	* BGUI_LINEAR
 """
 
-from bgl import *
-from bge import texture
+from .gl_utils import *
+from .texture import ImageTexture
 
 from .widget import Widget, BGUI_DEFAULT, BGUI_CACHE
 
@@ -20,9 +20,7 @@ BGUI_LINEAR = GL_LINEAR
 class Image(Widget):
 	"""Widget for displaying images"""
 
-	_cache = {}
-
-	def __init__(self, parent, name, img, aspect=None, size=[0, 0], pos=[0, 0],
+	def __init__(self, parent, img, name=None, aspect=None, size=[0, 0], pos=[0, 0],
 				texco=[(0, 0), (1, 0), (1, 1), (0, 1)], interp_mode=BGUI_LINEAR, sub_theme='', options=BGUI_DEFAULT):
 		""":param parent: the widget's parent
 		:param name: the name of the widget
@@ -38,46 +36,30 @@ class Image(Widget):
 
 		Widget.__init__(self, parent, name, aspect, size, pos, sub_theme, options)
 
-		# Generate a texture
-		id_buf = Buffer(GL_INT, 1)
-		glGenTextures(1, id_buf)
+		if img != None:
+			self._texture = ImageTexture(img, interp_mode, options & BGUI_CACHE)
+		else:
+			self._texture = None
 
-		self.tex_id = id_buf.to_list()[0] if hasattr(id_buf, "to_list") else id_buf.list[0]
+		#: The UV texture coordinates to use for the image.
 		self.texco = texco
-		self._interp_mode = interp_mode
-		self.image = None
-		self.update_image(img)
 
-		self._color = [1, 1, 1, 1]
+		#: The color of the plane the texture is on.
+		self.color = [1, 1, 1, 1]
 
 	@property
 	def interp_mode(self):
 		"""The type of image filtering to be performed on the texture."""
-		return self._interp_mode
+		return self._texture.interp_mode
 
 	@interp_mode.setter
 	def interp_mode(self, value):
-		self._interp_mode = value
+		self._texture.interp_mode = value
 
 	@property
-	def color(self):
-		"""The color of the plane the texture is on."""
-		return self._color
-
-	@color.setter
-	def color(self, value):
-		self._color = value
-
-	def _cleanup(self):
-		id_buf = Buffer(GL_INT, 1)
-		id_buf[0] = self.tex_id
-		glDeleteTextures(1, id_buf)
-
-		# Set self.image to None to force ImageFFmpeg() to be deleted and free
-		# its image data.
-		self.image = None
-
-		Widget._cleanup(self)
+	def image_size(self):
+		"""The size (in pixels) of the currently loaded image, or [0, 0] if an image is not loaded"""
+		return self._texture.size
 
 	def update_image(self, img):
 		"""Changes the image texture
@@ -86,41 +68,7 @@ class Image(Widget):
 		:rtype: None
 		"""
 
-		# Try to avoid unnecessary texture uploads
-		if img == self.image:
-			return
-
-		self.image = img
-
-		glBindTexture(GL_TEXTURE_2D, self.tex_id)
-
-		if img in Image._cache:
-			# Image has already been loaded from disk, recall it from the cache
-			image = Image._cache[img]
-		else:
-			# Load the texture data from disk
-			image = texture.ImageFFmpeg(img)
-			image.scale = False
-			if self.options & BGUI_CACHE:
-				Image._cache[img] = image
-
-		im_buf = image.image
-
-		# If the image failed to load the im_buf will be None
-		# If this happens stop before things get ugly.
-		if im_buf == None:
-			print("Unable to load the image %s" % img)
-			return
-
-		# Setup some parameters
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, self.interp_mode)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, self.interp_mode)
-
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
-
-		# Upload the texture data
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.size[0], image.size[1], 0,
-						GL_RGBA, GL_UNSIGNED_BYTE, im_buf)
+		self._texture.reload(img)
 
 	def _draw(self):
 		"""Draws the image"""
@@ -133,7 +81,7 @@ class Image(Widget):
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 		# Bind the texture
-		glBindTexture(GL_TEXTURE_2D, self.tex_id)
+		self._texture.bind()
 
 		# Draw the textured quad
 		glColor4f(*self.color)
