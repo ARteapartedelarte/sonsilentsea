@@ -34,7 +34,7 @@ def load():
     cont = g.getCurrentController()
     obj = cont.owner
     obj['t'] = 0.0  # Emitter lifetime
-    obj['count'] = 0  # Number of particles emitted
+    obj['pending'] = 0.0  # Number of pending particles to be emitted
     return
 
 
@@ -232,7 +232,7 @@ def generateParticle(obj):
         part.worldOrientation = cam.worldOrientation
 
 
-    obj['count'] += 1
+    obj['pending'] -= 1.0
     return
 
 
@@ -254,10 +254,10 @@ def update():
         return
 
     # Targeted number of particles and remaining ones to achieve it
-    target = int(obj['t']*obj['rate'])
-    n = target - obj['count']
+    dt = 1.0/g.getLogicTicRate()
+    obj['pending'] += dt * obj['rate']
 
-    while(obj['count'] < n):
+    while(obj['pending'] >= 1.0):
         generateParticle(obj)
 
     # Test if the object must end
