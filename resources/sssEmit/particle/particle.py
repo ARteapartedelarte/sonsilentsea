@@ -194,6 +194,7 @@ def removeProperties(obj=None):
 def updateValues():
     """Update the particles emitter values."""
     generateProperties()
+    loadScript()
 
     obj = getParticle()
     emit = bpy.context.object

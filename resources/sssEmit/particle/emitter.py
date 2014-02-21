@@ -153,6 +153,7 @@ def removeProperties():
 def updateValues():
     """Update the particles emitter values."""
     generateProperties()
+    loadScript()
 
     obj = bpy.context.object
     obj.game.properties['culling'].value = obj.frustrum_culling
