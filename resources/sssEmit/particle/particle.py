@@ -456,6 +456,12 @@ def createPhysics(obj=None):
     obj.game.physics_type = 'RIGID_BODY'
     obj.game.use_actor = False
     obj.game.use_ghost = True
+    mask = [False]*8
+    mask[-2] = True
+    obj.game.collision_group = mask
+    mask = [False]*8
+    mask[-1] = True
+    obj.game.collision_mask = mask    
 
 
 def create_particle():
