@@ -90,7 +90,6 @@ def load():
 	enemies[0]['floating'] = 0.25
 	enemies[0]['angles'] = [-radians(15.0), -radians(3.0)]
 	enemies[0]['propulsion'] = 0.0
-	enemies[0].children['Ship.Liberty.Fire.left.000']['emitteron'] = True
 
 	print('Loading bouy object...')
 	Manager.load_blender_file('AI/Bouy/Bouy.blend')
