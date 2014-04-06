@@ -20,10 +20,6 @@
 
 import bge
 from bge import logic as g
-
-
-import bge
-from bge import logic as g
 from math import *
 from mathutils import *
 
@@ -47,7 +43,7 @@ class sssDynamic(bge.types.KX_GameObject):
         m = self.mass
         if 'real_mass' in self:
             m = float(self['real_mass'])
-        v = self.v.length
+        v = self.vback.length
         return m * v
 
     def getKineticEnergy(self):
@@ -59,5 +55,5 @@ class sssDynamic(bge.types.KX_GameObject):
         m = self.mass
         if 'real_mass' in self:
             m = float(self['real_mass'])
-        v2 = self.v.length_squared
+        v2 = self.vback.length_squared
         return 0.5 * m * v2

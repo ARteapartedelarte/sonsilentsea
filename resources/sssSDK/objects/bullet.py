@@ -20,15 +20,14 @@
 
 import bpy
 from os import path
+import sssSDK.objects.dynamic as dynamic
 
 
 # Module data
-NAME = 'Dynamic object'
-DESCRIPION = 'A dynamic object'
-CLASS_NAME = 'sssDynamic'
-SCRIPT_NAME = 'sss_dynamic'
-
-MASS_FACTOR = 1E-3
+NAME = 'Bullet'
+DESCRIPION = 'Bullet'
+CLASS_NAME = 'sssBullet'
+SCRIPT_NAME = 'sss_bullet'
 
 
 def scriptPaths():
@@ -87,7 +86,10 @@ def delProperty(name):
 
 def generateProperties():
     """Ensure that the object has the required properties."""
-    addProperty('real_mass', 'STRING', '1.0')
+    obj = bpy.context.object
+    addProperty('shell', 'FLOAT', 10.0)
+    addProperty('explosion', 'STRING', '')
+    addProperty('water', 'STRING', '')
 
 
 def updateValues():
@@ -96,19 +98,29 @@ def updateValues():
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['real_mass'].value = obj.sss_mass
-    m = min(10000.0, max(0.01, MASS_FACTOR * float(obj.sss_mass)))
-    obj.game.mass = m
+    obj.game.properties['shell'].value = obj.sss_shell
+    obj.game.properties['explosion'].value = obj.sss_bullet_explosion
+    obj.game.properties['water'].value = obj.sss_bullet_water
 
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_mass = bpy.props.StringProperty(
-        default='1.0',
+    bpy.types.Object.sss_shell = bpy.props.FloatProperty(
+        default=10.0,
+        min=0.0,
         update=update_callback,
-        description='Real mass of the object. It is needed due to the'
-                    ' restrictions imposed by Blender in the mass field')
+        description='Explosive shell in kilograms')
+    bpy.types.Object.sss_bullet_explosion = bpy.props.StringProperty(
+        default='',
+        update=update_callback,
+        description="Explosion object. Leave it empty to don't generate any"
+             " object when the bullet collides")
+    bpy.types.Object.sss_bullet_water = bpy.props.StringProperty(
+        default='',
+        update=update_callback,
+        description="Water explosion object. Leave it empty to don't generate"
+             " any object when the bullet hits the water")
 
 
 def loadScript():
@@ -168,30 +180,24 @@ def createLogic():
     obj.game.controllers[-1].text = text
 
 
-def createPhysics():
-    obj = bpy.context.active_object
-
-    obj.game.physics_type = 'RIGID_BODY'
-    mask = list(obj.game.collision_group)
-    mask[-1] = False
-    mask[-2] = False
-    obj.game.collision_group = mask
-    mask = list(obj.game.collision_mask)
-    mask[-1] = False
-    mask[-2] = False
-    obj.game.collision_mask = mask
-    obj.game.mass = MASS_FACTOR * float(obj.sss_mass)
-
-
 def create():
+    dynamic.create()
     generateProperties()
     loadScript()
     createLogic()
-    createPhysics()
 
 
 def draw(context, layout):
+    dynamic.draw(context, layout)
     row = layout.row()
     row.prop(context.object,
-             "sss_mass",
-             text="mass (kg)")
+             "sss_shell",
+             text="shell (kg)")
+    row = layout.row()
+    row.prop(context.object,
+             "sss_bullet_explosion",
+             text="Explosion object")
+    row = layout.row()
+    row.prop(context.object,
+             "sss_bullet_water",
+             text="Water explosion object.")

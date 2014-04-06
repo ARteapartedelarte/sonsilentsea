@@ -272,15 +272,12 @@ class sssSDK(bpy.types.Panel):
 
 
 def register():
-    # bpy.utils.register_class(emitter.create_emitter)
-    # bpy.utils.register_class(emitter.remove_emitter)
     bpy.utils.register_class(sssSDK)
 
 
 def unregister():
-    # bpy.utils.unregister_class(emitter.create_emitter)
-    # bpy.utils.unregister_class(emitter.remove_emitter)
     bpy.utils.unregister_class(sssSDK)
+
 
 if __name__ == "__main__":
     register()
