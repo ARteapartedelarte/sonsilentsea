@@ -23,6 +23,10 @@ from bge import logic as g
 from math import *
 from mathutils import *
 
+
+MASS_FACTOR = 1e-3
+
+
 class sssDynamic(bge.types.KX_GameObject):
     def __init__(self, obj):
         self.v = None
