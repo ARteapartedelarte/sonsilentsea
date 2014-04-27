@@ -35,6 +35,8 @@ for f in mod_files:
     if f.endswith('.py'):
         f = f[:-3]
     exec('import sssSDK.objects.{0} as {0}'.format(f))
+    if eval('{}'.format(f)).SELECTABLE is False:
+        continue
     objects.modules.append(eval('{}'.format(f)))
 
 bl_info = {

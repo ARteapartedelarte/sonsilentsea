@@ -25,6 +25,7 @@ from os import path
 # Module data
 NAME = 'Dynamic object'
 DESCRIPION = 'A dynamic object'
+SELECTABLE = True
 CLASS_NAME = 'sssDynamic'
 SCRIPT_NAME = 'sss_dynamic'
 

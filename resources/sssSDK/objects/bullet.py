@@ -26,6 +26,7 @@ import sssSDK.objects.dynamic as dynamic
 # Module data
 NAME = 'Bullet'
 DESCRIPION = 'Bullet'
+SELECTABLE = True
 CLASS_NAME = 'sssBullet'
 SCRIPT_NAME = 'sss_bullet'
 

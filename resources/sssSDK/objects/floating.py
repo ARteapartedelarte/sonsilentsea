@@ -26,6 +26,7 @@ import sssSDK.objects.dynamic as dynamic
 # Module data
 NAME = 'Floating object'
 DESCRIPION = 'A floating (non-propelled) object'
+SELECTABLE = True
 CLASS_NAME = 'sssFloating'
 SCRIPT_NAME = 'sss_floating'
 
