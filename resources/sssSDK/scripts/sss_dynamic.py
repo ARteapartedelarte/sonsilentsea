@@ -24,7 +24,7 @@ from math import *
 from mathutils import *
 
 
-MASS_FACTOR = 1e-3
+MASS_FACTOR = @MASS_FACTOR@
 
 
 class sssDynamic(bge.types.KX_GameObject):

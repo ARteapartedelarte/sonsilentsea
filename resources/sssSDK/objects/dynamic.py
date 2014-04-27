@@ -146,6 +146,14 @@ def loadScript():
                           filter_folder=True,
                           filemode=9,
                           internal=True)
+    # Now we must set some script data
+    text = bpy.data.texts[SCRIPT_NAME + '.py']
+    text.clear()
+    f = open(filepath, 'r')
+    txt = f.read()
+    txt = txt.replace('@MASS_FACTOR@', '{}'.format(MASS_FACTOR))
+    text.write(txt)
+    f.close()
 
 
 def createLogic():
