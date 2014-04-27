@@ -26,7 +26,7 @@ from sss_dynamic import MASS_FACTOR
 from sss_dynamic import sssDynamic
 
 
-GRAV = 9.81
+GRAV = abs(g.getCurrentScene().gravity.z)
 RHO = 1025.0
 
 
