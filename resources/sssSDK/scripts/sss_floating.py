@@ -24,15 +24,17 @@ from math import *
 from mathutils import *
 from sss_dynamic import MASS_FACTOR
 from sss_dynamic import sssDynamic
+from sss_destroyable import sssDestroyable
 
 
 GRAV = abs(g.getCurrentScene().gravity.z)
 RHO = 1025.0
 
 
-class sssFloating(sssDynamic):
+class sssFloating(sssDynamic, sssDestroyable):
     def __init__(self, obj):
-        super(sssFloating, self).__init__(obj)
+        sssDynamic.__init__(self, obj)
+        sssDestroyable.__init__(self, obj)
         self.collisionCallbacks.append(self.collision)
 
     def displacement(self):
@@ -65,9 +67,12 @@ class sssFloating(sssDynamic):
                                                           0.0))
 
     def update(self):
-        super(sssFloating, self).update()
+        sssDynamic.update(self)
+        sssDestroyable.update(self)
 
-        fz = GRAV * self.displacement()
+        disp = self.displacement()
+        added_mass = min(self.added_mass, 0.5 * self.displacement())
+        fz = GRAV * (disp - added_mass)
         f = Vector((0.0, 0.0, fz)) * MASS_FACTOR
         self.applyForce(f, False)
 

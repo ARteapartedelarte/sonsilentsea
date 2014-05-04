@@ -24,48 +24,53 @@ from math import *
 from mathutils import *
 
 
-MASS_FACTOR = @MASS_FACTOR@
-
-
-class sssDynamic(bge.types.KX_GameObject):
+class sssDestroyable():
     def __init__(self, obj):
-        self.v = None
-        self.vback = None
+        self.added_mass = 0.0
+        self.collisionCallbacks.append(self.recv_collision)
 
     def update(self):
-        self.vback = self.v
-        self.v = self.getLinearVelocity()
-        if self.vback is None:
-            self.vback = self.v
+        if self['HP'] < 0.0:
+            self.added_mass += -self['HP']
 
-    def getLinearMomentum(self, back_step=True):
-        """Returns the linear momentum p = m * v. You may consider using the
-        kinetic energy instead, which is cheaper computed.
+    def recv_collision(self, obj):
+        """Detect and parse a collision with other object.
         """
-        if back_step:
-            v_instance = self.vback
-        else:
-            v_instance = self.v
-        if v_instance is None:
-            return 0.0
-        m = self.mass
-        if 'real_mass' in self:
-            m = float(self['real_mass'])
-        v = v_instance.length
-        return m * v
+        # Try to compute the effect from the self object
+        try:
+            p1 = self.getLinearMomentum(True)
+            p0 = self.getLinearMomentum(False)
+            p = p1 - p0
+        except:
+            # Try to compute the effect from the collider
+            try:
+                p1 = obj.getLinearMomentum(True)
+                p0 = obj.getLinearMomentum(False)
+                p = p1 - p0
+            except:
+                # None one of the objects have info about the collision
+                p = 0.0
+        # Substract the armour avoided damage
+        p /= 1000.0
+        p = max(0.0, p - self['AP'])
+        # Damage the object
+        self['HP'] -= p
 
-    def getKineticEnergy(self, back_step=True):
-        """Returns the kinetic energy e = 1/2 m * v**2. It is cheaper to the
-        linear momentum computation.
+    def recv_explosion(self, shell, obj=None):
+        """Compute a received explosion.
+        If obj is not None, the armour penetrating test will be performed
         """
-        if back_step:
-            v_instance = self.vback
-        else:
-            v_instance = self.v
-        if v_instance is None:
-            return 0.0
-        m = self.mass
-        if 'real_mass' in self:
-            m = float(self['real_mass'])
-        v2 = v_instance.length_squared
-        return 0.5 * m * v2
+        if obj is not None:
+            p = 0
+            try:
+                p1 = obj.getLinearMomentum(True)
+                p0 = obj.getLinearMomentum(False)
+                p = p1 - p0
+            except:
+                # None one of the objects have info about the collision
+                p = 0.0
+            p /= 1000.0
+            if p < self['AP']:
+                return
+        # Damage the object
+        self['HP'] -= shell

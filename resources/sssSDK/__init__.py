@@ -27,6 +27,7 @@ import sssSDK.objects as objects
 # Try to import all the objects
 mod_files = os.listdir(objects.__path__[0])
 objects.modules = []
+objects.all_modules = []
 for f in mod_files:
     if f == '__init__.py':
         continue
@@ -35,6 +36,7 @@ for f in mod_files:
     if f.endswith('.py'):
         f = f[:-3]
     exec('import sssSDK.objects.{0} as {0}'.format(f))
+    objects.all_modules.append(eval('{}'.format(f)))
     if eval('{}'.format(f)).SELECTABLE is False:
         continue
     objects.modules.append(eval('{}'.format(f)))
@@ -246,7 +248,7 @@ class sssSDK(bpy.types.Panel):
             update=create_callback,
             description="Set the type of object")
 
-        for module in objects.modules:
+        for module in objects.all_modules:
             module.generateObjectProperties(update_callback)
 
     generateObjectProperties(setObject, updateValues)

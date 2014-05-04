@@ -40,6 +40,14 @@ class sssBullet(sssDynamic):
         """ Perform the explosion against an object
         @param obj Collider object
         """
+        shell = self['shell']
+
+        # Send damages to the remote object
+        try:
+            obj.recv_explosion(shell, obj=self)
+        except:
+            pass
+
         self.endObject()
 
         if self['explosion'] == '':
@@ -51,7 +59,6 @@ class sssBullet(sssDynamic):
             dir = -self.getAxisVect(Vector((1,0,0)))
             pos = self.worldPosition - 4.0*dir
         scene = g.getCurrentScene()
-        shell = self['shell']
         emitter = scene.addObject(self['explosion'], self)
         emitter.worldPosition = pos + 1.0*dir
         """
