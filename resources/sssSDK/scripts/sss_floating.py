@@ -88,7 +88,8 @@ class sssFloating(sssDynamic, sssDestroyable):
         sssDestroyable.update(self)
 
         disp = self.displacement()
-        added_mass = min(self.added_mass, 0.5 * self.displacement())
+        added_mass = max(0.0, min(self.added_mass,
+            1.01 * (disp - float(self['real_mass']))))
         fz = GRAV * (disp - added_mass)
         f = Vector((0.0, 0.0, fz)) * MASS_FACTOR
         self.applyForce(f, False)

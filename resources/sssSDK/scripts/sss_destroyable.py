@@ -40,13 +40,13 @@ class sssDestroyable():
         try:
             p1 = self.getLinearMomentum(True)
             p0 = self.getLinearMomentum(False)
-            p = p1 - p0
+            p = abs(p1 - p0)
         except:
             # Try to compute the effect from the collider
             try:
                 p1 = obj.getLinearMomentum(True)
                 p0 = obj.getLinearMomentum(False)
-                p = p1 - p0
+                p = abs(p1 - p0)
             except:
                 # None one of the objects have info about the collision
                 p = 0.0
@@ -65,7 +65,7 @@ class sssDestroyable():
             try:
                 p1 = obj.getLinearMomentum(True)
                 p0 = obj.getLinearMomentum(False)
-                p = p1 - p0
+                p = abs(p1 - p0)
             except:
                 # None one of the objects have info about the collision
                 p = 0.0
