@@ -35,7 +35,6 @@ class sssFloating(sssDynamic, sssDestroyable):
     def __init__(self, obj):
         sssDynamic.__init__(self, obj)
         sssDestroyable.__init__(self, obj)
-        self.collisionCallbacks.append(self.collision)
 
     def displacement(self):
         z = -self.worldPosition[2]
@@ -54,6 +53,24 @@ class sssFloating(sssDynamic, sssDestroyable):
                     break
                 i += 1
         return vol * RHO
+
+    def seaMoment(self):
+        # Sea moment z threshold (near to the free surface, maximum effect
+        # should be computed, far away null effect must be considered)
+        z_min = 3.0
+        z_max = 10.0
+        z = max(0.0, -self.worldPosition[2] - z_min)
+        depth_factor = 1.0 - min(1.0, z / z_max)
+
+        t = self['t']
+        Ax = depth_factor * 0.3
+        Tx = 11.0
+        Ay = depth_factor * 0.15
+        Ty = 8.0
+        mx = Ax * sin(2.0 * pi / Tx * t)
+        my = Ay * sin(2.0 * pi / Ty * t)
+
+        return float(self['real_mass']) * Vector((mx, my, 0.0))
 
     def rightingMoment(self):
         X = Vector((-1.0, 0.0, 0.0))
@@ -76,11 +93,5 @@ class sssFloating(sssDynamic, sssDestroyable):
         f = Vector((0.0, 0.0, fz)) * MASS_FACTOR
         self.applyForce(f, False)
 
-        m = (self.rightingMoment()) * MASS_FACTOR
-        self.applyTorque(m, False)    
-
-    def collision(self, obj):
-        """ Perform the explosion against an object
-        @param obj Collider object
-        """
-        pass
+        m = (self.rightingMoment() + self.seaMoment()) * MASS_FACTOR
+        self.applyTorque(m, False)
