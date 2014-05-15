@@ -22,8 +22,12 @@ import bge
 from bge import logic as g
 from math import *
 from mathutils import *
+from sss_dynamic import MASS_FACTOR
 from sss_dynamic import sssDynamic
 from sss_destroyable import sssDestroyable
+
+
+FACTOR = 1.0E6 * MASS_FACTOR
 
 
 class sssPropeller(sssDynamic, sssDestroyable):
@@ -49,7 +53,7 @@ class sssPropeller(sssDynamic, sssDestroyable):
         dt = 1.0 / g.getLogicTicRate()
         theta = 2.0 * pi / 60.0 * rpm * dt
         self.applyRotation(Vector((theta, 0.0, 0.0)), True)
-        f = copysign(nu * self['power'] * sqrt(abs(m) / 3.0), m) * 1.0E6
+        f = copysign(nu * self['power'] * sqrt(abs(m) / 3.0), m) * FACTOR
         if self.parent is not None:
             self.parent.applyForce(self.getAxisVect(Vector((f, 0.0, 0.0))),
                                    False)
