@@ -36,6 +36,10 @@ class sssDestroyable():
     def recv_collision(self, obj):
         """Detect and parse a collision with other object.
         """
+        # Test that the object is not related with you
+        if obj == self.parent or obj in self.children:
+            return
+
         # Try to compute the effect from the self object
         try:
             p1 = self.getLinearMomentum(True)
