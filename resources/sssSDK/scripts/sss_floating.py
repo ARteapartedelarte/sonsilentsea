@@ -61,18 +61,29 @@ class sssFloating(sssDynamic, sssDestroyable):
         z_max = 10.0
         z = max(0.0, -self.worldPosition[2] - z_min)
         depth_factor = 1.0 - min(1.0, z / z_max)
+        if not depth_factor:
+            return Vector((0.0, 0.0, 0.0))
 
         t = self['t']
-        Ax = depth_factor * 0.3
+        Ax = depth_factor * 0.6
         Tx = 11.0
-        Ay = depth_factor * 0.15
+        Ay = depth_factor * 0.3
         Ty = 8.0
         mx = Ax * sin(2.0 * pi / Tx * t)
         my = Ay * sin(2.0 * pi / Ty * t)
 
-        return float(self['real_mass']) * Vector((mx, my, 0.0))
+        return (float(self['real_mass']) * Vector((mx, my, 0.0)))
 
     def rightingMoment(self):
+        mat = self.localOrientation
+        eul = mat.to_euler('XYZ')
+        mx = Vector((eul.x - radians(self['roll']), 0.0, 0.0))
+        my = Vector((0.0, eul.y - radians(self['pitch']), 0.0))
+        rot = Euler((0.0, 0.0, eul.z), 'XYZ')
+        mx.rotate(rot)
+        my.rotate(rot)
+        return -float(self['real_mass']) * GRAV * (mx + my)
+
         X = Vector((-1.0, 0.0, 0.0))
         Y = Vector((0.0, 1.0, 0.0))
         Z = Vector((0.0, 0.0, 1.0))
