@@ -39,9 +39,8 @@ class sssPropeller(sssDynamic, sssDestroyable):
         sssDynamic.update(self)
         sssDestroyable.update(self)
 
-        # Propeller stop conditions
+        # Propeller stoped conditions
         if not self['march'] or self['HP'] <= 0.0:
-            self.setAngularVelocity(Vector((0.0, 0.0, 0.0)), True)
             return
         # Get the engine power and rotational velocity
         m = max(-3.0, min(3.0, self['march']))
@@ -52,8 +51,8 @@ class sssPropeller(sssDynamic, sssDestroyable):
         rpm = self['RPM'] * m / 3.0
         dt = 1.0 / g.getLogicTicRate()
         theta = 2.0 * pi / 60.0 * rpm * dt
-        self.applyRotation(Vector((theta, 0.0, 0.0)), True)
+        self.applyRotation(Vector((0.0, 0.0, theta)), True)
         f = copysign(nu * self['power'] * sqrt(abs(m) / 3.0), m) * FACTOR
         if self.parent is not None:
-            self.parent.applyForce(self.getAxisVect(Vector((f, 0.0, 0.0))),
+            self.parent.applyForce(self.getAxisVect(Vector((0.0, 0.0, f))),
                                    False)
