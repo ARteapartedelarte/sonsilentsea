@@ -26,7 +26,7 @@ import sssSDK.objects.destroyable as destroyable
 
 # Module data
 NAME = 'Propeller'
-DESCRIPION = 'Propeller. X axis is considered as the advancing direction.'
+DESCRIPION = 'Propeller. Z axis is considered as the advancing direction.'
 SELECTABLE = True
 CLASS_NAME = 'sssPropeller'
 SCRIPT_NAME = 'sss_propeller'
