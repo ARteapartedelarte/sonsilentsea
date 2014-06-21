@@ -109,7 +109,8 @@ class ImageTexture(Texture):
 			if HAVE_BGE_TEXTURE:
 				img = texture.ImageFFmpeg(image)
 				img.scale = False
-				if not img.valid or img.image is None:
+				# if not img.valid or img.image is None:
+				if img.image is None:
 					img = None
 				elif self._caching:
 					ImageTexture._cache[image] = img
