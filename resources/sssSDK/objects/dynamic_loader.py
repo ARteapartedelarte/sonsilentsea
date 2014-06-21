@@ -20,17 +20,14 @@
 
 import bpy
 from os import path
-import math
-import sssSDK.objects.dynamic as dynamic
-import sssSDK.objects.destroyable as destroyable
 
 
 # Module data
-NAME = 'Turret'
-DESCRIPION = 'Turret. The Turret will rotate around the Z axis.'
-SELECTABLE = True
-CLASS_NAME = 'sssTurret'
-SCRIPT_NAME = 'sss_turret'
+NAME = 'Dynamic loader'
+DESCRIPION = 'Load blender files'
+SELECTABLE = False
+CLASS_NAME = 'sssDynamicLoader'
+SCRIPT_NAME = 'sss_dynamic_loader'
 
 
 def scriptPaths():
@@ -89,44 +86,26 @@ def delProperty(name):
 
 def generateProperties():
     """Ensure that the object has the required properties."""
-    obj = bpy.context.object
-    addProperty('min_angle', 'FLOAT', -360.0)
-    addProperty('max_angle', 'FLOAT', 360.0)
-    addProperty('vel_angle', 'FLOAT', 5.0)
+    addProperty('blend_file', 'STRING', '')
 
 
 def updateValues():
     """Update the particles emitter values."""
-    dynamic.updateValues()
     generateProperties()
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['min_angle'].value = obj.sss_turret_min_angle
-    obj.game.properties['max_angle'].value = obj.sss_turret_max_angle
-    obj.game.properties['vel_angle'].value = obj.sss_turret_vel_angle
+    obj.game.properties['blend_file'].value = obj.sss_blend_file
+
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_turret_min_angle = bpy.props.FloatProperty(
-        default=-360.0,
-        min=-360.0,
-        max=0.0,
+    bpy.types.Object.sss_blend_file = bpy.props.StringProperty(
+        default='',
         update=update_callback,
-        description='Minimum rotation angle (-360 to no limit).')
-    bpy.types.Object.sss_turret_max_angle = bpy.props.FloatProperty(
-        default=360.0,
-        min=0.0,
-        max=360.0,
-        update=update_callback,
-        description='Maximum rotation angle (360 to no limit).')
-    bpy.types.Object.sss_turret_vel_angle = bpy.props.FloatProperty(
-        default=5.0,
-        min=1.0,
-        max=360.0,
-        update=update_callback,
-        description='Rotation velocity.')
+        description="Blender file to be dynamically loaded, '' if nothing"
+                    " should be loaded")
 
 
 def loadScript():
@@ -185,33 +164,15 @@ def createLogic():
     obj.game.controllers[-1].mode = 'SCRIPT'
     obj.game.controllers[-1].text = text
 
-    # Set the object as non-actor ghost object, i.e. it will detect collisions
-    # without either reacting or generating collisions.
-    obj.game.use_actor = False
-    obj.game.use_ghost = True
-
 
 def create():
-    dynamic.create()
-    destroyable.create()
     generateProperties()
     loadScript()
     createLogic()
 
 
 def draw(context, layout):
-    dynamic.draw(context, layout)
-    destroyable.draw(context, layout)
     row = layout.row()
     row.prop(context.object,
-             "sss_turret_min_angle",
-             text="Minimum angle (deg)")
-    row = layout.row()
-    row.prop(context.object,
-             "sss_turret_max_angle",
-             text="Maximum angle (deg)")
-    row = layout.row()
-    row.prop(context.object,
-             "sss_turret_vel_angle",
-             text="Rotation velocity (deg/s)")
-
+             "sss_blend_file",
+             text="File")

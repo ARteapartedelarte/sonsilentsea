@@ -23,14 +23,15 @@ from os import path
 import math
 import sssSDK.objects.dynamic as dynamic
 import sssSDK.objects.destroyable as destroyable
+import sssSDK.objects.dynamic_loader as loader
 
 
 # Module data
-NAME = 'Turret'
-DESCRIPION = 'Turret. The Turret will rotate around the Z axis.'
+NAME = 'Gun'
+DESCRIPION = 'Gun. The gun can rotate just in pitch angle'
 SELECTABLE = True
-CLASS_NAME = 'sssTurret'
-SCRIPT_NAME = 'sss_turret'
+CLASS_NAME = 'sssGun'
+SCRIPT_NAME = 'sss_gun'
 
 
 def scriptPaths():
@@ -90,9 +91,13 @@ def delProperty(name):
 def generateProperties():
     """Ensure that the object has the required properties."""
     obj = bpy.context.object
-    addProperty('min_angle', 'FLOAT', -360.0)
-    addProperty('max_angle', 'FLOAT', 360.0)
-    addProperty('vel_angle', 'FLOAT', 5.0)
+    addProperty('min_pitch', 'FLOAT', -10.0)
+    addProperty('max_pitch', 'FLOAT', 30.0)
+    addProperty('vel_pitch', 'FLOAT', 5.0)
+    addProperty('reload_time', 'FLOAT', 7.0)
+    addProperty('bullet_obj', 'STRING', '')
+    addProperty('bullet_vel', 'FLOAT', 250.0)
+    addProperty('smoke_obj', 'STRING', '')
 
 
 def updateValues():
@@ -102,31 +107,54 @@ def updateValues():
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['min_angle'].value = obj.sss_turret_min_angle
-    obj.game.properties['max_angle'].value = obj.sss_turret_max_angle
-    obj.game.properties['vel_angle'].value = obj.sss_turret_vel_angle
+    obj.game.properties['min_pitch'].value = obj.sss_min_pitch
+    obj.game.properties['max_pitch'].value = obj.sss_max_pitch
+    obj.game.properties['vel_pitch'].value = obj.sss_vel_pitch
+    obj.game.properties['reload_time'].value = obj.sss_reload_time
+    obj.game.properties['bullet_obj'].value = obj.sss_bullet_obj
+    obj.game.properties['bullet_vel'].value = obj.sss_bullet_vel
+    obj.game.properties['smoke_obj'].value = obj.sss_smoke_obj
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_turret_min_angle = bpy.props.FloatProperty(
-        default=-360.0,
-        min=-360.0,
+    bpy.types.Object.sss_min_pitch = bpy.props.FloatProperty(
+        default=-10.0,
+        min=-90.0,
         max=0.0,
         update=update_callback,
-        description='Minimum rotation angle (-360 to no limit).')
-    bpy.types.Object.sss_turret_max_angle = bpy.props.FloatProperty(
-        default=360.0,
+        description='Minimum pitch angle.')
+    bpy.types.Object.sss_max_pitch = bpy.props.FloatProperty(
+        default=30.0,
         min=0.0,
-        max=360.0,
+        max=90.0,
         update=update_callback,
-        description='Maximum rotation angle (360 to no limit).')
-    bpy.types.Object.sss_turret_vel_angle = bpy.props.FloatProperty(
+        description='Maximum pitch angle.')
+    bpy.types.Object.sss_vel_pitch = bpy.props.FloatProperty(
         default=5.0,
         min=1.0,
-        max=360.0,
+        max=90.0,
         update=update_callback,
         description='Rotation velocity.')
+    bpy.types.Object.sss_reload_time = bpy.props.FloatProperty(
+        default=7.0,
+        min=0.0,
+        update=update_callback,
+        description='Reload timelapse.')
+    bpy.types.Object.sss_bullet_obj = bpy.props.StringProperty(
+        default='',
+        update=update_callback,
+        description='Bullet object to be shooted.')
+    bpy.types.Object.sss_bullet_vel = bpy.props.FloatProperty(
+        default=250.0,
+        min=50.0,
+        max=1500.0,
+        update=update_callback,
+        description='Bullet launching speed.')
+    bpy.types.Object.sss_smoke_obj = bpy.props.StringProperty(
+        default='',
+        update=update_callback,
+        description='Smoke object generated when shooting.')
 
 
 def loadScript():
@@ -194,6 +222,7 @@ def createLogic():
 def create():
     dynamic.create()
     destroyable.create()
+    loader.create()
     generateProperties()
     loadScript()
     createLogic()
@@ -204,14 +233,30 @@ def draw(context, layout):
     destroyable.draw(context, layout)
     row = layout.row()
     row.prop(context.object,
-             "sss_turret_min_angle",
-             text="Minimum angle (deg)")
+             "sss_min_pitch",
+             text="Minimum pitch (deg)")
     row = layout.row()
     row.prop(context.object,
-             "sss_turret_max_angle",
-             text="Maximum angle (deg)")
+             "sss_max_pitch",
+             text="Maximum pitch (deg)")
     row = layout.row()
     row.prop(context.object,
-             "sss_turret_vel_angle",
+             "sss_vel_pitch",
              text="Rotation velocity (deg/s)")
-
+    row = layout.row()
+    row.prop(context.object,
+             "sss_reload time",
+             text="Reload (s)")
+    row = layout.row()
+    row.prop(context.object,
+             "sss_bullet_obj",
+             text="Bullet object")
+    loader.draw(context, layout)
+    row = layout.row()
+    row.prop(context.object,
+             "sss_bullet_vel",
+             text="Bullet velocity")
+    row = layout.row()
+    row.prop(context.object,
+             "sss_smoke_obj",
+             text="Smoke object")

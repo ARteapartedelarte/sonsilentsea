@@ -57,6 +57,7 @@ class sssTurret(sssDynamic, sssDestroyable):
 
         dyaw = self.getDYaw()
         yaw = self.localOrientation.to_euler().z
+        print(dyaw)
         # Get the sortest way
         if dyaw < -pi:
             dyaw += 2.0 * pi
@@ -70,6 +71,7 @@ class sssTurret(sssDynamic, sssDestroyable):
         if yaw + dyaw < self.min_yaw:
             dyaw += 2.0 * pi
 
+        print(dyaw)
         # Test if we are trying to aim out of the bounds
         if yaw + dyaw > self.max_yaw or yaw + dyaw < self.min_yaw:
             return
