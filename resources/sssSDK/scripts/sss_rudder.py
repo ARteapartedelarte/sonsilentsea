@@ -74,7 +74,7 @@ class sssRudder(sssDynamic, sssDestroyable):
         K = self['K']
         v = ship.getLinearVelocity(True)[0]
         try:
-            factor = 1.0E3 * self.mass_factor
+            factor = 1.0E4 * self.mass_factor
         except:
             factor = FACTOR
         f = K * r / 3.0 * v * abs(v) * factor
