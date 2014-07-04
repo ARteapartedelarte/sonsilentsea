@@ -255,7 +255,7 @@ def computeVolume():
     bpy.context.scene.objects[obj.name].select = True
 
     # Filter the null starting volumes
-    while (len(volumes[0]) > 1) and (volumes[1][1] == 0.0):
+    while (len(volumes[0]) > 1) and (volumes[1][1] <= 0.0):
         del volumes[0][0]
         del volumes[1][0]
     # Filter the submerged volumes
