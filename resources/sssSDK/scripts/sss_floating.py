@@ -22,7 +22,6 @@ import bge
 from bge import logic as g
 from math import *
 from mathutils import *
-from sss_dynamic import MASS_FACTOR
 from sss_dynamic import sssDynamic
 from sss_destroyable import sssDestroyable
 
@@ -35,6 +34,13 @@ class sssFloating(sssDynamic, sssDestroyable):
     def __init__(self, obj):
         sssDynamic.__init__(self, obj)
         sssDestroyable.__init__(self, obj)
+        # Correct the mass factor (sometime it could gone out of bounds)
+        z = self.worldPosition[2]
+        self.worldPosition[2] = 0.0
+        real_mass = self.displacement()
+        self.worldPosition[2] = z
+        blen_mass = self.mass
+        self.mass_factor = blen_mass / real_mass
 
     def displacement(self):
         z = -self.worldPosition[2]
@@ -102,8 +108,8 @@ class sssFloating(sssDynamic, sssDestroyable):
         added_mass = max(0.0, min(self.added_mass,
             1.01 * (disp - float(self['real_mass']))))
         fz = GRAV * (disp - added_mass)
-        f = Vector((0.0, 0.0, fz)) * MASS_FACTOR
+        f = Vector((0.0, 0.0, fz)) * self.mass_factor
         self.applyForce(f, False)
 
-        m = (self.rightingMoment() + self.seaMoment()) * MASS_FACTOR
+        m = (self.rightingMoment() + self.seaMoment()) * self.mass_factor
         self.applyTorque(m, False)

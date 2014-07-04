@@ -22,7 +22,6 @@ import bge
 from bge import logic as g
 from math import *
 from mathutils import *
-from sss_dynamic import MASS_FACTOR
 from sss_dynamic import sssDynamic
 from sss_destroyable import sssDestroyable
 

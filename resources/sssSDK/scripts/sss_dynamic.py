@@ -31,6 +31,7 @@ class sssDynamic(bge.types.KX_GameObject):
     def __init__(self, obj):
         self.v = None
         self.vback = None
+        self.mass_factor = MASS_FACTOR
 
     def update(self):
         self.vback = self.v

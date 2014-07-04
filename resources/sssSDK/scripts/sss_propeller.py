@@ -34,6 +34,7 @@ class sssPropeller(sssDynamic, sssDestroyable):
     def __init__(self, obj):
         sssDynamic.__init__(self, obj)
         sssDestroyable.__init__(self, obj)
+            
 
     def update(self):
         sssDynamic.update(self)
@@ -52,7 +53,12 @@ class sssPropeller(sssDynamic, sssDestroyable):
         dt = 1.0 / g.getLogicTicRate()
         theta = 2.0 * pi / 60.0 * rpm * dt
         self.applyRotation(Vector((0.0, 0.0, theta)), True)
-        f = copysign(nu * self['power'] * sqrt(abs(m) / 3.0), m) * FACTOR
         if self.parent is not None:
+            # Try to correct the factor
+            try:
+                factor = 1.0E6 * self.mass_factor
+            except:
+                factor = FACTOR
+            f = copysign(nu * self['power'] * sqrt(abs(m) / 3.0), m) * factor
             self.parent.applyForce(self.getAxisVect(Vector((0.0, 0.0, f))),
                                    False)

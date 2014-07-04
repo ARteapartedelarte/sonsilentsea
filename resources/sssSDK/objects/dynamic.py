@@ -29,7 +29,7 @@ SELECTABLE = True
 CLASS_NAME = 'sssDynamic'
 SCRIPT_NAME = 'sss_dynamic'
 
-MASS_FACTOR = 1E-3
+MASS_FACTOR = 1E-5
 
 
 def scriptPaths():
