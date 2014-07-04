@@ -91,8 +91,8 @@ def generateProperties():
     obj = bpy.context.object
     addProperty('RPM', 'FLOAT', 150.0)
     addProperty('power', 'FLOAT', 1.0)
-    addProperty('nu_d', 'FLOAT', 0.5)
-    addProperty('nu_r', 'FLOAT', 0.15)
+    addProperty('nu_d', 'FLOAT', 1.0)
+    addProperty('nu_r', 'FLOAT', 0.3)
     addProperty('march', 'INT', 0)
 
 
