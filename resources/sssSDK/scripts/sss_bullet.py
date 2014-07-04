@@ -30,7 +30,7 @@ class sssBullet(sssDynamic):
         super(sssBullet, self).__init__(obj)
         self.collisionCallbacks.append(self.explode)
 
-    def typeName():
+    def typeName(self):
         return 'sssBullet'
 
     def update(self):

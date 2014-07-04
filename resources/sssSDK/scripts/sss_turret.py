@@ -35,7 +35,7 @@ class sssTurret(sssDynamic, sssDestroyable):
         self.vel_yaw = radians(self['vel_angle'])
         self.aim = None
 
-    def typeName():
+    def typeName(self):
         return 'sssTurret'
 
     def aimTo(self, point):

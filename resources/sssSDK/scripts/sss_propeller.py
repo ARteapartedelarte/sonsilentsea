@@ -35,7 +35,7 @@ class sssPropeller(sssDynamic, sssDestroyable):
         sssDynamic.__init__(self, obj)
         sssDestroyable.__init__(self, obj)
             
-    def typeName():
+    def typeName(self):
         return 'sssPropeller'
 
     def update(self):

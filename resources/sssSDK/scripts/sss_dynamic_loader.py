@@ -31,7 +31,7 @@ class sssDynamicLoader():
             return
         self.load_blender_file(blend_file)
 
-    def typeName():
+    def typeName(self):
         return 'sssDynamicLoader'
 
     def update(self):

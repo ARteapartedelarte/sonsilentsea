@@ -29,7 +29,7 @@ class sssDestroyable():
         self.added_mass = 0.0
         self.collisionCallbacks.append(self.recv_collision)
 
-    def typeName():
+    def typeName(self):
         return 'sssDestroyable'
 
     def update(self):

@@ -46,7 +46,7 @@ class sssGun(sssDynamic, sssDestroyable, sssDynamicLoader):
             if type(act) == type(bge.types.KX_SoundActuator):
                 self.sounds.append(act)
 
-    def typeName():
+    def typeName(self):
         return 'sssGun'
 
     def isAimed(self, point=None, threshold=ERROR_RADIUS):

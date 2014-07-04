@@ -40,7 +40,7 @@ class sssRudder(sssDynamic, sssDestroyable):
         dr = self.worldPosition - ship.worldPosition
         self.dist = dr.length
 
-    def typeName():
+    def typeName(self):
         return 'sssRudder'
 
     def setAngle(self):
