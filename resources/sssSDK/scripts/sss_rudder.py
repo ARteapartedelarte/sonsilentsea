@@ -46,6 +46,8 @@ class sssRudder(sssDynamic, sssDestroyable):
         if abs(r) > 3:
             r = int(copysign(3, r))
             self['rudder'] = r
+        if not r or self['HP'] <= 0.0:
+            return
         aim_angle = radians(self['max_angle'] * r / 3.0)
         rot = aim_angle - self['angle']
         if rot == 0.0:
