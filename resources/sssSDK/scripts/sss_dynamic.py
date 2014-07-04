@@ -33,6 +33,9 @@ class sssDynamic(bge.types.KX_GameObject):
         self.vback = None
         self.mass_factor = MASS_FACTOR
 
+    def typeName():
+        return 'sssDynamic'
+
     def update(self):
         self.vback = self.v
         self.v = self.getLinearVelocity()

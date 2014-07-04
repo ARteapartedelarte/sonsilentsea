@@ -42,6 +42,9 @@ class sssFloating(sssDynamic, sssDestroyable):
         blen_mass = self.mass
         self.mass_factor = blen_mass / real_mass
 
+    def typeName():
+        return 'sssFloating'
+
     def displacement(self):
         z = -self.worldPosition[2]
         vols_z = eval(self['vols_z'])

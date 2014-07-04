@@ -29,6 +29,9 @@ class sssDestroyable():
         self.added_mass = 0.0
         self.collisionCallbacks.append(self.recv_collision)
 
+    def typeName():
+        return 'sssDestroyable'
+
     def update(self):
         if self['HP'] < 0.0:
             self.added_mass += -self['HP']

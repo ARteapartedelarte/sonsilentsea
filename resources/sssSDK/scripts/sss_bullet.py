@@ -30,6 +30,9 @@ class sssBullet(sssDynamic):
         super(sssBullet, self).__init__(obj)
         self.collisionCallbacks.append(self.explode)
 
+    def typeName():
+        return 'sssBullet'
+
     def update(self):
         super(sssBullet, self).update()
         if self.worldPosition.z < 0.0:

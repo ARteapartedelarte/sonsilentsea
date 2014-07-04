@@ -40,6 +40,9 @@ class sssRudder(sssDynamic, sssDestroyable):
         dr = self.worldPosition - ship.worldPosition
         self.dist = dr.length
 
+    def typeName():
+        return 'sssRudder'
+
     def setAngle(self):
         r = self['rudder']
         if abs(r) > 3:
