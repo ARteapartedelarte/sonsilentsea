@@ -27,7 +27,7 @@ from sss_dynamic import sssDynamic
 from sss_destroyable import sssDestroyable
 
 
-FACTOR = 1.0E6 * MASS_FACTOR
+FACTOR = 2.5 * 1.0E6 * MASS_FACTOR  # 2.5 to fight against the damping
 
 
 class sssPropeller(sssDynamic, sssDestroyable):
@@ -58,7 +58,7 @@ class sssPropeller(sssDynamic, sssDestroyable):
         if self.parent is not None:
             # Try to correct the factor
             try:
-                factor = 1.0E6 * self.mass_factor
+                factor = 2.5 * 1.0E6 * self.mass_factor
             except:
                 factor = FACTOR
             f = copysign(nu * self['power'] * sqrt(abs(m) / 3.0), m) * factor
