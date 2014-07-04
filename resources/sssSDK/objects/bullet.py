@@ -182,11 +182,19 @@ def createLogic():
     obj.game.controllers[-1].text = text
 
 
+def createPhysics():
+    obj = bpy.context.active_object
+
+    obj.game.damping = 0.0
+    obj.game.rotation_damping = 0.0
+
+
 def create():
     dynamic.create()
     generateProperties()
     loadScript()
     createLogic()
+    createPhysics()
 
 
 def draw(context, layout):
