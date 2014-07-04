@@ -89,7 +89,7 @@ def delProperty(name):
 def generateProperties():
     """Ensure that the object has the required properties."""
     obj = bpy.context.object
-    addProperty('K', 'FLOAT', 1.0E3)
+    addProperty('K', 'FLOAT', 1.0)
     addProperty('max_angle', 'FLOAT', 30.0)
     addProperty('angle', 'FLOAT', 0.0)
     addProperty('rudder', 'INT', 0)

@@ -22,10 +22,12 @@ import bge
 from bge import logic as g
 from math import *
 from mathutils import *
+from sss_dynamic import MASS_FACTOR
 from sss_dynamic import sssDynamic
 from sss_destroyable import sssDestroyable
 
 
+FACTOR = 1.0E4 * MASS_FACTOR
 D_ANGLE = radians(0.1)
 
 
@@ -71,6 +73,10 @@ class sssRudder(sssDynamic, sssDestroyable):
             return
         K = self['K']
         v = ship.getLinearVelocity(True)[0]
-        f = K * r / 3.0 * v * abs(v)
+        try:
+            factor = 1.0E3 * self.mass_factor
+        except:
+            factor = FACTOR
+        f = K * r / 3.0 * v * abs(v) * factor
         m = f * self.dist
         ship.applyTorque(Vector((0.0, 0.0, m)), True)
