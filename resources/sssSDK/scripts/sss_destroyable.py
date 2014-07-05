@@ -42,6 +42,19 @@ class sssDestroyable():
         # Test that the object is not related with you
         if obj == self.parent or obj in self.children:
             return
+        # Test the special case of turret childrens
+        try:
+            p = self.parent
+            if p.typeName() == 'sssTurret' and obj == p.parent:
+                return
+        except:
+            pass
+        for c in self.children:
+            try:
+                if c.typeName() == 'sssTurret' and obj in c.children:
+                    return
+            except:
+                continue
 
         # Try to compute the effect from the self object
         try:
