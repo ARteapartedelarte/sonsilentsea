@@ -47,6 +47,7 @@ class sssShip(sssFloating):
         self._propellers = []
         self._rudders = []
         self._guns = []
+        self._gun_target = []
         for c in children:
             try:
                 if c.typeName() == 'sssPropeller':
@@ -63,6 +64,7 @@ class sssShip(sssFloating):
                     for cc in c.children:
                         if cc.typeName() == 'sssGun':
                             self._guns.append(cc)
+                            self._gun_target.append(None)
             except:
                 continue
 
@@ -120,6 +122,24 @@ class sssShip(sssFloating):
         self._waypoint = (w.xy, int(m))
         return self._waypoint
 
+    def gunTarget(self, target, guns=None):
+        """ Set the target for the guns
+        target: Either a position or the name of an entity. The z coordinate
+        will be discarded. None to don't assign a target
+        guns: The list of guns affected (ids). None to select all.
+        """
+        if guns is None:
+            guns = list(range(len(self._guns)))
+        for g in guns:
+            try:
+                if isinstance(target, str):
+                    self._gun_target[g] = target
+                else:
+                    self._gun_target[g] = None
+                    self._guns[g].aimTo(Target, True)
+            except:
+                continue
+
     def update(self):
         # Update the subsystems list, some subsystems could be not mutated
         # yet, or eventually added/removed
@@ -136,6 +156,10 @@ class sssShip(sssFloating):
                 r['rudder'] = self._wheel            
         if self._waypoint is not None:
             self.goTo(self._waypoint)
+        for i, g in enumerate(self._guns):
+            if self._gun_target[i] is None:
+                continue
+            setGun(g, self._gun_target[i])
 
     def goTo(self, w):
         aim = w[0]
@@ -174,3 +198,11 @@ class sssShip(sssFloating):
             if r['HP'] <= 0.0:
                 continue
             r['rudder'] = w
+
+    def setGun(self, gun, target):
+        scene = g.getCurrentScene()
+        pos = scene.objects[target].worldPosition
+        if gun.aiming:
+            gun.aimTo(pos, False)
+            return
+        gun.aimTo(pos, True)
