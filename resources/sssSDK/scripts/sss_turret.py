@@ -33,6 +33,7 @@ class sssTurret(sssDynamic, sssDestroyable):
         self.min_yaw = radians(self['min_angle'])
         self.max_yaw = radians(self['max_angle'])
         self.vel_yaw = radians(self['vel_angle'])
+        self.yaw0 = self.localOrientation.to_euler().z
         self.aim = None
 
     def typeName(self):
@@ -59,9 +60,12 @@ class sssTurret(sssDynamic, sssDestroyable):
             return
 
         dyaw = self.getDYaw()
-        yaw = self.localOrientation.to_euler().z
-        print(dyaw)
+        yaw = self.localOrientation.to_euler().z - self.yaw0
         # Get the sortest way
+        if yaw < -pi:
+            yaw += 2.0 * pi
+        if yaw > pi:
+            yaw -= 2.0 * pi
         if dyaw < -pi:
             dyaw += 2.0 * pi
         if dyaw > pi:
@@ -74,7 +78,6 @@ class sssTurret(sssDynamic, sssDestroyable):
         if yaw + dyaw < self.min_yaw:
             dyaw += 2.0 * pi
 
-        print(dyaw)
         # Test if we are trying to aim out of the bounds
         if yaw + dyaw > self.max_yaw or yaw + dyaw < self.min_yaw:
             return
