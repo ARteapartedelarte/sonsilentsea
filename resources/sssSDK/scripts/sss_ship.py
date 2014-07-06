@@ -38,6 +38,7 @@ class sssShip(sssFloating):
         self._wheel = None
         self._waypoint = None
         self.getSubSystems()
+        self._gun_target = [None] * len(self._guns)
 
     def typeName(self):
         return 'sssShip'
@@ -47,7 +48,6 @@ class sssShip(sssFloating):
         self._propellers = []
         self._rudders = []
         self._guns = []
-        self._gun_target = []
         for c in children:
             try:
                 if c.typeName() == 'sssPropeller':
@@ -62,9 +62,11 @@ class sssShip(sssFloating):
                 elif c.typeName() == 'sssTurret':
                     self._subsystems = True
                     for cc in c.children:
-                        if cc.typeName() == 'sssGun':
-                            self._guns.append(cc)
-                            self._gun_target.append(None)
+                        try:
+                            if cc.typeName() == 'sssGun':
+                                self._guns.append(cc)
+                        except:
+                            continue
             except:
                 continue
 
@@ -144,6 +146,8 @@ class sssShip(sssFloating):
         # Update the subsystems list, some subsystems could be not mutated
         # yet, or eventually added/removed
         self.getSubSystems()
+        added = len(self._guns) - len(self._gun_target)
+        self._gun_target.extend([None] * added)
 
         sssFloating.update(self)
         if self['HP'] <= 0.0:
@@ -159,7 +163,7 @@ class sssShip(sssFloating):
         for i, g in enumerate(self._guns):
             if self._gun_target[i] is None:
                 continue
-            setGun(g, self._gun_target[i])
+            self.setGun(g, self._gun_target[i])
 
     def goTo(self, w):
         aim = w[0]
