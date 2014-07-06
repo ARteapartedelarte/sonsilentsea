@@ -43,7 +43,7 @@ class sssGun(sssDynamic, sssDestroyable, sssDynamicLoader):
         self.reloading = 0.0
         self.sounds = []
         for act in self.actuators:
-            if type(act) == type(bge.types.KX_SoundActuator):
+            if 'KX_SoundActuator' in str(type(act)):
                 self.sounds.append(act)
 
     def typeName(self):
