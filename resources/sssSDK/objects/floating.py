@@ -206,12 +206,16 @@ def computeVolume():
 
     loc = obj.location
     dim = obj.dimensions
-    z_min = loc.z - dim.z
-    z_max = loc.z + dim.z
+    dim_x = dim.x
+    dim_y = dim.y
+    dim_z = dim.z
+    z_min = loc.z - dim_z
+    z_max = loc.z + dim_z
 
     n = 41
     dz = (z_max - z_min) / n
     if not dz:
+        print('ERROR: Null dimension detected in z direction.')
         return volumes
     z = z_min + 0.5 * dz
 
@@ -230,22 +234,38 @@ def computeVolume():
             break
 
     # Create an intersection modifier
+    # The intersection may fail when the objects are completely included into
+    # the cutting box, so we can use the difference operation
     mod = obj_dup.modifiers.new('mod', 'BOOLEAN')
-    mod.operation = 'INTERSECT'
+    mod.operation = 'DIFFERENCE'
     mod.object = obj_cut
 
     bpy.ops.object.select_all(action='DESELECT')
     bpy.context.scene.objects.active = obj_dup
     bpy.context.scene.objects[obj_dup.name].select = True
+    if list(bpy.ops.rigidbody.mass_calculate())[0] != 'FINISHED':
+        print('ERROR: Total object mass cannot be computed.')
+        # Remove the auxiliar generated objects
+        obj_dup.modifiers.remove(mod)
+        bpy.ops.rigidbody.object_remove()
+        # bpy.context.scene.objects.unlink(obj_dup)
+        bpy.context.scene.objects.unlink(obj_cut)
+
+        # Set the original object as the selected one
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.context.scene.objects.active = obj
+        bpy.context.scene.objects[obj.name].select = True
+        return volumes
+    v_max = obj_dup.rigid_body.mass
     while z < z_max:
         # Cut the object
-        obj_cut.dimensions = (2.0 * dim.x, 2.0 * dim.y, 2.0 * (z - z_min))
+        obj_cut.dimensions = (2.0 * dim_x, 2.0 * dim_y, 2.0 * (z - z_min))
         # bpy.ops.object.modifier_apply(modifier=mod.name)
 
         # Compute the mass
         v = 0.0
         if list(bpy.ops.rigidbody.mass_calculate())[0] == 'FINISHED':
-            v = obj_dup.rigid_body.mass
+            v = v_max - obj_dup.rigid_body.mass
         volumes[0].append(z)
         volumes[1].append(v)
 
