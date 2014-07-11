@@ -99,6 +99,7 @@ def generateProperties():
 def updateValues():
     """Update the particles emitter values."""
     dynamic.updateValues()
+    destroyable.updateValues()
     generateProperties()
     loadScript()
 

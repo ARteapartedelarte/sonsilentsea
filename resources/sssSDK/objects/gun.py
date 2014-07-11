@@ -103,6 +103,8 @@ def generateProperties():
 def updateValues():
     """Update the particles emitter values."""
     dynamic.updateValues()
+    destroyable.updateValues()
+    loader.updateValues()
     generateProperties()
     loadScript()
 
@@ -245,7 +247,7 @@ def draw(context, layout):
              text="Rotation velocity (deg/s)")
     row = layout.row()
     row.prop(context.object,
-             "sss_reload time",
+             "sss_reload_time",
              text="Reload (s)")
     row = layout.row()
     row.prop(context.object,

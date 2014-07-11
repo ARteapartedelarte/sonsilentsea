@@ -113,6 +113,7 @@ def generateProperties(v):
 def updateValues():
     """Update the particles emitter values."""
     dynamic.updateValues()
+    destroyable.updateValues()
     loadScript()
 
     obj = bpy.context.object
