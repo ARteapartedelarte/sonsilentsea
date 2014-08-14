@@ -89,6 +89,7 @@ def delProperty(name):
 def generateProperties():
     """Ensure that the object has the required properties."""
     obj = bpy.context.object
+    addProperty('AI', 'BOOL', True)
     addProperty('team', 'INT', 0)
     addProperty('allies', 'STRING', '[]')
     addProperty('enemies', 'STRING', '[]')
