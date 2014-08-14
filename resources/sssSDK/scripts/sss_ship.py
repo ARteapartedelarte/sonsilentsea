@@ -51,18 +51,24 @@ class sssShip(sssFloating):
         for c in children:
             try:
                 if c.typeName() == 'sssPropeller':
-                    self._subsystems = True
+                    if not c.alive():
+                        continue
                     self._propellers.append(c)
                 elif c.typeName() == 'sssRudder':
-                    self._subsystems = True
+                    if not c.alive():
+                        continue
                     self._rudders.append(c)
                 elif c.typeName() == 'sssGun':
-                    self._subsystems = True
+                    if not c.alive():
+                        continue
                     self._guns.append(c)
                 elif c.typeName() == 'sssTurret':
-                    self._subsystems = True
+                    if not c.alive():
+                        continue
                     for cc in c.children:
                         try:
+                            if not cc.alive():
+                                continue
                             if cc.typeName() == 'sssGun':
                                 self._guns.append(cc)
                         except:
@@ -206,7 +212,12 @@ class sssShip(sssFloating):
     def setGun(self, gun, target):
         scene = g.getCurrentScene()
         pos = scene.objects[target].worldPosition
+        vel = scene.objects[target].getLinearVelocity()
+        d = (self.worldPosition.xy - pos.xy).length
+        v = gun['bullet_vel']
+        t = d / v
+        aim = pos + t * vel
         if gun.aiming:
-            gun.aimTo(pos, False)
+            gun.aimTo(aim, False)
             return
-        gun.aimTo(pos, True)
+        gun.aimTo(aim, True)
