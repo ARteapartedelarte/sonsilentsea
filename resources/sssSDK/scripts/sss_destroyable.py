@@ -94,3 +94,8 @@ class sssDestroyable():
                 return
         # Damage the object
         self['HP'] -= shell
+
+    def alive():
+        if self['HP'] < 0.0:
+            return False
+        return True
