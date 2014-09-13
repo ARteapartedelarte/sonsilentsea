@@ -94,16 +94,12 @@ def generateProperties(v):
     addProperty('pitch', 'FLOAT', 0.0)
     addProperty('GMT', 'FLOAT', 0.35)
     addProperty('GML', 'FLOAT', 1.0)
-    z_string = '('
-    for vv in v[0]:
-        z_string += '{0:.2f},'.format(vv)
-    z_string += ')'
-    v_string = '('
-    for vv in v[1]:
-        v_string += '{0:.2f},'.format(vv)
-    v_string += ')'
-    addProperty('vols_z', 'STRING', z_string)
-    addProperty('vols_v', 'STRING', v_string)
+    addProperty('vols_n', 'INT', len(v[0]))
+    for i in range(len(v[0])):
+        zz = v[0][i]
+        vv = v[1][i]
+        addProperty('vols_z{}'.format(i), 'FLOAT', zz)
+        addProperty('vols_v{}'.format(i), 'FLOAT', vv)
     # In this case we need to regenerate the displacement property
     vol = getVolume(0.0, v)
     obj.sss_mass = '{}'.format(1025.0 * vol)
@@ -297,7 +293,7 @@ def computeVolume():
 
     assert len(volumes[0])
 
-    # remove odd elements to reduce the length (that could be accepetable)
+    # remove odd elements to reduce the length (that could be acceptable)
     max_length = 11
     i = 1
     while len(volumes[0]) > max_length:
@@ -308,6 +304,19 @@ def computeVolume():
             i = 1
 
     return volumes
+
+
+def getVolumesFromObject(obj):
+    z = []
+    v = []
+    try:
+        n = obj.game.properties['vols_n'].value
+        for i in range(n):
+            z.append(obj.game.properties['vols_z{}'.format(i)].value)
+            v.append(obj.game.properties['vols_v{}'.format(i)].value)
+    except:
+        return [],[]
+    return z, v
 
 
 def getVolume(z, vols):
@@ -355,8 +364,7 @@ def draw(context, layout):
 
     row = layout.row()
     obj = context.object
-    vols_z = eval(obj.game.properties['vols_z'].value)
-    vols_v = eval(obj.game.properties['vols_v'].value)
+    vols_z, vols_v = getVolumesFromObject(obj)
     vol = float(obj.game.properties['real_mass'].value) / 1025.0
     z = -getZ(vol, (vols_z, vols_v))
     row.label('z = {0:.3f} m'.format(z))

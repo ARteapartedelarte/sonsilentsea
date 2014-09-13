@@ -34,6 +34,8 @@ class sssFloating(sssDynamic, sssDestroyable):
     def __init__(self, obj):
         sssDynamic.__init__(self, obj)
         sssDestroyable.__init__(self, obj)
+        # Convert the volume attributes in a faster set of arrays
+        self.vols_z, self.vols_v = self.getVolumes()
         # Correct the mass factor (sometime it could gone out of bounds)
         z = self.worldPosition[2]
         self.worldPosition[2] = 0.0
@@ -45,10 +47,22 @@ class sssFloating(sssDynamic, sssDestroyable):
     def typeName(self):
         return 'sssFloating'
 
+    def getVolumes(self):
+        z = []
+        v = []
+        try:
+            n = self['vols_n']
+            for i in range(n):
+                z.append(self['vols_z{}'.format(i)])
+                v.append(self['vols_v{}'.format(i)])
+        except:
+            return [],[]
+        return z, v
+
     def displacement(self):
         z = -self.worldPosition[2]
-        vols_z = eval(self['vols_z'])
-        vols_v = eval(self['vols_v'])
+        vols_z = self.vols_z
+        vols_v = self.vols_v
         if z <= vols_z[0]:
             vol = 0.0
         elif z >= vols_z[-1]:
