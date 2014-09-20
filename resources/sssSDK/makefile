@@ -14,6 +14,7 @@ install:
 	$(RM) -r $(PREFIX)/lib/blender/scripts/addons/sssSDK
 	$(MKDIR) $(PREFIX)/lib/blender/scripts/addons/sssSDK
 	$(CP) __init__.py $(PREFIX)/lib/blender/scripts/addons/sssSDK/
+	$(CP) utils.py $(PREFIX)/lib/blender/scripts/addons/sssSDK/
 	$(CP) -r objects $(PREFIX)/lib/blender/scripts/addons/sssSDK/
 	$(CP) -r scripts $(PREFIX)/lib/blender/scripts/addons/sssSDK/
 

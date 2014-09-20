@@ -20,6 +20,7 @@
 
 import bpy
 from os import path
+from sssSDK.utils import *
 
 
 # Module data
@@ -30,60 +31,6 @@ CLASS_NAME = 'sssDynamic'
 SCRIPT_NAME = 'sss_dynamic'
 
 MASS_FACTOR = 1E-4
-
-
-def scriptPaths():
-    """Return all the possible locations for the scripts."""
-    paths = bpy.utils.script_paths(check_all=True)
-    paths.append(path.join(bpy.utils.resource_path('USER'), 'scripts'))
-    paths.append(path.join(bpy.utils.resource_path('LOCAL'), 'scripts'))
-    paths.append(path.join(bpy.utils.resource_path('SYSTEM'), 'scripts'))
-    return paths
-
-
-def addonsPaths():
-    """ Return all the possible locations for the addons """
-    paths = []
-    for folder in scriptPaths():
-        f = path.join(folder, 'addons')
-        if path.isdir(f):
-            paths.append(f)
-        f = path.join(folder, 'addons_extern')
-        if path.isdir(f):
-            paths.append(f)
-    return paths
-
-
-def addProperty(name, type_id, value):
-    """Test if a property exist in the object, adding it otherwise.
-
-    Keyword arguments:
-    name -- Property name
-    type_id -- Type of property
-    value -- Property value
-    """
-    obj = bpy.context.object
-    if not name in obj.game.properties.keys():
-        bpy.ops.object.game_property_new()
-        obj.game.properties[-1].name = name
-        obj.game.properties[name].type = type_id
-        obj.game.properties[name].value = value
-
-
-def delProperty(name):
-    """Remove a property from the object if it exist.
-
-    Keyword arguments:
-    name -- Property name
-    """
-    obj = bpy.context.object
-    if not name in obj.game.properties.keys():
-        return
-
-    for i, p in enumerate(obj.game.properties):
-        if p.name == name:
-            bpy.ops.object.game_property_remove(i)
-            return
 
 
 def generateProperties():
