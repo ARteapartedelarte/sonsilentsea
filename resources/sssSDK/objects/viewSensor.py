@@ -21,45 +21,34 @@
 import bpy
 from os import path
 from sssSDK.utils import *
+import sssSDK.objects.sensor as sensor
 
 
 # Module data
-NAME = 'Sensors'
+NAME = 'ObservationPoint'
 DESCRIPION = 'Other game entities detection base class'
-SELECTABLE = False
-CLASS_NAME = 'sssSensor'
-SCRIPT_NAME = 'sss_sensor'
+SELECTABLE = True
+CLASS_NAME = 'sssViewSensor'
+SCRIPT_NAME = 'sss_viewSensor'
 
 MASS_FACTOR = 1E-4
 
 
 def generateProperties():
     """Ensure that the object has the required properties."""
-    addProperty('max_distance', 'FLOAT', 10000.0)
-    addProperty('min_distance', 'FLOAT', 1000.0)
+    pass
 
 
 def updateValues():
     """Update the changed values."""
-    generateProperties()
+    sensor.updateValues()
     loadScript()
-
-    obj = bpy.context.object
-    obj.game.properties['max_distance'].value = obj.sss_max_distance
-    obj.game.properties['min_distance'].value = obj.sss_min_distance
 
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_max_distance = bpy.props.FloatProperty(
-        default=10000.0,
-        update=update_callback,
-        description='Maximum distance where an object could be detected')
-    bpy.types.Object.sss_min_distance = bpy.props.FloatProperty(
-        default=1000.0,
-        update=update_callback,
-        description='Distance below that the object will be surely detected')
+    pass
 
 
 def loadScript():
@@ -126,32 +115,12 @@ def createLogic():
     obj.game.controllers[-1].text = text
 
 
-def createPhysics():
-    obj = bpy.context.active_object
-
-    obj.game.physics_type = 'NO_COLLISION'
-    mask = list(obj.game.collision_group)
-    mask[-1] = False
-    mask[-2] = False
-    obj.game.collision_group = mask
-    mask = list(obj.game.collision_mask)
-    mask[-1] = False
-    mask[-2] = False
-    obj.game.collision_mask = mask
-
-
 def create():
+    sensor.create()
     generateProperties()
     loadScript()
     createLogic()
-    createPhysics()
 
 
 def draw(context, layout):
-    row = layout.row()
-    row.prop(context.object,
-             "sss_max_distance",
-             text="max distance")
-    row.prop(context.object,
-             "sss_min_distance",
-             text="min distance")
+    sensor.draw(context, layout)

@@ -38,8 +38,6 @@ def generateProperties():
     obj = bpy.context.object
     addProperty('AI', 'BOOL', True)
     addProperty('team', 'INT', 0)
-    addProperty('allies', 'STRING', '[]')
-    addProperty('enemies', 'STRING', '[]')
 
 
 def updateValues():

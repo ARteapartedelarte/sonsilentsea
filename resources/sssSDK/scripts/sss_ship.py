@@ -39,6 +39,13 @@ class sssShip(sssFloating):
         self._waypoint = None
         self.getSubSystems()
         self._gun_target = [None] * len(self._guns)
+        # List of known contacts and ghosts
+        # Contacts are allies/enemies which are perfectly known, i.e. Ship
+        # type, position, ...
+        # Ghosts are contacts which just an approximation of its position is
+        # known, but not if they are allies or enemies, the ship type, ...
+        self._contacts = []
+        self._ghosts = []
 
     def typeName(self):
         return 'sssShip'
@@ -48,6 +55,7 @@ class sssShip(sssFloating):
         self._propellers = []
         self._rudders = []
         self._guns = []
+        self._sensors = []
         for c in children:
             try:
                 if c.typeName() == 'sssPropeller':
@@ -73,6 +81,8 @@ class sssShip(sssFloating):
                                 self._guns.append(cc)
                         except:
                             continue
+                elif c.typeName() == 'sssSensor':
+                    self._sensors.append(c)
             except:
                 continue
 
@@ -144,7 +154,7 @@ class sssShip(sssFloating):
                     self._gun_target[g] = target
                 else:
                     self._gun_target[g] = None
-                    self._guns[g].aimTo(Target, True)
+                    self._guns[g].aimTo(target, True)
             except:
                 continue
 
@@ -170,6 +180,8 @@ class sssShip(sssFloating):
             if self._gun_target[i] is None:
                 continue
             self.setGun(g, self._gun_target[i])
+        for s in self._sensors:
+            s.update()
 
     def goTo(self, w):
         aim = w[0]

@@ -59,8 +59,7 @@ class sssFloating(sssDynamic, sssDestroyable):
             return [],[]
         return z, v
 
-    def displacement(self):
-        z = -self.worldPosition[2]
+    def getVolume(self, z, submerged=True):
         vols_z = self.vols_z
         vols_v = self.vols_v
         if z <= vols_z[0]:
@@ -75,7 +74,13 @@ class sssFloating(sssDynamic, sssDestroyable):
                     vol = vols_v[i - 1] + (z - vols_z[i - 1]) * tg
                     break
                 i += 1
-        return vol * RHO
+        if submerged:
+            return vol
+        return vols_v[-1] - vol
+
+    def displacement(self):
+        z = -self.worldPosition[2]
+        return self.getVolume(z) * RHO
 
     def seaMoment(self):
         # Sea moment z threshold (near to the free surface, maximum effect

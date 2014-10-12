@@ -22,41 +22,53 @@ import bge
 from bge import logic as g
 from math import *
 from mathutils import *
+import random
+from sss_sensor import sssSensor
 
 
-class sssSensor(bge.types.KX_GameObject):
+# Remote object volume of reference, i.e. The probability of detection of an
+# object of this volume is determined only by kernel() function,
+# proportionally increasing for bigger objects
+_REF_VOL_ = 50000.0
+# List of viewable objects
+_VIEWABLE_OBJECTS_ = ('sssFloating', 'sssShip')
+
+
+class sssViewSensor(sssSensor):
     def __init__(self, obj):
-        self.h = 0.5 * (self['max_distance'] - self['min_distance'])
+        sssSensor.__init__(self, obj)
 
     def typeName(self):
-        return 'sssSensor'
+        return 'sssSensor'  # All the sensors will get the type 'sssSensor'
 
     def update(self):
-        pass
-
-    def kernel(self, obj):
-        """Compute the probability of detection modifier.
-        """
-        r = obj.worldPosition.xy - self.worldPosition.xy
-        l_squared = r.length_squared
-        if l_squared < self['min_distance']**2:
-            return 1.0
-        if l_squared > self['max_distance']**2:
-            return 0.0
-
-        l = r.length - self['min_distance']
-        q = l / self.h  # from 0 to 2
-
-        # Quintic Wendland kernel
-        return (1.0 + 2.0 * q) * (1.0 - 0.5 * q)**4
-
-    def add_contact(self, obj):
         if self.parent is None:
             return
-        try:
-            if obj in self.parent._contacts:
-                return
-            self.parent._contacts.append(obj)
-        except:
-            return        
-
+        # Scan all the scene objects
+        scene = g.getCurrentScene()
+        objlist = scene.objects
+        for obj in objlist:
+            # Discard self detection
+            if obj == self.parent:
+                continue
+            # Analyze just the viewable objects
+            if not hasattr(obj, 'typeName'):
+                continue
+            if not obj.typeName() in _VIEWABLE_OBJECTS_:
+                continue
+            # Get the viewable volume (an object is considered viewable if it
+            # is emerged, or submerged least than 15 meters)
+            z = -obj.worldPosition[2] - 15.0
+            vol = obj.getVolume(z, False) / _REF_VOL_
+            if vol == 0.0:
+                continue
+            # Get the probability kernel function
+            W = self.kernel(obj)
+            if W == 0.0:
+                continue
+            if W == 1.0:
+                # It is closer than the minimum distance
+                self.add_contact(obj)
+                continue
+            if random.random() < W * (vol**0.33):
+                self.add_contact(obj)
