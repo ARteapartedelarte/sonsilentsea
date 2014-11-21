@@ -84,7 +84,7 @@ def getModule():
 
 
 def getValidName():
-    """Convert the object name inot a valid module identifier."""
+    """Convert the object name in a valid module identifier."""
     obj = bpy.context.object
     valid_name = 'sss_' + obj.name
     # Replace all the invalid chars by underscores
