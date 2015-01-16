@@ -23,13 +23,19 @@ from bpy import types, props
 import math
 import os
 from os import path
-import sssSDK.objects as objects
+import sssSDK
+try:
+    import sssSDK.objects as objects
+except:
+    from sssSDK import objects
 # Try to import all the objects
 mod_files = os.listdir(objects.__path__[0])
 objects.modules = []
 objects.all_modules = []
 for f in mod_files:
     if f == '__init__.py':
+        continue
+    if f.startswith('__pycache__'):
         continue
     if f.endswith('.pyc'):
         continue
