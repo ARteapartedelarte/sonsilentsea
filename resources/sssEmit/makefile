@@ -1,22 +1,26 @@
 # sssEmit 1.0 makefile
 
-PREFIX=/usr
-
 ECHO=@echo
 MKDIR=mkdir -p
 RM=rm -f
-CP=cp -f
+CP=cp
 
-all:
-	$(ECHO) "This package does not need to be built."
+ifndef $(ADDONS_PATH)
+	ifndef $(PREFIX)
+		PREFIX=/usr
+	endif
+	ADDONS_PATH=$(PREFIX)/lib/blender/scripts/addons
+endif
 
-install:
-	$(RM) -r $(PREFIX)/lib/blender/scripts/addons/sssEmit
-	$(MKDIR) $(PREFIX)/lib/blender/scripts/addons/sssEmit
-	$(CP) __init__.py $(PREFIX)/lib/blender/scripts/addons/sssEmit/
-	$(CP) -r particle $(PREFIX)/lib/blender/scripts/addons/sssEmit/
-	$(CP) -r scripts $(PREFIX)/lib/blender/scripts/addons/sssEmit/
+all: install
 
-clean:
-	$(ECHO) "This package does not need to be cleaned."
+clean: uninstall
 
+install: uninstall
+	$(MKDIR) $(ADDONS_PATH)/sssEmit
+	$(CP) __init__.py $(ADDONS_PATH)/sssEmit/
+	$(CP) -r particle $(ADDONS_PATH)/sssEmit/
+	$(CP) -r scripts $(ADDONS_PATH)/sssEmit/
+
+uninstall:
+	$(RM) -r $(ADDONS_PATH)/sssEmit

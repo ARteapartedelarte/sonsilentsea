@@ -1,23 +1,27 @@
 # sssSDK 1.0 makefile
 
-PREFIX=/usr
-
 ECHO=@echo
 MKDIR=mkdir -p
 RM=rm -f
-CP=cp -f
+CP=cp
 
-all:
-	$(ECHO) "This package does not need to be built."
+ifndef $(ADDONS_PATH)
+	ifndef $(PREFIX)
+		PREFIX=/usr
+	endif
+	ADDONS_PATH=$(PREFIX)/lib/blender/scripts/addons
+endif
 
-install:
-	$(RM) -r $(PREFIX)/lib/blender/scripts/addons/sssSDK
-	$(MKDIR) $(PREFIX)/lib/blender/scripts/addons/sssSDK
-	$(CP) __init__.py $(PREFIX)/lib/blender/scripts/addons/sssSDK/
-	$(CP) utils.py $(PREFIX)/lib/blender/scripts/addons/sssSDK/
-	$(CP) -r objects $(PREFIX)/lib/blender/scripts/addons/sssSDK/
-	$(CP) -r scripts $(PREFIX)/lib/blender/scripts/addons/sssSDK/
+all: install
 
-clean:
-	$(ECHO) "This package does not need to be cleaned."
+clean: uninstall
 
+install: uninstall
+	$(MKDIR) $(ADDONS_PATH)/sssSDK
+	$(CP) __init__.py $(ADDONS_PATH)/sssSDK/
+	$(CP) utils.py $(ADDONS_PATH)/sssSDK/
+	$(CP) -r objects $(ADDONS_PATH)/sssSDK/
+	$(CP) -r scripts $(ADDONS_PATH)/sssSDK/
+
+uninstall:
+	$(RM) -r $(ADDONS_PATH)/sssSDK
