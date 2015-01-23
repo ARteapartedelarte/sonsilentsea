@@ -24,7 +24,6 @@ import math
 from sssSDK.utils import *
 import sssSDK.objects.dynamic as dynamic
 import sssSDK.objects.destroyable as destroyable
-import sssSDK.objects.dynamic_loader as loader
 
 
 # Module data
@@ -51,7 +50,6 @@ def updateValues():
     """Update the particles emitter values."""
     dynamic.updateValues()
     destroyable.updateValues()
-    loader.updateValues()
     generateProperties()
     loadScript()
 
@@ -171,7 +169,6 @@ def createLogic():
 def create():
     dynamic.create()
     destroyable.create()
-    loader.create()
     generateProperties()
     loadScript()
     createLogic()
@@ -200,7 +197,6 @@ def draw(context, layout):
     row.prop(context.object,
              "sss_gun_bullet_obj",
              text="Bullet object")
-    loader.draw(context, layout)
     row = layout.row()
     row.prop(context.object,
              "sss_gun_bullet_vel",

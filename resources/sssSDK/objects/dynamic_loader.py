@@ -26,7 +26,7 @@ from sssSDK.utils import *
 # Module data
 NAME = 'Dynamic loader'
 DESCRIPION = 'Load blender files'
-SELECTABLE = False
+SELECTABLE = True
 CLASS_NAME = 'sssDynamicLoader'
 SCRIPT_NAME = 'sss_dynamic_loader'
 
