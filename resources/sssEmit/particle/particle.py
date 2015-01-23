@@ -268,7 +268,7 @@ def generateObjectProperties(update_callback):
         default=0.0,
         min=0.0,
         update=update_callback,
-        description='Particle lifetime.')
+        description='Particle lifetime')
     bpy.types.Object.is_scale_fade = bpy.props.BoolProperty(
         default=False,
         update=update_callback,
@@ -277,19 +277,19 @@ def generateObjectProperties(update_callback):
         default=1.0,
         min=0.0,
         update=update_callback,
-        description='Final scale (relative factor to the original one).')
+        description='Final scale (relative factor to the original one)')
     bpy.types.Object.scale_fade_in = bpy.props.FloatProperty(
         default=0.0,
         min=0.0,
         precision=3,
         update=update_callback,
-        description='Fade start instant.')
+        description='Fade start instant')
     bpy.types.Object.scale_fade_out = bpy.props.FloatProperty(
         default=0.0,
         min=0.001,
         precision=3,
         update=update_callback,
-        description='Fade end instant.')
+        description='Fade end instant')
     bpy.types.Object.is_color_fade = bpy.props.BoolProperty(
         default=False,
         update=update_callback,
@@ -303,19 +303,19 @@ def generateObjectProperties(update_callback):
         subtype='COLOR_GAMMA',
         size=3,
         update=update_callback,
-        description='Final color.')
+        description='Final color')
     bpy.types.Object.color_fade_in = bpy.props.FloatProperty(
         default=0.0,
         min=0.0,
         precision=3,
         update=update_callback,
-        description='Fade start instant.')
+        description='Fade start instant')
     bpy.types.Object.color_fade_out = bpy.props.FloatProperty(
         default=0.0,
         min=0.001,
         precision=3,
         update=update_callback,
-        description='Fade end instant.')
+        description='Fade end instant')
     bpy.types.Object.is_alpha_fade = bpy.props.BoolProperty(
         default=False,
         update=update_callback,
@@ -324,19 +324,19 @@ def generateObjectProperties(update_callback):
         default=1.0,
         min=0.0,
         update=update_callback,
-        description='Final alpha.')
+        description='Final alpha')
     bpy.types.Object.alpha_fade_in = bpy.props.FloatProperty(
         default=0.0,
         min=0.0,
         precision=3,
         update=update_callback,
-        description='Fade start instant.')
+        description='Fade start instant')
     bpy.types.Object.alpha_fade_out = bpy.props.FloatProperty(
         default=0.0,
         min=0.001,
         precision=3,
         update=update_callback,
-        description='Fade end instant.')
+        description='Fade end instant')
 
 
 def draw(context, layout):

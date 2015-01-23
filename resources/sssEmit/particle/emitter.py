@@ -222,7 +222,7 @@ def generateObjectProperties(update_callback):
         min=0.0,
         update=update_callback,
         description='Particles emission time (after this time the object will'
-        ' be removed from the escene).')
+        ' be removed from the escene)')
 
     bpy.types.Object.rate = bpy.props.FloatProperty(
         default=30.0,
