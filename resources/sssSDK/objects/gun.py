@@ -56,51 +56,51 @@ def updateValues():
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['min_pitch'].value = obj.sss_min_pitch
-    obj.game.properties['max_pitch'].value = obj.sss_max_pitch
-    obj.game.properties['vel_pitch'].value = obj.sss_vel_pitch
-    obj.game.properties['reload_time'].value = obj.sss_reload_time
-    obj.game.properties['bullet_obj'].value = obj.sss_bullet_obj
-    obj.game.properties['bullet_vel'].value = obj.sss_bullet_vel
-    obj.game.properties['smoke_obj'].value = obj.sss_smoke_obj
+    obj.game.properties['min_pitch'].value = obj.sss_gun_min_pitch
+    obj.game.properties['max_pitch'].value = obj.sss_gun_max_pitch
+    obj.game.properties['vel_pitch'].value = obj.sss_gun_vel_pitch
+    obj.game.properties['reload_time'].value = obj.sss_gun_reload_time
+    obj.game.properties['bullet_obj'].value = obj.sss_gun_bullet_obj
+    obj.game.properties['bullet_vel'].value = obj.sss_gun_bullet_vel
+    obj.game.properties['smoke_obj'].value = obj.sss_gun_smoke_obj
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_min_pitch = bpy.props.FloatProperty(
+    bpy.types.Object.sss_gun_min_pitch = bpy.props.FloatProperty(
         default=-10.0,
         min=-90.0,
         max=0.0,
         update=update_callback,
         description='Minimum pitch angle')
-    bpy.types.Object.sss_max_pitch = bpy.props.FloatProperty(
+    bpy.types.Object.sss_gun_max_pitch = bpy.props.FloatProperty(
         default=30.0,
         min=0.0,
         max=90.0,
         update=update_callback,
         description='Maximum pitch angle')
-    bpy.types.Object.sss_vel_pitch = bpy.props.FloatProperty(
+    bpy.types.Object.sss_gun_vel_pitch = bpy.props.FloatProperty(
         default=5.0,
         min=1.0,
         max=90.0,
         update=update_callback,
         description='Rotation velocity')
-    bpy.types.Object.sss_reload_time = bpy.props.FloatProperty(
+    bpy.types.Object.sss_gun_reload_time = bpy.props.FloatProperty(
         default=7.0,
         min=0.0,
         update=update_callback,
         description='Reload timelapse')
-    bpy.types.Object.sss_bullet_obj = bpy.props.StringProperty(
+    bpy.types.Object.sss_gun_bullet_obj = bpy.props.StringProperty(
         default='',
         update=update_callback,
         description='Bullet object to be shooted')
-    bpy.types.Object.sss_bullet_vel = bpy.props.FloatProperty(
+    bpy.types.Object.sss_gun_bullet_vel = bpy.props.FloatProperty(
         default=250.0,
         min=50.0,
         max=1500.0,
         update=update_callback,
         description='Bullet launching speed')
-    bpy.types.Object.sss_smoke_obj = bpy.props.StringProperty(
+    bpy.types.Object.sss_gun_smoke_obj = bpy.props.StringProperty(
         default='',
         update=update_callback,
         description='Smoke object generated when shooting')
@@ -182,30 +182,30 @@ def draw(context, layout):
     destroyable.draw(context, layout)
     row = layout.row()
     row.prop(context.object,
-             "sss_min_pitch",
+             "sss_gun_min_pitch",
              text="Minimum pitch (deg)")
     row = layout.row()
     row.prop(context.object,
-             "sss_max_pitch",
+             "sss_gun_max_pitch",
              text="Maximum pitch (deg)")
     row = layout.row()
     row.prop(context.object,
-             "sss_vel_pitch",
+             "sss_gun_vel_pitch",
              text="Rotation velocity (deg/s)")
     row = layout.row()
     row.prop(context.object,
-             "sss_reload_time",
+             "sss_gun_reload_time",
              text="Reload (s)")
     row = layout.row()
     row.prop(context.object,
-             "sss_bullet_obj",
+             "sss_gun_bullet_obj",
              text="Bullet object")
     loader.draw(context, layout)
     row = layout.row()
     row.prop(context.object,
-             "sss_bullet_vel",
+             "sss_gun_bullet_vel",
              text="Bullet velocity")
     row = layout.row()
     row.prop(context.object,
-             "sss_smoke_obj",
+             "sss_gun_smoke_obj",
              text="Smoke object")

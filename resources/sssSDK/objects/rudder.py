@@ -50,18 +50,18 @@ def updateValues():
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['K'].value = obj.sss_K
-    obj.game.properties['max_angle'].value = obj.sss_max_angle
+    obj.game.properties['K'].value = obj.sss_rudder_K
+    obj.game.properties['max_angle'].value = obj.sss_rudder_max_angle
 
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_K = bpy.props.FloatProperty(
+    bpy.types.Object.sss_rudder_K = bpy.props.FloatProperty(
         default=1.0E3,
         update=update_callback,
         description='Rudder moment multiplier')
-    bpy.types.Object.sss_max_angle = bpy.props.FloatProperty(
+    bpy.types.Object.sss_rudder_max_angle = bpy.props.FloatProperty(
         default=30.0,
         min=0.0,
         update=update_callback,
@@ -143,10 +143,10 @@ def draw(context, layout):
     destroyable.draw(context, layout)
     row = layout.row()
     row.prop(context.object,
-             "sss_K",
+             "sss_rudder_K",
              text="K")
     row = layout.row()
     row.prop(context.object,
-             "sss_max_angle",
+             "sss_rudder_max_angle",
              text="Maximum angle (deg)")
 

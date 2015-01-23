@@ -43,19 +43,19 @@ def updateValues():
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['AP'].value = obj.sss_AP
-    obj.game.properties['HP'].value = obj.sss_HP
+    obj.game.properties['AP'].value = obj.sss_destroyable_AP
+    obj.game.properties['HP'].value = obj.sss_destroyable_HP
 
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_AP = bpy.props.FloatProperty(
+    bpy.types.Object.sss_destroyable_AP = bpy.props.FloatProperty(
         default=0.0,
         update=update_callback,
         description='Armour points of the object. As more armour points more'
                     ' hard will be damaging the object')
-    bpy.types.Object.sss_HP = bpy.props.FloatProperty(
+    bpy.types.Object.sss_destroyable_HP = bpy.props.FloatProperty(
         default=1.0,
         update=update_callback,
         description='Health points of the object. As more health points more'
@@ -128,9 +128,9 @@ def create():
 def draw(context, layout):
     row = layout.row()
     row.prop(context.object,
-             "sss_AP",
+             "sss_destroyable_AP",
              text="Armour points")
     row = layout.row()
     row.prop(context.object,
-             "sss_HP",
+             "sss_destroyable_HP",
              text="Health points")

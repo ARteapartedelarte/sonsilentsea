@@ -44,15 +44,15 @@ def updateValues():
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['real_mass'].value = obj.sss_mass
-    m = min(10000.0, max(0.01, MASS_FACTOR * float(obj.sss_mass)))
+    obj.game.properties['real_mass'].value = obj.sss_dynamic_mass
+    m = min(10000.0, max(0.01, MASS_FACTOR * float(obj.sss_dynamic_mass)))
     obj.game.mass = m
 
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_mass = bpy.props.StringProperty(
+    bpy.types.Object.sss_dynamic_mass = bpy.props.StringProperty(
         default='1.0',
         update=update_callback,
         description='Real mass of the object. It is needed due to the'
@@ -136,7 +136,7 @@ def createPhysics():
     mask[-1] = False
     mask[-2] = False
     obj.game.collision_mask = mask
-    obj.game.mass = MASS_FACTOR * float(obj.sss_mass)
+    obj.game.mass = MASS_FACTOR * float(obj.sss_dynamic_mass)
 
 
 def create():
@@ -149,5 +149,5 @@ def create():
 def draw(context, layout):
     row = layout.row()
     row.prop(context.object,
-             "sss_mass",
+             "sss_dynamic_mass",
              text="mass (kg)")

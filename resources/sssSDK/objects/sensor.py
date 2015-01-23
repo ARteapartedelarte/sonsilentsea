@@ -45,18 +45,18 @@ def updateValues():
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['max_distance'].value = obj.sss_max_distance
-    obj.game.properties['min_distance'].value = obj.sss_min_distance
+    obj.game.properties['max_distance'].value = obj.sss_sensor_max_distance
+    obj.game.properties['min_distance'].value = obj.sss_sensor_min_distance
 
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_max_distance = bpy.props.FloatProperty(
+    bpy.types.Object.sss_sensor_max_distance = bpy.props.FloatProperty(
         default=10000.0,
         update=update_callback,
         description='Maximum distance where an object could be detected')
-    bpy.types.Object.sss_min_distance = bpy.props.FloatProperty(
+    bpy.types.Object.sss_sensor_min_distance = bpy.props.FloatProperty(
         default=1000.0,
         update=update_callback,
         description='Distance below that the object will be surely detected')
@@ -150,8 +150,8 @@ def create():
 def draw(context, layout):
     row = layout.row()
     row.prop(context.object,
-             "sss_max_distance",
+             "sss_sensor_max_distance",
              text="max distance")
     row.prop(context.object,
-             "sss_min_distance",
+             "sss_sensor_min_distance",
              text="min distance")

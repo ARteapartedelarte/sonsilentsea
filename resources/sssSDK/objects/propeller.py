@@ -51,20 +51,20 @@ def updateValues():
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['RPM'].value = obj.sss_RPM
-    obj.game.properties['power'].value = obj.sss_power
+    obj.game.properties['RPM'].value = obj.sss_propeller_RPM
+    obj.game.properties['power'].value = obj.sss_propeller_power
 
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_RPM = bpy.props.FloatProperty(
+    bpy.types.Object.sss_propeller_RPM = bpy.props.FloatProperty(
         default=150.0,
         update=update_callback,
         description='Propeller maximum rotation velocity (r.p.m.). Positive'
                     ' for counterwise rotational direction, negative'
                     ' otherwise')
-    bpy.types.Object.sss_power = bpy.props.FloatProperty(
+    bpy.types.Object.sss_propeller_power = bpy.props.FloatProperty(
         default=1.0,
         min=0.0,
         update=update_callback,
@@ -146,10 +146,10 @@ def draw(context, layout):
     destroyable.draw(context, layout)
     row = layout.row()
     row.prop(context.object,
-             "sss_RPM",
+             "sss_propeller_RPM",
              text="RPM")
     row = layout.row()
     row.prop(context.object,
-             "sss_power",
+             "sss_propeller_power",
              text="Engine power (MW)")
 

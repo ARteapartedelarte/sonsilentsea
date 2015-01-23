@@ -47,7 +47,7 @@ def updateValues():
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['shell'].value = obj.sss_shell
+    obj.game.properties['shell'].value = obj.sss_bullet_shell
     obj.game.properties['explosion'].value = obj.sss_bullet_explosion
     obj.game.properties['water'].value = obj.sss_bullet_water
 
@@ -55,7 +55,7 @@ def updateValues():
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_shell = bpy.props.FloatProperty(
+    bpy.types.Object.sss_bullet_shell = bpy.props.FloatProperty(
         default=10.0,
         min=0.0,
         update=update_callback,
@@ -148,7 +148,7 @@ def draw(context, layout):
     dynamic.draw(context, layout)
     row = layout.row()
     row.prop(context.object,
-             "sss_shell",
+             "sss_bullet_shell",
              text="shell (kg)")
     row = layout.row()
     row.prop(context.object,

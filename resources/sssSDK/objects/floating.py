@@ -49,8 +49,8 @@ def generateProperties(v):
         addProperty('vols_v{}'.format(i), 'FLOAT', vv)
     # In this case we need to regenerate the displacement property
     vol = getVolume(0.0, v)
-    obj.sss_mass = '{}'.format(1025.0 * vol)
-    obj.game.properties['real_mass'].value = obj.sss_mass
+    obj.sss_dynamic_mass = '{}'.format(1025.0 * vol)
+    obj.game.properties['real_mass'].value = obj.sss_dynamic_mass
 
 
 def updateValues():
@@ -60,19 +60,19 @@ def updateValues():
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['GMT'].value = obj.sss_gmt
-    obj.game.properties['GML'].value = obj.sss_gml
+    obj.game.properties['GMT'].value = obj.sss_floating_gmt
+    obj.game.properties['GML'].value = obj.sss_floating_gml
 
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_gmt = bpy.props.FloatProperty(
+    bpy.types.Object.sss_floating_gmt = bpy.props.FloatProperty(
         default=0.35,
         min=0.0,
         update=update_callback,
         description='Transversal stability parameter')
-    bpy.types.Object.sss_gml = bpy.props.FloatProperty(
+    bpy.types.Object.sss_floating_gml = bpy.props.FloatProperty(
         default=0.35,
         min=0.0,
         update=update_callback,
@@ -318,11 +318,11 @@ def draw(context, layout):
 
     row = layout.row()
     row.prop(context.object,
-             "sss_gmt",
+             "sss_floating_gmt",
              text="GMT (m)")
     row = layout.row()
     row.prop(context.object,
-             "sss_gml",
+             "sss_floating_gml",
              text="GML (m)")
 
     destroyable.draw(context, layout)

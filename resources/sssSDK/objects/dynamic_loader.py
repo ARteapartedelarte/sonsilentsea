@@ -42,13 +42,13 @@ def updateValues():
     loadScript()
 
     obj = bpy.context.object
-    obj.game.properties['blend_file'].value = obj.sss_blend_file
+    obj.game.properties['blend_file'].value = obj.sss_dynamic_loader_file
 
 
 def generateObjectProperties(update_callback):
     """Generate the Blender object properties.
     """
-    bpy.types.Object.sss_blend_file = bpy.props.StringProperty(
+    bpy.types.Object.sss_dynamic_loader_file = bpy.props.StringProperty(
         default='',
         update=update_callback,
         description="Blender file to be dynamically loaded, '' if nothing"
@@ -121,5 +121,5 @@ def create():
 def draw(context, layout):
     row = layout.row()
     row.prop(context.object,
-             "sss_blend_file",
+             "sss_dynamic_loader_file",
              text="File")
