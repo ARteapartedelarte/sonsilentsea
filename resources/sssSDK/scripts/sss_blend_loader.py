@@ -24,7 +24,7 @@ import os.path as path
 import sys
 
 
-class sssDynamicLoader():
+class sssBlendLoader():
     def __init__(self, obj):
         blend_file = self['blend_file']
         if blend_file == '':
@@ -32,7 +32,7 @@ class sssDynamicLoader():
         self.load_blender_file(blend_file)
 
     def typeName(self):
-        return 'sssDynamicLoader'
+        return 'sssBlendLoader'
 
     def update(self):
         return
