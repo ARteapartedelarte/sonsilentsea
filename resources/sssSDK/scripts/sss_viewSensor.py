@@ -56,19 +56,27 @@ class sssViewSensor(sssSensor):
                 continue
             if not obj.typeName() in _VIEWABLE_OBJECTS_:
                 continue
-            # Get the viewable volume (an object is considered viewable if it
-            # is emerged, or submerged least than 15 meters)
-            z = -obj.worldPosition[2] - 15.0
-            vol = obj.getVolume(z, False) / _REF_VOL_
-            if vol == 0.0:
-                continue
-            # Get the probability kernel function
+            # Get the kernel modifier function
             W = self.kernel(obj)
             if W == 0.0:
+                # The object is too far to be detected
                 continue
+            # Get the viewable volume
+            # Depending on distance an object submerged can be viewed or not, so
+            # we are considering that objects close to the sensor, submerged
+            # less than 15 meter (maximum periscope distance) can be detected,
+            # while this capacity is reduced as the object is far away
+            z = -obj.worldPosition[2] - 15.0 * W
+            vol = obj.getVolume(z, False) / _REF_VOL_
+            if vol == 0.0:
+                # Undetectable, the object is too far or too submerged
+                continue
+
             if W == 1.0:
-                # It is closer than the minimum distance
+                # The object is a critical distance, it is surely detected
                 self.add_contact(obj)
                 continue
+            # The object has a certain probability to be detected. Small objects
+            # are hard to be detected, big objects are easily detected
             if random.random() < W * (vol**0.33):
                 self.add_contact(obj)
