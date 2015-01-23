@@ -62,19 +62,19 @@ def generateObjectProperties(update_callback):
         min=-360.0,
         max=0.0,
         update=update_callback,
-        description='Minimum rotation angle (-360 to no limit).')
+        description='Minimum rotation angle (-360 to no limit)')
     bpy.types.Object.sss_turret_max_angle = bpy.props.FloatProperty(
         default=360.0,
         min=0.0,
         max=360.0,
         update=update_callback,
-        description='Maximum rotation angle (360 to no limit).')
+        description='Maximum rotation angle (360 to no limit)')
     bpy.types.Object.sss_turret_vel_angle = bpy.props.FloatProperty(
         default=5.0,
         min=1.0,
         max=360.0,
         update=update_callback,
-        description='Rotation velocity.')
+        description='Rotation velocity')
 
 
 def loadScript():

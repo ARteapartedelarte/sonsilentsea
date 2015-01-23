@@ -72,38 +72,38 @@ def generateObjectProperties(update_callback):
         min=-90.0,
         max=0.0,
         update=update_callback,
-        description='Minimum pitch angle.')
+        description='Minimum pitch angle')
     bpy.types.Object.sss_max_pitch = bpy.props.FloatProperty(
         default=30.0,
         min=0.0,
         max=90.0,
         update=update_callback,
-        description='Maximum pitch angle.')
+        description='Maximum pitch angle')
     bpy.types.Object.sss_vel_pitch = bpy.props.FloatProperty(
         default=5.0,
         min=1.0,
         max=90.0,
         update=update_callback,
-        description='Rotation velocity.')
+        description='Rotation velocity')
     bpy.types.Object.sss_reload_time = bpy.props.FloatProperty(
         default=7.0,
         min=0.0,
         update=update_callback,
-        description='Reload timelapse.')
+        description='Reload timelapse')
     bpy.types.Object.sss_bullet_obj = bpy.props.StringProperty(
         default='',
         update=update_callback,
-        description='Bullet object to be shooted.')
+        description='Bullet object to be shooted')
     bpy.types.Object.sss_bullet_vel = bpy.props.FloatProperty(
         default=250.0,
         min=50.0,
         max=1500.0,
         update=update_callback,
-        description='Bullet launching speed.')
+        description='Bullet launching speed')
     bpy.types.Object.sss_smoke_obj = bpy.props.StringProperty(
         default='',
         update=update_callback,
-        description='Smoke object generated when shooting.')
+        description='Smoke object generated when shooting')
 
 
 def loadScript():

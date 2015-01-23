@@ -60,7 +60,7 @@ def generateObjectProperties(update_callback):
     bpy.types.Object.sss_K = bpy.props.FloatProperty(
         default=1.0E3,
         update=update_callback,
-        description='Rudder moment multiplier.')
+        description='Rudder moment multiplier')
     bpy.types.Object.sss_max_angle = bpy.props.FloatProperty(
         default=30.0,
         min=0.0,
