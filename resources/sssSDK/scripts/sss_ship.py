@@ -22,6 +22,7 @@ import bge
 from bge import logic as g
 from math import *
 from mathutils import *
+import random
 from sss_floating import sssFloating
 
 
@@ -29,6 +30,8 @@ WAYPOINT_TOLERANCE = 150.0
 WAYPOINT_ROT_PID = (3 * 12 / pi,   # Maximum rotation for 15 degrees or higher
                     0.0,           # Integral control is disabled
                     3 * 180 / pi)  # Try to limit the rotation to 1 degrees/s
+NEW_CONTACT_VALID_PERIOD = 1.0
+MAX_CONTACT_VALID_PERIOD = 3.0
 
 
 class sssShip(sssFloating):
@@ -44,47 +47,31 @@ class sssShip(sssFloating):
         # type, position, ...
         # Ghosts are contacts which just an approximation of its position is
         # known, but not if they are allies or enemies, the ship type, ...
-        self._contacts = []
-        self._ghosts = []
+        self.__contacts = {}
+        self.__ghosts = {}
 
     def typeName(self):
         return 'sssShip'
 
-    def getSubSystems(self):
-        children = self.children
-        self._propellers = []
-        self._rudders = []
-        self._guns = []
-        self._sensors = []
+    def getChildrenByType(self, type_name, obj=None):
+        if obj is None:
+            obj = self
+        ents = []
+        children = obj.children
         for c in children:
             try:
-                if c.typeName() == 'sssPropeller':
-                    if not c.alive():
-                        continue
-                    self._propellers.append(c)
-                elif c.typeName() == 'sssRudder':
-                    if not c.alive():
-                        continue
-                    self._rudders.append(c)
-                elif c.typeName() == 'sssGun':
-                    if not c.alive():
-                        continue
-                    self._guns.append(c)
-                elif c.typeName() == 'sssTurret':
-                    if not c.alive():
-                        continue
-                    for cc in c.children:
-                        try:
-                            if not cc.alive():
-                                continue
-                            if cc.typeName() == 'sssGun':
-                                self._guns.append(cc)
-                        except:
-                            continue
-                elif c.typeName() == 'sssSensor':
-                    self._sensors.append(c)
+                if c.typeName() == type_name:
+                    ents.append(c)
             except:
-                continue
+                pass
+            ents.extend(self.getChildrenByType(type_name, c))
+        return ents
+
+    def getSubSystems(self):
+        self._propellers = self.getChildrenByType('sssPropeller')
+        self._rudders = self.getChildrenByType('sssRudder')
+        self._guns = self.getChildrenByType('sssGun')
+        self._sensors = self.getChildrenByType('sssSensor')
 
     def getMarch(self):
         return self._march
@@ -176,14 +163,25 @@ class sssShip(sssFloating):
                 r['rudder'] = self._wheel            
         if self._waypoint is not None:
             self.goTo(self._waypoint)
-        for i, g in enumerate(self._guns):
+        for i, gun in enumerate(self._guns):
             if self._gun_target[i] is None:
                 continue
-            self.setGun(g, self._gun_target[i])
+            self.setGun(gun, self._gun_target[i])
         for s in self._sensors:
             s.update()
 
-    def goTo(self, w):
+        # Update the contacts and ghosts
+        dt = 1.0 / g.getLogicTicRate()
+        for obj in self.contacts.keys():
+            self.contacts[obj]['t'] -= dt
+            if self.contacts[obj]['t'] < 0.0:
+                self.removeContact(obj)
+        for obj in self.ghosts.keys():
+            self.ghosts[obj]['t'] -= dt
+            if self.ghosts[obj]['t'] < 0.0:
+                self.removeGhost(obj)
+
+    def goTo(self, w, tol=WAYPOINT_TOLERANCE):
         aim = w[0]
         vel = w[1]
         if not vel:
@@ -191,17 +189,15 @@ class sssShip(sssFloating):
         # Lets see if we have arrived the point
         vec = (aim - self.worldPosition.xy)
         dist_squared = vec.length_squared
-        if dist_squared < WAYPOINT_TOLERANCE**2:
+        if dist_squared < tol**2:
             self.march(0)
             self.wheel(0)
             return
         # Start moving
-        for p in self._propellers:
-            if p['HP'] <= 0.0:
-                continue
-            p['march'] = vel
-        # Get the required yaw rotation
-        vec = vec.normalized()
+        self.orientate(vec, vel)
+
+    def orientate(self, vec, vel):
+        vec = vec.xy.normalized()
         aim_yaw = atan2(vec.y, vec.x)
         vec = self.getAxisVect(Vector((1.0, 0.0, 0.0))).xy.normalized()
         if vel < 0:
@@ -214,6 +210,11 @@ class sssShip(sssFloating):
             dyaw -= 2.0 * pi
         # Get the actual rotation velocity
         dyawdt = self.getAngularVelocity().z
+        # Activate propellers
+        for p in self._propellers:
+            if p['HP'] <= 0.0:
+                continue
+            p['march'] = vel
         # Ask to move the rudders
         w = int(round(WAYPOINT_ROT_PID[0] * dyaw - WAYPOINT_ROT_PID[2] * dyawdt))
         for r in self._rudders:
@@ -233,3 +234,77 @@ class sssShip(sssFloating):
             gun.aimTo(aim, False)
             return
         gun.aimTo(aim, True)
+
+    @property
+    def contacts(self):
+        return self.__contacts
+
+    @contacts.setter
+    def contacts(self, value):
+        raise AttributeError('contacts is a read only attribute')
+
+    def addContact(self, obj):
+        # First check that it is not an already existing contact
+        if obj in self.__contacts.keys():
+            # It is a contact, add 1 second of validity
+            self.__contacts[obj]['t'] = min(self.__contacts[obj]['t'] + 1.0,
+                                            MAX_CONTACT_VALID_PERIOD)
+            return
+        # It is a new contact
+        self.__contacts[obj] = {'t':NEW_CONTACT_VALID_PERIOD}
+        
+        # Check if it was a Ghost upgradable to contact, in that case we can sum
+        # the valid time
+        if obj in self.__ghosts.keys():
+            t = self.__ghosts[obj]['t']
+            self.__contacts[obj]['t'] = min(self.__contacts[obj]['t'] + t,
+                                            MAX_CONTACT_VALID_PERIOD)
+            # And remove the ghost
+            self.removeGhost(self)
+        
+    def removeContact(self, obj):
+        if obj not in self.__contacts.keys():
+            return
+        del self.__contacts[obj]
+
+    @property
+    def ghosts(self):
+        return self.__ghosts
+
+    @ghosts.setter
+    def ghosts(self, value):
+        raise AttributeError('contacts is a read only attribute')
+
+    def addGhost(self, obj, max_error=100.0):
+        # Check if it is an already existing contact. Contact is more elevated
+        # than Ghost, so in this case we are increasing the contact validity
+        # period.
+        # It can be used, for instance, when you are submerged and only ghosts
+        # can be received from the sonar, but you can have them already
+        # identified.
+        if obj in self.__contacts.keys():
+            # It is a contact, add 1 second of validity
+            self.__contacts[obj]['t'] = min(self.__contacts[obj]['t'] + 1.0,
+                                            MAX_CONTACT_VALID_PERIOD)
+            return
+        # Otherwise check if it is an already existing ghost in order to
+        # increment validity period, or ventually to reduce position error
+        if obj in self.__ghosts.keys():
+            # It is a contact, add 1 second of validity
+            self.__ghosts[obj]['t'] = min(self.__ghosts[obj]['t'] + 1.0,
+                                            MAX_CONTACT_VALID_PERIOD)
+            if self.__ghosts[obj]['error'] > max_error:
+                self.__ghosts[obj]['error'] = random.uniform(0.0, max_error)
+            return
+        # It is a new ghost
+        error_dir = Vector((1.0, 0.0, 0.0))
+        eul = mathutils.Euler((0.0, 0.0, random.uniform(0.0, 2.0 * pi)), 'XYZ')
+        error_dir.rotate(eul)
+        self.__ghosts[obj] = {'t':NEW_CONTACT_VALID_PERIOD,
+                              'error_dir':error_dir,
+                              'error':random.uniform(0.0, max_error)}
+
+    def removeGhost(self, obj):
+        if obj not in self.__ghosts.keys():
+            return
+        del self.__ghosts[obj]

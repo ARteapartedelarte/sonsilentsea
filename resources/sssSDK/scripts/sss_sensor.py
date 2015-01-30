@@ -50,13 +50,11 @@ class sssSensor(bge.types.KX_GameObject):
         # Quintic Wendland kernel
         return (1.0 + 2.0 * q) * (1.0 - 0.5 * q)**4
 
-    def add_contact(self, obj):
+    def addContact(self, obj):
         if self.parent is None:
             return
         try:
-            if obj in self.parent._contacts:
-                return
-            self.parent._contacts.append(obj)
+            self.parent.addContact(obj)
         except:
             return        
 

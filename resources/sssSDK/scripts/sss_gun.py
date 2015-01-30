@@ -24,17 +24,15 @@ from math import *
 from mathutils import *
 from sss_dynamic import sssDynamic
 from sss_destroyable import sssDestroyable
-from sss_dynamic_loader import sssDynamicLoader
 
 
 ERROR_RADIUS = 200.0
 
 
-class sssGun(sssDynamic, sssDestroyable, sssDynamicLoader):
+class sssGun(sssDynamic, sssDestroyable):
     def __init__(self, obj):
         sssDynamic.__init__(self, obj)
         sssDestroyable.__init__(self, obj)
-        sssDynamicLoader.__init__(self, obj)
         self.min_pitch = radians(self['min_pitch'])
         self.max_pitch = radians(self['max_pitch'])
         self.vel_pitch = radians(self['vel_pitch'])
@@ -49,13 +47,24 @@ class sssGun(sssDynamic, sssDestroyable, sssDynamicLoader):
     def typeName(self):
         return 'sssGun'
 
+    def fireRange(self):
+        grav = abs(g.getCurrentScene().gravity.z)
+        pitch = min(self.max_pitch, radians(45.0))
+        vel = self['bullet_vel']
+        vel_z = vel * sin(pitch)
+        vel_x = vel * cos(pitch)
+        t = 2.0 * vel_z / grav
+        # The bullet is placed ahead to avoid self intersection
+        return vel_x * t + 32.0
+
     def isAimed(self, point=None, threshold=ERROR_RADIUS):
         if point is None:
             point = self.aim
         grav = abs(g.getCurrentScene().gravity.z)
         vec = self.getAxisVect(Vector((1.0, 0.0, 0.0)))
         vel = vec * self['bullet_vel']
-        pos = self.worldPosition
+        # The bullet is placed ahead to avoid self intersection
+        pos = self.worldPosition + vec * 32.0
         # Compute the flighting time
         # z = 0 = z_0 + v_0 t - 1/2 g t^2 
         t = (vel.z + sqrt(vel.z**2 + 2.0 * grav * pos.z)) / grav
@@ -114,7 +123,8 @@ class sssGun(sssDynamic, sssDestroyable, sssDynamicLoader):
             return 0.0
         grav = abs(g.getCurrentScene().gravity.z)
         vec = self.aim - self.worldPosition.xy
-        dist = vec.length
+        # The bullet is placed ahead
+        dist = vec.length - 32.0
         # Compute the aiming pitch angle. For the pitch angle
         # it will be suposed that the gun is in the water
         # level (z=0), which should imply an error that is
@@ -137,7 +147,6 @@ class sssGun(sssDynamic, sssDestroyable, sssDynamicLoader):
     def update(self):
         sssDynamic.update(self)
         sssDestroyable.update(self)
-        sssDynamicLoader.update(self)
         dt = 1.0 / g.getLogicTicRate()
         if self.reloading > 0.0:
             self.reloading -= dt

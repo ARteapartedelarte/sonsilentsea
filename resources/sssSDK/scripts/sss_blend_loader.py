@@ -24,7 +24,7 @@ import os.path as path
 import sys
 
 
-class sssBlendLoader():
+class sssBlendLoader(bge.types.KX_GameObject):
     def __init__(self, obj):
         blend_file = self['blend_file']
         if blend_file == '':

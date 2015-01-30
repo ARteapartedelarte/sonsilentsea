@@ -74,9 +74,9 @@ class sssViewSensor(sssSensor):
 
             if W == 1.0:
                 # The object is a critical distance, it is surely detected
-                self.add_contact(obj)
+                self.addContact(obj)
                 continue
             # The object has a certain probability to be detected. Small objects
             # are hard to be detected, big objects are easily detected
             if random.random() < W * (vol**0.33):
-                self.add_contact(obj)
+                self.addContact(obj)
